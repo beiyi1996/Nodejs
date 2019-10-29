@@ -39,3 +39,5 @@ let memberSchema = new Schema({
     default: Date.now
   }
 });
+
+module.exports = mongoose.model('Member', memberSchema);
