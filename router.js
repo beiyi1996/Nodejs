@@ -5,7 +5,8 @@ const path = require('path');
 const router = express.Router();
 const Member = require('./models/member');
 const bcrypt = require('bcrypt');
-
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 // 會員註冊
 router.get('/register', (req, res) => {
@@ -13,21 +14,19 @@ router.get('/register', (req, res) => {
 });
 
 router.post('/register', (req, res, next) => {
-    const body = req.body;
+    const { email, password } = req.body;
     console.log('body', body);
-    Member.findOne({
-        $or:[{email: body.email, name: body.name}]
-    }, (err, data) => {
+    Member.findOne({email: email}, (err, data) => {
         if(err) next(err);
         console.log('register data', data);
         if(data) {
-            return res.status(200).json({
-                err_code: 1,
-                message: 'Email or nickname is already exists.'
+            return res.status(201).json({
+                err_code: 201,
+                message: 'Email is already exists.'
             });
         }
 
-        body.password = bcrypt.hashSync(body.password, 10);
+        body.password = bcrypt.hashSync(password, 10);
         console.log('body.password', body.password);
         new Member(body).save((err, member)=>{
             console.log('member', member);
@@ -52,18 +51,18 @@ router.get('/login', (req, res) => {
 
 router.post('/login', (req, res, next) => {
     console.log(req.body);
-    const body = req.body;
-    Member.findOne({email: body.email}, 
+    const { email, password } = req.body;
+    Member.findOne({email: email}, 
         (err, member) => {
             if(err) next(err);
             if(!member){
-                res.status(200).json({
-                    err_code: 1,
+                res.status(401).json({
+                    err_code: 401,
                     message: 'This Email is invalid.'
                 });
             }
             console.log(333, member);
-            bcrypt.compare(body.password, member.password, (err, result) => {
+            bcrypt.compare(password, member.password, (err, result) => {
                 if(err) next(err);
                 console.log('result', result);
                 if(result){
@@ -71,9 +70,10 @@ router.post('/login', (req, res, next) => {
                         err_code: 200,
                         message: 'log in suceesfully'
                     });
+                    req.session.member = member;
                 } else {
-                    res.status(204).json({
-                        err_code: 2,
+                    res.status(401).json({
+                        err_code: 401,
                         message: 'Password is worng.'
                     });
                 }
@@ -81,6 +81,16 @@ router.post('/login', (req, res, next) => {
     });
 });
 
-
+router.get('/forgetpassword', (req, res) => {
+    const { email } = req.body;
+    let transporter = nodemailer.createTransport('SMTP', {
+       service: 'Gmail',
+       auth: {
+        user: email,
+        pass: 
+       }
+    });
+    res.send('<h1>forgot password, we are sent a validation code with your email. please check your email.</h1>');
+});
 
 module.exports = router;
