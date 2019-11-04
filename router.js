@@ -14,6 +14,8 @@ router.get('/register', (req, res) => {
 });
 
 router.post('/register', (req, res, next) => {
+    console.log('post 註冊!!');
+    console.log('req', req.body);
     const { email, password } = req.body;
     console.log('body', body);
     Member.findOne({email: email}, (err, data) => {
@@ -81,16 +83,54 @@ router.post('/login', (req, res, next) => {
     });
 });
 
-router.get('/forgetpassword', (req, res) => {
-    const { email } = req.body;
-    let transporter = nodemailer.createTransport('SMTP', {
-       service: 'Gmail',
-       auth: {
-        user: email,
-        pass: 
-       }
+async function createMail(email){
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: 'gourmand369@gmail.com', // generated ethereal user
+            pass: 'ao3g6ru8' // generated ethereal password
+        }
     });
+
+    await transporter.sendMail({
+        from: 'gourmand369@gmail.com', // sender address
+        to: email, // list of receivers
+        subject: 'forget password', // Subject line
+        text: 'forget password email', // plain text body
+        html: `<h3>請至連結更改密碼 : <a href="http://10.30.3.137:3000/modifiedpassword">修改密碼</a></h3>` // html body
+    });
+}
+
+router.get('/forgotpassword', (req, res, next) => {
+    const { email } = req.body;
+    console.log('email', email);
+    let token = crypto.randomBytes(32, (err, buffer) => {
+        if(err) next(err);
+       console.log('buffer to string', buffer.toString('hex')); 
+    });
+    let time = new Date();
+    Member.findOne({email: email}, (err, data) => {
+        if(err) next(err);
+        console.log('data', data);
+        // data.token = token;
+        // data.create_token_time = time;
+        // Member(data).save((err, member) => {
+        //     if(err) next(err);
+        //     res.status(200).json({
+        //         err_code: 200,
+        //         message: 'save the token and create time.'
+        //     });
+        //     console.log('member', member);
+        // });
+    });
+    createMail(email).catch(console.error);
     res.send('<h1>forgot password, we are sent a validation code with your email. please check your email.</h1>');
+});
+
+router.get('/modifiedpassword', (req, res) => {
+    res.send('<h1>this is modified password page</h1>');
 });
 
 module.exports = router;
