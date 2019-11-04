@@ -16,8 +16,8 @@ router.get('/register', (req, res) => {
 router.post('/register', (req, res, next) => {
     console.log('post 註冊!!');
     console.log('req', req.body);
+    const body = req.body;
     const { email, password } = req.body;
-    console.log('body', body);
     Member.findOne({email: email}, (err, data) => {
         if(err) next(err);
         console.log('register data', data);
