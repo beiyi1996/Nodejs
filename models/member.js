@@ -37,6 +37,14 @@ let memberSchema = new Schema({
   modified_time: {
     type: Date,
     default: Date.now
+  },
+  token: {
+    type: String,
+    default: ''
+  },
+  create_token_time: {
+    type: Date,
+    default: ''
   }
 });
 
