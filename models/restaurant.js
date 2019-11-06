@@ -3,6 +3,8 @@
 const mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
+mongoose.connect("mongodb://localhost/booking", { useMongoClient: true });
+
 let restaurantSchema = new Schema({
     name: {
         type: String,
