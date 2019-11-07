@@ -5,10 +5,11 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 // const cors = require('cors');
-const router = require('./router.js');
+const router = require('./src/router');
 const port = 3000;
 
 app.set('views', path.join(__dirname, './views/')); // 默認就是views目錄
+app.use('/node_modules/', express.static(path.join(__dirname, './node_modules/')));
 
 // app.use(cors());
 // parse application/x-www-form-urlencoded
