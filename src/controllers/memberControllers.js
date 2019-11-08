@@ -1,9 +1,8 @@
+/*jshint esversion: 6 */
 import Member from "../../models/member";
 import Bcrypt from "bcrypt";
 import Crypto from "crypto";
 import NodeMailer from "nodemailer";
-
-console.log("controllers is import!!");
 
 exports.createAccount = (req, res, next) => {
   console.log("post 註冊!");
