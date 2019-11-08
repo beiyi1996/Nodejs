@@ -5,6 +5,7 @@ const path = require("path");
 const router = express.Router();
 const MemberController = require("./controllers/memberControllers");
 const RestaurantController = require("./controllers/restaurantControllers");
+const IndexController = require("./controllers/indexControllers");
 
 // 會員註冊
 router.get("/register", (req, res) => {
@@ -36,5 +37,14 @@ router.post("/updaterestaurantdata", RestaurantController.updateRestaurantData);
 
 // 刪除資料
 router.post("/deleterestaurantdata", RestaurantController.deleteRestaurantData);
+
+// 搜尋餐廳
+router.post("/search", RestaurantController.searchRestaurant);
+
+// 首頁
+router.get("/", IndexController.randomRenderRestaurant);
+
+// 產品介紹頁
+router.get("/search/:name/:_id", RestaurantController.getRestaurantDetail);
 
 module.exports = router;
