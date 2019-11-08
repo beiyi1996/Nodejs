@@ -28,10 +28,6 @@ app.use(
 
 app.use(router);
 
-app.get('/', (req, res) => {
-    res.send('hi!!!');
-});
-
 app.use((req, res) => {
     res.send('404 Not found...');
 });
