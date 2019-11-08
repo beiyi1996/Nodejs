@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 import Restaurant from "../../models/restaurant";
 
 exports.createRestaurantData = (req, res, next) => {
@@ -53,5 +54,69 @@ exports.deleteRestaurantData = (req, res, next) => {
       message: `Delete restaurant: ${name}` 
     });
     console.log('delete end..');
+  });
+};
+
+async function findByName(name, res, next){
+  await Restaurant.findOne({name: name}, (err, data) => {
+    if(err) next(err);
+    console.log('data', data);
+    res.status(200).json({
+      code: 200,
+      message: `find restaurant by name : ${name}`,
+      resaturants: data
+    });
+  });
+}
+
+async function findByArea(area, res, next){
+  await Restaurant.find({"category.area": area}, (err, data) => {
+    if(err) next(err);
+    console.log('data', data);
+    res.status(200).json({
+      code: 200,
+      message: `find restaurant by area : ${area}`,
+      restaurants: data
+    });
+  });
+}
+
+async function findByKind(kind, res, next){
+  await Restaurant.find({"category.kind": kind}, (err, data) => {
+    if(err) next(err);
+    console.log('data', data);
+    res.status(200).json({
+      code: 200,
+      message: `find restaurant by kind : ${kind}`,
+      restaurants: data
+    });
+  });
+}
+
+exports.searchRestaurant = (req, res, next) => {
+  const { area, kind, name } = req.query;
+  if(area){
+    console.log('area', area);
+    findByArea(area, res, next);
+  } else if(kind){
+    console.log('kind', kind);
+    findByKind(kind, res, next);
+  } else if(name){
+    console.log('name', name);
+    findByName(name, res, next);
+  }
+};
+
+exports.getRestaurantDetail = (req, res, next) => {
+  const { name, _id } = req.params;
+  console.log('name', name, '_id', _id);
+  Restaurant.findOne({name: name, _id: _id}, (err, data) => {
+    if(err) next(err);
+    console.log('data', data);
+    res.status(200).json({
+      code: 200,
+      message: `find restaurant ${name}`,
+      restaurant: data
+    });
   });
 };
