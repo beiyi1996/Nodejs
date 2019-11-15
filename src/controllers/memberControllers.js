@@ -3,36 +3,78 @@ import Member from "../../models/member";
 import Bcrypt from "bcrypt";
 import Crypto from "crypto";
 import NodeMailer from "nodemailer";
+import { body, validationResult } from "../../node_modules/express-validator/check";
 
-exports.createAccount = (req, res, next) => {
-  console.log("post 註冊!");
-  console.log("req", req.body);
-  const body = req.body;
-  const { email, password } = req.body;
-  Member.findOne({ email: email }, (err, data) => {
-    if (err) next(err);
-    console.log("register data", data);
-    if (data) {
-      return res.status(201).json({
-        code: 201,
-        message: "Email is already exists."
-      });
+exports.validator = (method) => {
+  switch (method){
+    case 'createAccount': {
+      return [
+        body('email', 'Invalid email').exists().isEmail(),
+        body('password', 'Invalid email').isLength({min: 8}),
+        body('gender').optional({ checkFalsy: true }),
+        body('phone').isInt(),
+        body('name').isLength({min: 1})
+      ];
     }
-
-    body.password = Bcrypt.hashSync(password, 10);
-    console.log("body.password", body.password);
-    new Member(body).save((err, member) => {
-      console.log("member", member);
-      if (err) next(err);
-      req.session.member = member;
-      console.log("req.session.member", req.session.member);
-      res.status(200).json({
-        code: 200,
-        message: "OK"
-      });
-    });
-  });
+  }
 };
+
+exports.createAccount = async (req, res, next) => {
+  try{
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      res.status(422).json({
+        code: 422,
+        errors: errors.array()
+      });
+      return;
+    }
+    
+    const { email, password, gender, phone, name } = req.body;
+    const bcryptPassword = Bcrypt.hashSync(password, 10);
+    console.log("bcryptPassword", bcryptPassword);
+    const member = await Member.create({
+      email,
+      password: bcryptPassword,
+      gender,
+      phpne,
+      name
+    });
+    res.json(member);
+  } catch(err) {
+    return next(err);
+  }
+};
+
+// exports.createAccount = (req, res, next) => {
+//   console.log("post 註冊!");
+//   console.log("req", req.body);
+//   const body = req.body;
+//   const { email, password } = req.body;
+//   Member.findOne({ email: email }, (err, data) => {
+//     if (err) next(err);
+//     console.log("register data", data);
+//     if (data) {
+//       return res.status(201).json({
+//         code: 201,
+//         message: "Email is already exists."
+//       });
+//     }
+
+//     body.password = Bcrypt.hashSync(password, 10);
+//     console.log("body.password", body.password);
+//     new Member(body).save((err, member) => {
+//       console.log("member", member);
+//       if (err) next(err);
+//       req.session.member = member;
+//       console.log("req.session.member", req.session.member);
+//       res.status(200).json({
+//         code: 200,
+//         message: "OK"
+//       });
+//     });
+//   });
+// };
 
 exports.logIn = (req, res, next) => {
   console.log(req.body);
