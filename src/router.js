@@ -12,7 +12,7 @@ router.get("/register", (req, res) => {
   res.send("<h1>This is register page!</h1>");
 });
 
-router.post("/register", MemberController.createAccount);
+router.post("/register", MemberController.validator('createAccount'), MemberController.createAccount);
 
 // 會員登入
 router.get("/login", (req, res) => {
