@@ -19,10 +19,10 @@ router.get("/login", (req, res) => {
   res.send("<h1>This is LogIn page!</h1>");
 });
 
-router.post("/login", MemberController.logIn);
+router.post("/login", MemberController.validator('login'), MemberController.logIn);
 
 // 忘記密碼
-router.get("/forgotpassword", MemberController.forgotPassword);
+router.get("/forgotpassword", MemberController.validator('forgotPassword'), MemberController.forgotPassword);
 
 //修改密碼
 router.get("/modifiedpassword", MemberController.modifiedPasswordGET);
