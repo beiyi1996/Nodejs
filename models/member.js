@@ -12,7 +12,12 @@ let memberSchema = new Schema({
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    validate: {
+      validator: function(v) {
+        return /([`~!@#$%^&*()_+}{":;'?\/\\>.<\[\],|])/.test(v);
+      }
+    }
   },
   name: {
     type: String
