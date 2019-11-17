@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 // const cors = require('cors');
 const router = require('./src/router');
-const expressValidator = require('express-validator');
 const port = 3000;
 
 app.set('views', path.join(__dirname, './views/')); // 默認就是views目錄
@@ -18,7 +17,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
-app.use(expressValidator());
 app.use(
   session({
     secret: "youarehash", // 加密字串: 會與原密碼組合成新的字串, 在進行加密
