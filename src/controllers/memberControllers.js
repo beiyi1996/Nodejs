@@ -10,10 +10,20 @@ exports.validator = (method) => {
     case 'createAccount': {
       return [
         body('email', 'Invalid email').exists().isEmail(),
-        body('password', 'Invalid email').isLength({min: 8}),
+        body('password', 'Invalid password').isLength({min: 8}),
         body('gender').optional({ checkFalsy: true }),
-        body('phone').isInt(),
+        body('phone').isLength({min: 10}),
         body('name').isLength({min: 1})
+      ];
+    }
+    case 'login': {
+      return [
+        body('email', 'Invalid email').exists().isEmail()
+      ];
+    }
+    case 'forgotPassword': {
+      return [
+        body('email', 'Invalid email').exists().isEmail()
       ];
     }
   }
@@ -37,77 +47,61 @@ exports.createAccount = async (req, res, next) => {
       email,
       password: bcryptPassword,
       gender,
-      phpne,
+      phone,
       name
     });
     res.json(member);
   } catch(err) {
+    console.log('error!!!');
     return next(err);
   }
 };
 
-// exports.createAccount = (req, res, next) => {
-//   console.log("post 註冊!");
-//   console.log("req", req.body);
-//   const body = req.body;
-//   const { email, password } = req.body;
-//   Member.findOne({ email: email }, (err, data) => {
-//     if (err) next(err);
-//     console.log("register data", data);
-//     if (data) {
-//       return res.status(201).json({
-//         code: 201,
-//         message: "Email is already exists."
-//       });
-//     }
-
-//     body.password = Bcrypt.hashSync(password, 10);
-//     console.log("body.password", body.password);
-//     new Member(body).save((err, member) => {
-//       console.log("member", member);
-//       if (err) next(err);
-//       req.session.member = member;
-//       console.log("req.session.member", req.session.member);
-//       res.status(200).json({
-//         code: 200,
-//         message: "OK"
-//       });
-//     });
-//   });
-// };
-
-exports.logIn = (req, res, next) => {
+exports.logIn = async (req, res, next) => {
   console.log(req.body);
-  const { email, password } = req.body;
-  Member.findOne({ email: email }, (err, member) => {
-    if (err) next(err);
-    if (!member) {
-      res.status(401).json({
-        code: 401,
-        message: "This Email is invalid."
+  try{
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      res.status(422).json({
+        code: 422,
+        errors: errors.array()
       });
+      return;
     }
-    console.log(333, member);
-    Bcrypt.compare(password, member.password, (err, result) => {
-      if (err) next(err);
-      console.log("result", result);
-      if (result) {
-        res.status(200).json({
-          err_code: 200,
-          message: "log in suceesfully"
-        });
-        req.session.member = member;
-      } else {
+
+    const { email, password } = req.body;
+    Member.findOne({ email: email }, (err, member) => {
+      if (!member) {
         res.status(401).json({
           code: 401,
-          message: "Password is worng."
+          message: "This Email is invalid."
         });
       }
+      console.log(333, member);
+      Bcrypt.compare(password, member.password, (err, result) => {
+        console.log("result", result);
+        if (result) {
+          res.status(200).json({
+            code: 200,
+            message: "log in suceesfully"
+          });
+          req.session.member = member;
+        } else {
+          res.status(401).json({
+            code: 401,
+            message: "Password is worng."
+          });
+        }
+      });
     });
-  });
+  }
+  catch (err){
+    return next(err);
+  }
 };
 
 async function createMail(email, token) {
+  console.log('1', email);
   let transporter = NodeMailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -146,12 +140,27 @@ function createTokenAndSaveDB(email, next) {
 }
 
 exports.forgotPassword = (req, res, next) => {
-  const { email } = req.body;
-  console.log("email", email);
-  createTokenAndSaveDB(email, next);
-  res.send(
-    "<h1>forgot password, we are sent a validation code with your email. please check your email.</h1>"
-  );
+  console.log('22222');
+  try{
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      res.status(422).json({
+        code: 422,
+        errors: errors.array()
+      });
+      return;
+    }
+    const { email } = req.body;
+    console.log("email", email);
+    createTokenAndSaveDB(email, next);
+    res.send(
+      "<h1>forgot password, we are sent a validation code with your email. please check your email.</h1>"
+    );
+  }
+  catch(err) {
+    console.log('error!');
+    return next(err);
+  }
 };
 
 exports.modifiedPasswordGET = (req, res, next) => {
