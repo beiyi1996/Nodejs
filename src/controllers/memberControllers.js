@@ -9,7 +9,17 @@ exports.validator = (method) => {
   switch (method){
     case 'createAccount': {
       return [
-        body('email', 'Invalid email').exists().isEmail(),
+        body('email', 'Invalid email').isEmail().custom(async(value, {req}) => {
+          console.log('????', value);
+          await Member.findOne({email: value}, (err, data)=>{
+            if(err) next(err);
+            if(data) {
+              console.log('<<<<<<<<');
+            } else {
+              console.log('OK!');
+            }
+          });
+        }).withMessage('This email is already in use'),
         body('password', 'Invalid password').isLength({min: 8}),
         body('gender').optional({ checkFalsy: true }),
         body('phone').isLength({min: 10}),
