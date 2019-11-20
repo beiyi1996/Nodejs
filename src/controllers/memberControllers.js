@@ -37,6 +37,7 @@ const createAccount = async (req, res, next) => {
 
 const logIn = async (req, res, next) => {
   console.log(req.body);
+  let isLogIn = false;
   try{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -59,11 +60,13 @@ const logIn = async (req, res, next) => {
       Bcrypt.compare(password, member.password, (err, result) => {
         console.log("result", result);
         if (result) {
+          isLogIn = true;
           res.status(200).json({
             code: 200,
             message: "log in suceesfully"
           });
-          req.session.member = member;
+          req.session.member = {member: member.name, logStatus: isLogIn};
+          console.log('req.session', req.session);
         } else {
           res.status(401).json({
             code: 401,
