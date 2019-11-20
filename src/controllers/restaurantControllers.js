@@ -1,7 +1,7 @@
 /*jshint esversion: 6 */
 import Restaurant from "../../models/restaurant";
 
-exports.createRestaurantData = (req, res, next) => {
+const createRestaurantData = (req, res, next) => {
   const { name, address } = req.body;
   const body = req.body;
   console.log("restaurant data", req.body);
@@ -27,7 +27,7 @@ exports.createRestaurantData = (req, res, next) => {
   });
 };
 
-exports.updateRestaurantData = (req, res, next) => {
+const updateRestaurantData = (req, res, next) => {
   const { name } = req.body;
   console.log('req.body', req.body);
   Restaurant.findOneAndUpdate({name: name}, req.body, (err, restaurant) => {
@@ -43,7 +43,7 @@ exports.updateRestaurantData = (req, res, next) => {
   });
 };
 
-exports.deleteRestaurantData = (req, res, next) => {
+const deleteRestaurantData = (req, res, next) => {
   const { name, address } = req.body;
   Restaurant.findOneAndDelete({name: name, address: address}, (err, restaurant) => {
     if(err) next(err);
@@ -93,7 +93,7 @@ async function findByKind(kind, res, next){
   });
 }
 
-exports.searchRestaurant = (req, res, next) => {
+const searchRestaurant = (req, res, next) => {
   const { area, kind, name } = req.query;
   if(area){
     console.log('area', area);
@@ -107,7 +107,7 @@ exports.searchRestaurant = (req, res, next) => {
   }
 };
 
-exports.getRestaurantDetail = (req, res, next) => {
+const getRestaurantDetail = (req, res, next) => {
   const { name, _id } = req.params;
   console.log('name', name, '_id', _id);
   Restaurant.findOne({name: name, _id: _id}, (err, data) => {
@@ -120,3 +120,5 @@ exports.getRestaurantDetail = (req, res, next) => {
     });
   });
 };
+
+module.exports = { createRestaurantData, updateRestaurantData, deleteRestaurantData, searchRestaurant, getRestaurantDetail };
