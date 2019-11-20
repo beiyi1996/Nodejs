@@ -1,28 +1,29 @@
 /*jshint esversion: 6 */
 
-const express = require("express");
-const path = require("path");
-const router = express.Router();
-const MemberController = require("./controllers/memberControllers");
-const RestaurantController = require("./controllers/restaurantControllers");
-const IndexController = require("./controllers/indexControllers");
+import express from "express";
+import path from "path";
+import MemberController from "./controllers/memberControllers";
+import RestaurantController from "./controllers/restaurantControllers";
+import IndexController from "./controllers/indexControllers";
+import Validator from "./validator";
 
+const router = express.Router();
 // 會員註冊
 router.get("/register", (req, res) => {
   res.send("<h1>This is register page!</h1>");
 });
 
-router.post("/register", MemberController.validator('createAccount'), MemberController.createAccount);
+router.post("/register", Validator.memberValidator('createAccount'), MemberController.createAccount);
 
 // 會員登入
 router.get("/login", (req, res) => {
   res.send("<h1>This is LogIn page!</h1>");
 });
 
-router.post("/login", MemberController.validator('login'), MemberController.logIn);
+router.post("/login", Validator.memberValidator('login'), MemberController.logIn);
 
 // 忘記密碼
-router.get("/forgotpassword", MemberController.validator('forgotPassword'), MemberController.forgotPassword);
+router.post("/forgotpassword", Validator.memberValidator('forgotPassword'), MemberController.forgotPassword);
 
 //修改密碼
 router.get("/modifiedpassword", MemberController.modifiedPasswordGET);
