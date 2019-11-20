@@ -3,43 +3,11 @@ import Member from "../../models/member";
 import Bcrypt from "bcrypt";
 import Crypto from "crypto";
 import NodeMailer from "nodemailer";
-import { body, validationResult } from "../../node_modules/express-validator/check";
+import { validationResult } from "../../node_modules/express-validator";
+import MyEmail from "../mailPassword";
 
-exports.validator = (method) => {
-  switch (method){
-    case 'createAccount': {
-      return [
-        body('email', 'Invalid email').isEmail().custom(async(value, {req}) => {
-          console.log('????', value);
-          await Member.findOne({email: value}, (err, data)=>{
-            if(err) next(err);
-            if(data) {
-              console.log('<<<<<<<<');
-            } else {
-              console.log('OK!');
-            }
-          });
-        }).withMessage('This email is already in use'),
-        body('password', 'Invalid password').isLength({min: 8}),
-        body('gender').optional({ checkFalsy: true }),
-        body('phone').isLength({min: 10}),
-        body('name').isLength({min: 1})
-      ];
-    }
-    case 'login': {
-      return [
-        body('email', 'Invalid email').exists().isEmail()
-      ];
-    }
-    case 'forgotPassword': {
-      return [
-        body('email', 'Invalid email').exists().isEmail()
-      ];
-    }
-  }
-};
 
-exports.createAccount = async (req, res, next) => {
+const createAccount = async (req, res, next) => {
   try{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -67,7 +35,7 @@ exports.createAccount = async (req, res, next) => {
   }
 };
 
-exports.logIn = async (req, res, next) => {
+const logIn = async (req, res, next) => {
   console.log(req.body);
   try{
     const errors = validationResult(req);
@@ -111,19 +79,19 @@ exports.logIn = async (req, res, next) => {
 };
 
 async function createMail(email, token) {
-  console.log('1', email);
+  console.log(1, MyEmail);
   let transporter = NodeMailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: "gourmand369@gmail.com", // generated ethereal user
-      pass: "ao3g6ru8" // generated ethereal password
+      user: MyEmail.email, // generated ethereal user
+      pass: MyEmail.password // generated ethereal password
     }
   });
 
   await transporter.sendMail({
-    from: "gourmand369@gmail.com", // sender address
+    from: MyEmail.email, // sender address
     to: email, // list of receivers
     subject: "forget password", // Subject line
     text: "forget password email", // plain text body
@@ -149,7 +117,7 @@ function createTokenAndSaveDB(email, next) {
   });
 }
 
-exports.forgotPassword = (req, res, next) => {
+const forgotPassword = (req, res, next) => {
   console.log('22222');
   try{
     const errors = validationResult(req);
@@ -173,7 +141,7 @@ exports.forgotPassword = (req, res, next) => {
   }
 };
 
-exports.modifiedPasswordGET = (req, res, next) => {
+const modifiedPasswordGET = (req, res, next) => {
   console.log("req.query", req.query);
   const { token } = req.query;
   let now = new Date();
@@ -195,7 +163,7 @@ exports.modifiedPasswordGET = (req, res, next) => {
   });
 };
 
-exports.modifiedPasswordPOST = (req, res, next) => {
+const modifiedPasswordPOST = (req, res, next) => {
   const { email, password } = req.body;
   Member.findOne({ email: email }, (err, data) => {
     if (err) next(err);
@@ -210,3 +178,6 @@ exports.modifiedPasswordPOST = (req, res, next) => {
     });
   });
 };
+
+
+module.exports = { createAccount, logIn, forgotPassword, modifiedPasswordGET, modifiedPasswordPOST };
