@@ -48,4 +48,9 @@ router.get("/", IndexController.randomRenderRestaurant);
 // 產品介紹頁
 router.get("/search/:name/:_id", RestaurantController.getRestaurantDetail);
 
+// 訂購產品頁
+router.get("/booking", (req, res) => {
+  res.send("<h1>this is booking page</h1>");
+});
+
 module.exports = router;
