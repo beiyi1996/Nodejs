@@ -21,8 +21,8 @@ app.use(
   session({
     secret: "youarehash", // 加密字串: 會與原密碼組合成新的字串, 在進行加密
     resave: false,
-    saveUninitialized: true // session默認直接分配給你一個加密過的key,
-    // false: server 真的存資料到 session時, 才分配cookie key
+    saveUninitialized: true, // session默認直接分配給你一個加密過的key,false: server 真的存資料到 session時, 才分配cookie key
+    cookie: {maxAge: 60 * 1000}
   })
 );
 
