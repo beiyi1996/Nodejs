@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 
-mongoose.connect("mongodb://localhost/booking");
+mongoose.connect("mongodb://localhost/booking",  { useNewUrlParser: true, useUnifiedTopology: true });
 
 let memberSchema = new Schema({
   email: {
