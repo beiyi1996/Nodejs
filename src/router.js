@@ -5,6 +5,7 @@ import path from "path";
 import MemberController from "./controllers/memberControllers";
 import RestaurantController from "./controllers/restaurantControllers";
 import IndexController from "./controllers/indexControllers";
+import OrderController from "./controllers/orderControllers";
 import Validator from "./validator";
 
 const router = express.Router();
@@ -52,5 +53,7 @@ router.get("/search/:name/:_id", RestaurantController.getRestaurantDetail);
 router.get("/booking", (req, res) => {
   res.send("<h1>this is booking page</h1>");
 });
+
+router.post("/booking", OrderController.createOrder);
 
 module.exports = router;
