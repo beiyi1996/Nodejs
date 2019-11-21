@@ -13,11 +13,17 @@ const memberValidator = (method) => {
                 return Promise.reject('E-mail already in use');
               }
             });
-          }).withMessage('This email is already in use'),
+          }),
           body('password', 'Invalid password').isLength({min: 8}),
           body('gender').optional({ checkFalsy: true }),
           body('phone').isLength({min: 10}),
-          body('name').isLength({min: 1})
+          body('name').isLength({min: 1}).custom(value => {
+            return Member.findOne({name: value}).then(member => {
+              if(member) {
+                return Promise.reject('Nickname already in use');
+              }
+            });
+          })
         ];
       }
       case 'login': {
