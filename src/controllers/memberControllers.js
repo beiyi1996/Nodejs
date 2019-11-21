@@ -61,11 +61,9 @@ const logIn = async (req, res, next) => {
         console.log("result", result);
         if (result) {
           isLogIn = true;
-          res.status(200).json({
-            code: 200,
-            message: "log in suceesfully"
-          });
-          req.session.member = {member: member.name, logStatus: isLogIn};
+          req.session.member = member.name;
+          req.session.isLogIn = isLogIn;
+          res.redirect('/');
           console.log('req.session', req.session);
         } else {
           res.status(401).json({
