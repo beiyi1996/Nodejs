@@ -1,12 +1,13 @@
 /*jshint esversion: 6 */
-const express = require('express');
+import express from 'express';
+import path from 'path';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+import router from './src/router';
+import connectMongo from 'connect-mongo';
 const app = express();
-const path = require('path');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-// const cors = require('cors');
-const router = require('./src/router');
 const port = 3000;
+const MongoStore = connectMongo(session);
 
 app.set('views', path.join(__dirname, './views/')); // 默認就是views目錄
 app.use('/node_modules/', express.static(path.join(__dirname, './node_modules/')));
@@ -22,7 +23,8 @@ app.use(
     secret: "youarehash", // 加密字串: 會與原密碼組合成新的字串, 在進行加密
     resave: false,
     saveUninitialized: true, // session默認直接分配給你一個加密過的key,false: server 真的存資料到 session時, 才分配cookie key
-    cookie: {maxAge: 60 * 1000}
+    store: new MongoStore({url: 'mongodb://localhost:27017/sessiondb'}),
+    cookie: {maxAge: 600 * 1000}
   })
 );
 
