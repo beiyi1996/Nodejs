@@ -54,6 +54,6 @@ router.get("/booking", (req, res) => {
   res.send("<h1>this is booking page</h1>");
 });
 
-router.post("/booking", OrderController.createOrder);
+router.post("/booking", Validator.orderValidator('createOrder'), OrderController.createOrder);
 
 module.exports = router;
