@@ -22,11 +22,7 @@ let orderSchema = new Schema({
         type: Number,
         required: true,
     },
-    date: {
-        type: Date,
-        required: true
-    },
-    time: {
+    dateTime: {
         type: Date,
         required: true
     },
