@@ -8,38 +8,37 @@ const createOrder = async (req, res, next) => {
     try{
         const { date, time, adult, children, nots, restaurant_name } = req.body;
         console.log('-------req.session', req.session.member);
+        let dateTime = new Date(`${date} ${time}`);
         if(!req.session.isLogIn) {
             console.log('no log in');
             return res.redirect('/login');
         }
-        const member_id = await Member.findOne({name: req.session.member}, (err, member) => {
-            if(err) next(err);
-            console.log('member', member._id);
-            return member._id;
-        });
-        console.log('member_id', member_id);
-        console.log('restaurant_name', restaurant_name);
-        const restaurant_id = await Restaurant.findOne({name: restaurant_name}, (err, restaurant) => {
-            if(err) next(err);
-            console.log('restaurant', restaurant._id);
-            return restaurant._id;
-        });
-        console.log('restaurant_id', restaurant_id);
-        const order = await Order.create({
-            date,
-            time,
-            adult,
-            children,
-            nots,
-            restaurant_id,
-            member_id
-        });
-        console.log('order', order);
-        res.json(order);
+        const memberID = await Member.findOne({name: req.session.member}, {_id: 1});
+        const restaurantID = await Restaurant.findOne({name: restaurant_name},{_id: 1});
+        if(memberID && restaurantID) {
+            const order = await Order.create({
+                dateTime,
+                adult,
+                children,
+                nots,
+                restaurant_id: restaurantID._id,
+                member_id: memberID._id
+            });
+            res.json(order);
+        }else {
+            errObj(res,'500','memberID or restaurantID is null');
+        }
     }
     catch (err){
         return next(err);
     }
 };
+
+const errObj = (res, code, message) => {
+    res.status(code).json({
+        err_code: code,
+        message: message
+    });
+}
 
 module.exports = { createOrder };
