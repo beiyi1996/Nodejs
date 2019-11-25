@@ -20,7 +20,8 @@ let memberSchema = new Schema({
     }
   },
   name: {
-    type: String
+    type: String,
+    required: true
   },
   phone: {
     type: String,
