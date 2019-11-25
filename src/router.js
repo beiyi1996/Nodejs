@@ -14,7 +14,7 @@ router.get("/register", (req, res) => {
   res.send("<h1>This is register page!</h1>");
 });
 
-router.post("/register", Validator.memberValidator('createAccount'), MemberController.createAccount);
+router.post("/register", Validator.memberValidator('register'), MemberController.register);
 
 // 會員登入
 router.get("/login", (req, res) => {
@@ -32,7 +32,7 @@ router.get("/modifiedpassword", MemberController.modifiedPasswordGET);
 router.post("/modifiedpassword", MemberController.modifiedPasswordPOST);
 
 // 加入餐廳資料
-router.post("/insertrestaurantdata", RestaurantController.createRestaurantData);
+router.post("/createrestaurantdata", RestaurantController.createRestaurantData);
 
 // 更新餐廳資料
 router.post("/updaterestaurantdata", RestaurantController.updateRestaurantData);
@@ -54,6 +54,14 @@ router.get("/booking", (req, res) => {
   res.send("<h1>this is booking page</h1>");
 });
 
+// 訂位
 router.post("/booking", Validator.orderValidator('createOrder'), OrderController.createOrder);
 
+// 完成頁
+router.get("/completed", (req, res) => {
+  res.send("<h1>This is Completed page!!</h1>");
+});
+
+// 查看訂單
+router.get("/orders", OrderController.findOrders);
 module.exports = router;
