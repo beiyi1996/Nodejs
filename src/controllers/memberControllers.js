@@ -7,7 +7,7 @@ import { validationResult } from "../../node_modules/express-validator";
 import MyEmail from "../mailPassword";
 
 
-const createAccount = async (req, res, next) => {
+const register = async (req, res, next) => {
   try{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -181,4 +181,4 @@ const modifiedPasswordPOST = (req, res, next) => {
 };
 
 
-module.exports = { createAccount, logIn, forgotPassword, modifiedPasswordGET, modifiedPasswordPOST };
+module.exports = { register, logIn, forgotPassword, modifiedPasswordGET, modifiedPasswordPOST };
