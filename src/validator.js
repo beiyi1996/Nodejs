@@ -5,7 +5,7 @@ import Member from "../models/member";
 
 const memberValidator = (method) => {
     switch (method){
-      case 'createAccount': {
+      case 'register': {
         return [
           body('email', 'Invalid email').isEmail().custom(value => {
             return Member.findOne({email: value}).then(member => {
