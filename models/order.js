@@ -29,6 +29,12 @@ let orderSchema = new Schema({
     notes: {
         type: String,
     },
+    status: {
+        type: String,
+        required: true,
+        enum: ['Open', 'Confirmed', 'Completed', 'Cancelled'],
+        default: 'Open'
+    },
     create_time: {
         type: Date,
         default: Date.now
