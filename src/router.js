@@ -64,4 +64,12 @@ router.get("/completed", (req, res) => {
 
 // 查看訂單
 router.get("/orders", OrderController.findOrders);
+
+// 查看訂單明細
+router.get("/orderdetails/:order_id", OrderController.findOrderDetails);
+
+// 修改訂單頁
+router.get("/orderdetails/:order_id/edit", (req, res) => {
+  res.send("<h1>This is modified order details page!!</h1>");
+});
 module.exports = router;
