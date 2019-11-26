@@ -5,7 +5,6 @@ import Member from "../../models/member";
 import Restaurant from "../../models/restaurant";
 import MyEmail from "../mailPassword";
 import NodeMailer from "nodemailer";
-import { createCipher } from "crypto";
 
 async function sendCompletedMail(email, orderId) {
     console.log(1, MyEmail);
@@ -26,7 +25,7 @@ async function sendCompletedMail(email, orderId) {
       to: email, // list of receivers
       subject: `Completed Mail`, // Subject line
       text: "This is your completed email", // plain text body
-      html: `This is your completed email. <br> you can checked your order here <a href="/checkorders">check your order</a>` // html body
+      html: `This is your completed email. <br> you can checked your order here <a href='/orderdetails/${orderId}'>check your order</a>` // html body
     });
   }
 
@@ -52,7 +51,7 @@ const createOrder = async (req, res, next) => {
                 member_id: member._id
             });
             console.log('order', order);
-            sendCompletedMail(member.email, restaurantID._id);
+            sendCompletedMail(member.email, order._id);
             res.redirect('/completed');
         }else {
             errObj(res,'500','memberID or restaurantID is null');
@@ -68,8 +67,7 @@ const findOrders = async (req, res, next) => {
         if(req.session.isLogIn){
             const memberID = await Member.findOne({name: req.session.member}, {_id: 1});
             console.log('memberID', memberID);
-            const orders = await Order.find({member_id: memberID._id});
-            console.log('orders', orders);
+            const orders = await Order.find({member_id: memberID._id}).sort({dateTime: 1});
             res.json(orders);
         } else {
             console.log('Not log in...');
@@ -79,7 +77,27 @@ const findOrders = async (req, res, next) => {
     catch (err){
         return next(err);
     }
-}
+};
+
+const findOrderDetails = async (req, res, next) => {
+    try{
+        if(req.session.isLogIn){
+            console.log(999, req.params.order_id);
+            const memberID = await Member.findOne({name: req.session.member}, {_id: 1});
+            const orderDetails = await Order.findOne({member_id: memberID._id, _id: req.params.order_id});
+            console.log('find Order Details', orderDetails);
+            res.json(orderDetails);
+        } else {
+            console.log('Not log in...');
+            res.redirect('/login');
+        }
+    }
+    catch (err){
+        return next(err);
+    }
+};
+
+
 
 const errObj = (res, code, message) => {
     res.status(code).json({
@@ -88,4 +106,4 @@ const errObj = (res, code, message) => {
     });
 }
 
-module.exports = { createOrder, findOrders };
+module.exports = { createOrder, findOrders, findOrderDetails };
