@@ -97,7 +97,24 @@ const findOrderDetails = async (req, res, next) => {
     }
 };
 
-
+const modifiedOrderDetails = async (req, res, next) => {
+    try{
+        const { order_id } = req.params;
+        const { adult, children, date, time, notes } = req.body;
+        let dateTime = new Date(`${date} ${time}`);
+        const order = await Order.findOne({_id: order_id}).update({
+            adult,
+            children,
+            dateTime,
+            notes
+        });
+        console.log('order', order);
+        res.json(order);
+    }
+    catch (err){
+        return next(err);
+    }
+};
 
 const errObj = (res, code, message) => {
     res.status(code).json({
@@ -106,4 +123,4 @@ const errObj = (res, code, message) => {
     });
 }
 
-module.exports = { createOrder, findOrders, findOrderDetails };
+module.exports = { createOrder, findOrders, findOrderDetails, modifiedOrderDetails };
