@@ -72,4 +72,6 @@ router.get("/orderdetails/:order_id", OrderController.findOrderDetails);
 router.get("/orderdetails/:order_id/edit", (req, res) => {
   res.send("<h1>This is modified order details page!!</h1>");
 });
+
+router.post("/orderdetails/:order_id/edit", OrderController.modifiedOrderDetails);
 module.exports = router;
