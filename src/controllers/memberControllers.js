@@ -180,5 +180,14 @@ const modifiedPasswordPOST = (req, res, next) => {
   });
 };
 
+const logOut = async (req, res, next) => {
+  console.log('req.session.member', req.session.member);
+  console.log('req.session.isLogIn', req.session.isLogIn);
+  res.status(200).json({
+    code: 200,
+    message: "Log out successful!"
+  });
+};
 
-module.exports = { register, logIn, forgotPassword, modifiedPasswordGET, modifiedPasswordPOST };
+
+module.exports = { register, logIn, forgotPassword, modifiedPasswordGET, modifiedPasswordPOST, logOut };
