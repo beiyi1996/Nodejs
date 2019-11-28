@@ -31,6 +31,9 @@ router.get("/modifiedpassword", MemberController.modifiedPasswordGET);
 
 router.post("/modifiedpassword", MemberController.modifiedPasswordPOST);
 
+// 會員登出
+router.post("/logout", MemberController.logOut);
+
 // 加入餐廳資料
 router.post("/createrestaurantdata", RestaurantController.createRestaurantData);
 
