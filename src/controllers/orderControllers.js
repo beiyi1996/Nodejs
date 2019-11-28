@@ -99,17 +99,25 @@ const findOrderDetails = async (req, res, next) => {
 
 const modifiedOrderDetails = async (req, res, next) => {
     try{
-        const { order_id } = req.params;
-        const { adult, children, date, time, notes } = req.body;
-        let dateTime = new Date(`${date} ${time}`);
-        const order = await Order.findOne({_id: order_id}).update({
-            adult,
-            children,
-            dateTime,
-            notes
-        });
-        console.log('order', order);
-        res.json(order);
+        if(req.session.isLogIn){
+            const { order_id } = req.params;
+            const { adult, children, date, time, notes } = req.body;
+            let dateTime = new Date(`${date} ${time}`);
+            const memberID = await Member.findOne({name: req.session.member}, {_id: 1});
+            const order = await Order.findOne({_id: order_id}).update({
+                adult,
+                children,
+                dateTime,
+                notes
+            }).then(() => {
+                return Order.find({member_id: memberID._id});
+            });
+            console.log('order', order);
+            res.json(order);
+        } else {
+            console.log('Not log in...');
+            res.redirect('/login');
+        }
     }
     catch (err){
         return next(err);
