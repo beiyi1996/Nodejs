@@ -48,7 +48,8 @@ const createOrder = async (req, res, next) => {
                 children,
                 nots,
                 restaurant_id: restaurantID._id,
-                member_id: member._id
+                member_id: member._id,
+                status: 'Open'
             });
             console.log('order', order);
             sendCompletedMail(member.email, order._id);
@@ -124,6 +125,36 @@ const modifiedOrderDetails = async (req, res, next) => {
     }
 };
 
+const cancelledOrderDetail = async (req, res, next) => {
+    try{
+        if(req.session.isLogIn){
+            const { order_id } = req.params;
+            const memberID = await Member.findOne({name: req.session.member}, {_id: 1});
+            const orderDetails = await Order.findOne({_id: order_id}, {_id: 1, dateTime: 1});
+            const today = new Date().getTime();
+            const deteleDeadline = orderDetails.dateTime.getTime() - 604800000;
+            if(today > deteleDeadline) {
+                console.log('You are overdue deadline');
+                return res.status(400).json({
+                    code: 400,
+                    message: 'You are overdue deadline'
+                });
+            }
+            const newOrders = await Order.updateOne({_id : order_id}, {status: 'Cancelled'})
+                .then(() => {
+                    return Order.find({member_id: memberID._id});
+                });
+            res.status(200).json(newOrders);
+        } else {
+            console.log('Not log in');
+            res.redirect('/login');
+        }
+    }
+    catch(err) {
+        return next(err);
+    }
+};
+
 const errObj = (res, code, message) => {
     res.status(code).json({
         err_code: code,
@@ -131,4 +162,4 @@ const errObj = (res, code, message) => {
     });
 }
 
-module.exports = { createOrder, findOrders, findOrderDetails, modifiedOrderDetails };
+module.exports = { createOrder, findOrders, findOrderDetails, modifiedOrderDetails, cancelledOrderDetail };
