@@ -181,12 +181,24 @@ const modifiedPasswordPOST = (req, res, next) => {
 };
 
 const logOut = async (req, res, next) => {
-  console.log('req.session.member', req.session.member);
-  console.log('req.session.isLogIn', req.session.isLogIn);
-  res.status(200).json({
-    code: 200,
-    message: "Log out successful!"
-  });
+  try{
+    if(req.session.isLogIn){
+      req.session.destroy();
+      res.status(200).json({
+        code: 200,
+        message: "Log out successful!"
+      });
+    } else {
+      res.status(403).json({
+        code: 403,
+        message: "You are not log in!"
+      });
+    }
+  }
+  catch (err){
+    return next(err);
+  }
+  
 };
 
 
