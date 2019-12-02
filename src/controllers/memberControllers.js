@@ -1,6 +1,6 @@
 /*jshint esversion: 6 */
 import Member from "../../models/member";
-import Bcrypt from "bcrypt";
+import Bcrypt from "bcryptjs";
 import Crypto from "crypto";
 import NodeMailer from "nodemailer";
 import { validationResult } from "../../node_modules/express-validator";
@@ -180,7 +180,7 @@ const modifiedPasswordPOST = (req, res, next) => {
   });
 };
 
-const logOut = async (req, res, next) => {
+const logOut = (req, res, next) => {
   try{
     if(req.session.isLogIn){
       req.session.destroy();
