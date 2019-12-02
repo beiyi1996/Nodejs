@@ -51,17 +51,11 @@ const memberValidator = (method) => {
     }
   };
 
-const orderValidator = (method) => {
-  switch (method){
-    case 'createOrder': {
-      return [
-        body('data', 'Date is required field').isEmpty(),
-        body('time', 'Time is required field').isEmpty(),
-        body('adult', 'Adult is required field').isEmpty(),
-        body('children', 'Children is required field').isEmpty()
-      ];
-    }
-  }
+const orderValidator = () => {
+  body('date', 'Date is required field').isEmpty();
+  body('time', 'Time is required field').isEmpty();
+  body('adult', 'Adult is required field').isEmpty();
+  body('children', 'Children is required field').isEmpty();
 };
 
 module.exports = { memberValidator, orderValidator };
