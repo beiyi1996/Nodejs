@@ -109,7 +109,8 @@ const modifiedOrderDetails = async (req, res, next) => {
                 adult,
                 children,
                 dateTime,
-                notes
+                notes,
+                status: "Open"
             }).then(() => {
                 return Order.find({member_id: memberID._id});
             });
@@ -132,7 +133,7 @@ const cancelledOrderDetail = async (req, res, next) => {
             const memberID = await Member.findOne({name: req.session.member}, {_id: 1});
             const orderDetails = await Order.findOne({_id: order_id}, {_id: 1, dateTime: 1});
             const today = new Date().getTime();
-            const deteleDeadline = orderDetails.dateTime.getTime() - 604800000;
+            const deteleDeadline = orderDetails.dateTime.getTime() - 259200000;
             if(today > deteleDeadline) {
                 console.log('You are overdue deadline');
                 return res.status(400).json({
