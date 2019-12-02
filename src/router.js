@@ -58,7 +58,7 @@ router.get("/booking", (req, res) => {
 });
 
 // 訂位
-router.post("/booking", Validator.orderValidator('createOrder'), OrderController.createOrder);
+router.post("/booking", Validator.orderValidator, OrderController.createOrder);
 
 // 完成頁
 router.get("/completed", (req, res) => {
