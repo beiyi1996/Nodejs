@@ -1,7 +1,8 @@
 /*jshint esversion: 6 */
 
-import { body } from "../node_modules/express-validator";
+import { body, check } from "../node_modules/express-validator";
 import Member from "../models/member";
+import { CloudWatchLogs } from "aws-sdk";
 
 const memberValidator = (method) => {
     switch (method){
@@ -48,14 +49,25 @@ const memberValidator = (method) => {
           })
         ];
       }
+      case 'modifiedPassword': {
+        return [
+          body('password', 'Invalid password').isLength({min: 8})
+        ]
+      }
     }
   };
 
-const orderValidator = () => {
-  body('date', 'Date is required field').isEmpty();
-  body('time', 'Time is required field').isEmpty();
-  body('adult', 'Adult is required field').isEmpty();
-  body('children', 'Children is required field').isEmpty();
+const orderValidator = (method) => {
+  return [
+    body('date', 'Date is required field').custom(date => {
+      if(!date) {
+        throw new Error('??');
+      }
+    })
+    // body('time', 'Time is required field').isEmpty(),
+    // body('adult', 'Adult is required field').isEmpty(),
+    // body('children', 'Children is required field').isEmpty()
+  ];
 };
 
 module.exports = { memberValidator, orderValidator };

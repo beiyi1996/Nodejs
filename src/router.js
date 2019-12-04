@@ -29,7 +29,7 @@ router.post("/forgotpassword", Validator.memberValidator('forgotPassword'), Memb
 //修改密碼
 router.get("/modifiedpassword", MemberController.modifiedPasswordGET);
 
-router.post("/modifiedpassword", MemberController.modifiedPasswordPOST);
+router.post("/modifiedpassword", Validator.memberValidator('modifiedPassword'), MemberController.modifiedPasswordPOST);
 
 // 會員登出
 router.post("/logout", MemberController.logOut);
@@ -58,7 +58,7 @@ router.get("/booking", (req, res) => {
 });
 
 // 訂位
-router.post("/booking", Validator.orderValidator, OrderController.createOrder);
+router.post("/booking", Validator.orderValidator(), OrderController.createOrder);
 
 // 完成頁
 router.get("/completed", (req, res) => {

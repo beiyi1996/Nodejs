@@ -5,6 +5,7 @@ import Member from "../../models/member";
 import Restaurant from "../../models/restaurant";
 import MyEmail from "../mailPassword";
 import NodeMailer from "nodemailer";
+import { validationResult } from "../../node_modules/express-validator";
 
 async function sendCompletedMail(email, orderId) {
     console.log(1, MyEmail);
@@ -37,6 +38,15 @@ const createOrder = async (req, res, next) => {
         if(!req.session.isLogIn) {
             console.log('Not log in..');
             return res.redirect('/login');
+        }
+
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            res.status(422).json({
+                code: 422,
+                errors: errors.array()
+            });
+            return;
         }
         const member = await Member.findOne({name: req.session.member}, {_id: 1, email: 1});
         console.log(888, member.email);
