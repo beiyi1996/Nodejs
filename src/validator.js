@@ -57,11 +57,14 @@ const memberValidator = (method) => {
     }
   };
 
-const orderValidator = (method) => {
+const orderValidator = () => {
   return [
-    body('date', 'Date is required field').custom(date => {
+    body('date','is fail').custom((date) => {
       if(!date) {
         throw new Error('??');
+      }
+      else{
+        return true;
       }
     })
     // body('time', 'Time is required field').isEmpty(),
@@ -70,4 +73,7 @@ const orderValidator = (method) => {
   ];
 };
 
-module.exports = { memberValidator, orderValidator };
+export default {
+  memberValidator,
+  orderValidator 
+};
