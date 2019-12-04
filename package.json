@@ -27,8 +27,7 @@
     "express-validator": "^6.2.0",
     "mongoose": "^5.7.7",
     "nodemailer": "^6.3.1",
-    "nodemon": "^1.19.4",
-    "redis": "^2.8.0"
+    "nodemon": "^1.19.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.0",
