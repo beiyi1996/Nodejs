@@ -1,5 +1,7 @@
 /*jshint esversion: 6 */
 import Restaurant from "../../models/restaurant";
+import Member from "../../models/member";
+import SupplierOrders from "../../models/supplierOrders";
 
 const createRestaurantData = (req, res, next) => {
   const { name, address } = req.body;
@@ -121,4 +123,20 @@ const getRestaurantDetail = (req, res, next) => {
   });
 };
 
-module.exports = { createRestaurantData, updateRestaurantData, deleteRestaurantData, searchRestaurant, getRestaurantDetail };
+const getCustomerOrder = async(order) => {
+  console.log('order', order);
+  const memberData = await Member.findOne({_id: order.member_id}, {_id: 1, email: 1, name: 1, phone: 1});
+  console.log('memberData', memberData);
+  const newOrder = await SupplierOrders.create({
+    useremail: memberData.email,
+    username: memberData.name,
+    userphone: memberData.phone,
+    adult: order.adult,
+    children: order.children,
+    dateTime: order.dateTime,
+    notes: order.notes
+  });
+  console.log('newOrder', newOrder);
+};
+
+module.exports = { createRestaurantData, updateRestaurantData, deleteRestaurantData, searchRestaurant, getRestaurantDetail, getCustomerOrder };
