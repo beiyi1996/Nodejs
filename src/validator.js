@@ -2,7 +2,6 @@
 
 import { body, check } from "../node_modules/express-validator";
 import Member from "../models/member";
-import { CloudWatchLogs } from "aws-sdk";
 
 const memberValidator = (method) => {
     switch (method){
@@ -59,17 +58,30 @@ const memberValidator = (method) => {
 
 const orderValidator = () => {
   return [
-    body('date','is fail').custom((date) => {
-      if(!date) {
-        throw new Error('??');
+    body('date').custom((date) => {
+      if(typeof date !== 'string') {
+        throw new Error('Date is required field');
       }
-      else{
-        return true;
+      return true;
+    }),
+    body('time').custom((time) => {
+      if(typeof time !== 'string'){
+        throw new Error('Time is required field');
       }
+      return true;
+    }),
+    body('adult').custom((adult) => {
+      if(typeof adult !== 'string'){
+        throw new Error('Adult is required field');
+      }
+      return true;
+    }),
+    body('children').custom((children) => {
+      if(typeof children !== 'string'){
+        throw new Error('Children is required field');
+      }
+      return true;
     })
-    // body('time', 'Time is required field').isEmpty(),
-    // body('adult', 'Adult is required field').isEmpty(),
-    // body('children', 'Children is required field').isEmpty()
   ];
 };
 
