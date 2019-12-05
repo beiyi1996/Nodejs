@@ -6,6 +6,7 @@ import Restaurant from "../../models/restaurant";
 import MyEmail from "../mailPassword";
 import NodeMailer from "nodemailer";
 import { validationResult } from "../../node_modules/express-validator";
+import RestaurantController from "../controllers/restaurantControllers";
 
 async function sendCompletedMail(email, orderId) {
     console.log(1, MyEmail);
@@ -56,13 +57,14 @@ const createOrder = async (req, res, next) => {
                 dateTime,
                 adult,
                 children,
-                nots,
+                notes,
                 restaurant_id: restaurantID._id,
                 member_id: member._id,
                 status: 'Open'
             });
             console.log('order', order);
             sendCompletedMail(member.email, order._id);
+            RestaurantController.getCustomerOrder(order);
             res.redirect('/completed');
         }else {
             errObj(res,'500','memberID or restaurantID is null');
@@ -165,6 +167,15 @@ const cancelledOrderDetail = async (req, res, next) => {
         return next(err);
     }
 };
+
+// const updateOrderStatus = (req, res, next) => {
+//     const { statusCode } = req.params;
+//     switch (statusCode) {
+//         case 'OK': {
+
+//         }
+//     }
+// }
 
 const errObj = (res, code, message) => {
     res.status(code).json({
