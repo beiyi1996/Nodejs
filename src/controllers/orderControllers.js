@@ -16,9 +16,13 @@ async function sendCompletedMail(email, orderId) {
       host: "smtp.gmail.com",
       port: 587,
       secure: false, // true for 465, false for other ports
+      secureConnection: true, // 使用SSL方式 (安全方式，防止被竊取信息)
       auth: {
         user: MyEmail.email, // generated ethereal user
         pass: MyEmail.password // generated ethereal password
+      },
+      tls: {
+          rejectUnauthorized: false // 不得檢查服務器所發送的憑證
       }
     });
   
@@ -33,7 +37,7 @@ async function sendCompletedMail(email, orderId) {
 
 const createOrder = async (req, res, next) => {
     try{
-        const { date, time, adult, children, nots, restaurant_name } = req.body;
+        const { date, time, adult, children, notes, restaurant_name } = req.body;
         console.log('-------req.session', req.session.member);
         let dateTime = new Date(`${date} ${time}`);
         if(!req.session.isLogIn) {
@@ -64,7 +68,8 @@ const createOrder = async (req, res, next) => {
             });
             console.log('order', order);
             sendCompletedMail(member.email, order._id);
-            RestaurantController.getCustomerOrder(order);
+            // 在餐廳也建立訂單
+            RestaurantController.createCustomerOrder(order);
             res.redirect('/completed');
         }else {
             errObj(res,'500','memberID or restaurantID is null');
@@ -168,14 +173,24 @@ const cancelledOrderDetail = async (req, res, next) => {
     }
 };
 
-// const updateOrderStatus = (req, res, next) => {
-//     const { statusCode } = req.params;
-//     switch (statusCode) {
-//         case 'OK': {
-
+// const updateOrderStatus =  async(req, res, next) => {
+//     const orderStatus = RestaurantController.confirmedCustomerOrder();
+//     console.log('orderStatus', orderStatus);
+//     switch (orderStatus.code) {
+//         case 200: {
+            
 //         }
 //     }
 // }
+
+const findOrderForChangeStatus = (orderID) => {
+    return new Promise((resolve, reject) => {
+        Order.findOne({id: orderID}, (err, order) => {
+            if(err) reject(err);
+            resolve(order);
+        });
+    });
+}
 
 const errObj = (res, code, message) => {
     res.status(code).json({
@@ -184,4 +199,10 @@ const errObj = (res, code, message) => {
     });
 }
 
-module.exports = { createOrder, findOrders, findOrderDetails, modifiedOrderDetails, cancelledOrderDetail };
+module.exports = { 
+    createOrder, 
+    findOrders, 
+    findOrderDetails, 
+    modifiedOrderDetails, 
+    cancelledOrderDetail 
+};
