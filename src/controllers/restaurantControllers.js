@@ -123,7 +123,7 @@ const getRestaurantDetail = (req, res, next) => {
   });
 };
 
-const getCustomerOrder = async(order) => {
+const createCustomerOrder = async(order) => {
   console.log('order', order);
   const memberData = await Member.findOne({_id: order.member_id}, {_id: 1, email: 1, name: 1, phone: 1});
   console.log('memberData', memberData);
@@ -139,4 +139,29 @@ const getCustomerOrder = async(order) => {
   console.log('newOrder', newOrder);
 };
 
-module.exports = { createRestaurantData, updateRestaurantData, deleteRestaurantData, searchRestaurant, getRestaurantDetail, getCustomerOrder };
+const confirmedCustomerOrder = (req, res, next) => {
+  const { orderStatus, useremail, order_id } = req.query;
+  if(orderStatus === 'OK'){
+    res.status(200).json({
+      code: 200,
+      message: 'Restaurant is confirmed this order',
+      data: {orderStatus, useremail, order_id} 
+    });
+  } else {
+    res.status(403).json({
+      code: 403,
+      message: 'Today is Fully Booked',
+      data: {orderStatus, useremail, order_id}
+    });
+  }
+}
+
+module.exports = { 
+  createRestaurantData, 
+  updateRestaurantData, 
+  deleteRestaurantData, 
+  searchRestaurant, 
+  getRestaurantDetail, 
+  createCustomerOrder, 
+  confirmedCustomerOrder 
+};
