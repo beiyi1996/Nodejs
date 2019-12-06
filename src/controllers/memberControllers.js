@@ -85,9 +85,13 @@ async function createMail(email, token) {
     host: "smtp.gmail.com",
     port: 587,
     secure: false, // true for 465, false for other ports
+    secureConnection: true, // 使用SSL方式 (安全方式，防止被竊取信息)
     auth: {
       user: MyEmail.email, // generated ethereal user
       pass: MyEmail.password // generated ethereal password
+    },
+    tls: {
+      rejectUnauthorized: false // 不得檢查服務器所發送的憑證
     }
   });
 
