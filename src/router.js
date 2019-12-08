@@ -14,22 +14,22 @@ router.get("/register", (req, res) => {
   res.send("<h1>This is register page!</h1>");
 });
 
-router.post("/register", Validator.memberValidator('register'), MemberController.register);
+router.post("/register", Validator.memberValidator("register"), MemberController.register);
 
 // 會員登入
 router.get("/login", (req, res) => {
   res.send("<h1>This is LogIn page!</h1>");
 });
 
-router.post("/login", Validator.memberValidator('login'), MemberController.logIn);
+router.post("/login", Validator.memberValidator("login"), MemberController.logIn);
 
 // 忘記密碼
-router.post("/forgotpassword", Validator.memberValidator('forgotPassword'), MemberController.forgotPassword);
+router.post("/forgotpassword", Validator.memberValidator("forgotPassword"), MemberController.forgotPassword);
 
 //修改密碼
 router.get("/modifiedpassword", MemberController.modifiedPasswordGET);
 
-router.post("/modifiedpassword", Validator.memberValidator('modifiedPassword'), MemberController.modifiedPasswordPOST);
+router.post("/modifiedpassword", Validator.memberValidator("modifiedPassword"), MemberController.modifiedPasswordPOST);
 
 // 會員登出
 router.post("/logout", MemberController.logOut);
