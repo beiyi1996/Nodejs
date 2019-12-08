@@ -83,8 +83,6 @@ const createOrder = async (req, res, next) => {
       });
       console.log("order", order);
       await sendCompletedMail(member.email, order._id);
-      // 在餐廳也建立訂單
-      RestaurantController.createCustomerOrder(order);
       res.redirect("/completed");
     } else {
       errObj(res, "500", "memberID or restaurantID is null");
