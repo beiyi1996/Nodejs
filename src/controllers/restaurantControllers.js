@@ -1,7 +1,5 @@
 /*jshint esversion: 6 */
 import Restaurant from "../../models/restaurant";
-import Member from "../../models/member";
-import SupplierOrders from "../../models/supplierOrders";
 
 const createRestaurantData = (req, res, next) => {
   const { name, address } = req.body;
