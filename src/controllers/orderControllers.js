@@ -6,7 +6,6 @@ import Restaurant from "../../models/restaurant";
 import MyEmail from "../mailPassword";
 import NodeMailer from "nodemailer";
 import { validationResult } from "../../node_modules/express-validator";
-import RestaurantController from "../controllers/restaurantControllers";
 
 async function sendCompletedMail(email, orderId) {
   console.log(1, MyEmail);
