@@ -53,11 +53,10 @@ const logIn = async (req, res, next) => {
         email: email
       },
       (err, member) => {
+        if (err) next(err);
         if (!member) {
-          res.status(401).json({
-            code: 401,
-            message: "This Email is invalid."
-          });
+          console.log("This email is unregistered");
+          res.redirect("/register"); // 會員未註冊
         }
         console.log(333, member);
         Bcrypt.compare(password, member.password, (err, result) => {
