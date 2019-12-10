@@ -4,20 +4,30 @@ import path from "path";
 import bodyParser from "body-parser";
 import session from "express-session";
 import router from "./src/router";
+import cors from "cors";
 import connectMongo from "connect-mongo";
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 5000;
 const MongoStore = connectMongo(session);
 
 app.set("views", path.join(__dirname, "./views/")); // 默認就是views目錄
 app.use("/node_modules/", express.static(path.join(__dirname, "./node_modules/")));
 
-// app.use(cors());
+app.use(cors());
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
+app.use(router);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
+
 app.use(
   session({
     secret: "youarehash", // 加密字串: 會與原密碼組合成新的字串, 在進行加密
@@ -27,8 +37,6 @@ app.use(
     cookie: { maxAge: 600 * 1000 }
   })
 );
-
-app.use(router);
 
 app.use((req, res) => {
   res.send("404 Not found...");
@@ -41,4 +49,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(port, () => console.log("server is running at port 3000..."));
+app.listen(port, () => console.log(`server is running at port ${port}...`));
