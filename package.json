@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec babel-node index.js "
+    "server": "nodemon --exec babel-node index.js ",
+    "client": "npm run start --prefix client",
+    "start": "node index.js",
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
@@ -21,7 +24,9 @@
     "aws-sdk": "^2.561.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "concurrently": "^5.0.1",
     "connect-mongo": "^3.1.2",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "express-validator": "^6.2.0",
