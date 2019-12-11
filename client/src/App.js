@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 import React, { useState, useEffect } from "react";
 import productService from "./services/productService";
 import Button from "@material-ui/core/Button";
@@ -58,7 +59,10 @@ const useStyles = makeStyles({
     textAlign: "right",
     position: "absolute",
     right: "10px",
-    top: "5px"
+    top: "5px",
+    color: "snow",
+    fontWeight: "bold",
+    fontFamily: "Microsoft JhengHei"
   },
   guessItem: {
     display: "flex",
@@ -69,6 +73,14 @@ const useStyles = makeStyles({
   img: {
     width: "100%",
     height: "100%"
+  },
+  restaurantName: {
+    width: "65%",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",
+    "-webkit-line-clamp": "2",
+    "-webkit-box-orient": "vertical"
   }
 });
 
@@ -82,8 +94,8 @@ const categoryStyles = makeStyles({
   },
   badge: {
     position: "absolute",
-    bottom: "8px",
-    right: "12px",
+    top: "12px",
+    right: "0",
     width: "100%"
   },
   name: {
@@ -116,15 +128,15 @@ function App() {
 
   return (
     <Container maxWidth="md" className={classes.Container}>
-      <Header></Header>
+      <Header />
       <Grid item xs={6} className={classes.item}>
         <Card className={classes.card}>
           <CardContent className={classes.content}>
             <Typography className={classes.pos} color="textSecondary">
               飯
             </Typography>
-            <Typography variant="body2" component="p" className={classes.img}>
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" />
+            <Typography variant="body2" component="p">
+              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
             </Typography>
           </CardContent>
           <CardActions>
@@ -134,14 +146,12 @@ function App() {
       </Grid>
       <Grid item xs={6} className={classes.item}>
         <Card className={classes.card}>
-          <CardContent>
+          <CardContent className={classes.content}>
             <Typography className={classes.pos} color="textSecondary">
               麵
             </Typography>
             <Typography variant="body2" component="p">
-              well meaning and kindly.
-              <br />
-              {'"a benevolent smile"'}
+              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
             </Typography>
           </CardContent>
           <CardActions>
@@ -151,14 +161,12 @@ function App() {
       </Grid>
       <Grid item xs={6} className={classes.item}>
         <Card className={classes.card}>
-          <CardContent>
+          <CardContent className={classes.content}>
             <Typography className={classes.pos} color="textSecondary">
               甜點
             </Typography>
             <Typography variant="body2" component="p">
-              well meaning and kindly.
-              <br />
-              {'"a benevolent smile"'}
+              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
             </Typography>
           </CardContent>
           <CardActions>
@@ -168,14 +176,12 @@ function App() {
       </Grid>
       <Grid item xs={6} className={classes.item}>
         <Card className={classes.card}>
-          <CardContent>
+          <CardContent className={classes.content}>
             <Typography className={classes.pos} color="textSecondary">
               飲料
             </Typography>
             <Typography variant="body2" component="p">
-              well meaning and kindly.
-              <br />
-              {'"a benevolent smile"'}
+              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
             </Typography>
           </CardContent>
           <CardActions>
@@ -195,13 +201,8 @@ function App() {
                     <img src="http://fakeimg.pl/100x100?text=image" />
                   </Card>
                   <Grid item xs={12} className={classes.guessItem}>
-                    <span>{result.name}</span>
-                    <Badge
-                      color="secondary"
-                      overlap="circle"
-                      className={categoryClasses.badge}
-                      badgeContent={<span>{result.category.kind}</span>}
-                    ></Badge>
+                    <span className={classes.restaurantName}>{result.name}</span>
+                    <Badge color="secondary" overlap="circle" className={categoryClasses.badge} badgeContent={<span>{result.category.kind}</span>}></Badge>
                   </Grid>
                 </div>
               );
