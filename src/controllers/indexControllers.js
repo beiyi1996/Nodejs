@@ -1,8 +1,9 @@
 /*jshint esversion: 6 */
 
 import Restaurant from "../../models/restaurant";
+import Category from "../../models/category";
 
-exports.randomRenderRestaurant = (req, res, next) => {
+const randomRenderRestaurant = (req, res, next) => {
   Restaurant.find((err, data) => {
     if (err) next(err);
     console.log("data", data);
@@ -13,3 +14,7 @@ exports.randomRenderRestaurant = (req, res, next) => {
     });
   }).limit(10);
 };
+
+const getCategory = (req, res, next) => {};
+
+module.exports = { randomRenderRestaurant, getCategory };
