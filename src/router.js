@@ -6,6 +6,7 @@ import MemberController from "./controllers/memberControllers";
 import RestaurantController from "./controllers/restaurantControllers";
 import IndexController from "./controllers/indexControllers";
 import OrderController from "./controllers/orderControllers";
+import CategoryController from "./controllers/categoryControllers";
 import Validator from "./validator";
 
 const router = express.Router();
@@ -81,4 +82,13 @@ router.post("/orderdetails/:order_id/edit", OrderController.modifiedOrderDetails
 
 // 取消訂單
 router.post("/orderdetails/:order_id/cancell", OrderController.cancelledOrderDetail);
+
+// 新增類別
+router.post("/createCategory", CategoryController.createCategory);
+
+// 更新類別
+router.post("/updateCategory", CategoryController.updateCategory);
+
+// 刪除類別
+router.post("/deleteCategory", CategoryController.deleteCategory);
 module.exports = router;
