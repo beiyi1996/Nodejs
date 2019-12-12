@@ -27,7 +27,6 @@ import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import AddIcon from "@material-ui/icons/Add";
-import { async } from "rxjs/internal/scheduler/async";
 
 const drawerWidth = 138;
 
@@ -92,7 +91,7 @@ export default function MenuAppBar(props) {
   //   setKind(props.distinctByKind);
   //   console.log("props", props.distinctByKind);
   // }, [props.distinctByKind]);
-  console.log("234", props.data);
+  // console.log("234", props.data);
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -118,33 +117,21 @@ export default function MenuAppBar(props) {
         />
       </FormGroup> */}
       <AppBar
-        position="static"
+        position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: openD
         })}
       >
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, openD && classes.hide)}
-          >
+          <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" className={clsx(classes.menuButton, openD && classes.hide)}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
+          <Typography variant="h6" noWrap className={classes.title}>
             Gourmand
           </Typography>
           {auth && (
             <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-list-grow"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
+              <IconButton aria-label="account of current user" aria-controls="menu-list-grow" aria-haspopup="true" onClick={handleMenu} color="inherit">
                 <AccountCircle />
               </IconButton>
               <Menu
@@ -179,17 +166,10 @@ export default function MenuAppBar(props) {
         }}
       >
         <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
+          <IconButton onClick={handleDrawerClose}>{theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}</IconButton>
         </div>
         <ExpansionPanel>
-          <ExpansionPanelSummary
-            expandIcon={<AddIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-            className={classes.summary}
-          >
+          <ExpansionPanelSummary expandIcon={<AddIcon />} aria-controls="panel1a-content" id="panel1a-header" className={classes.summary}>
             <Typography className={classes.heading}>餐廳分類</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails className={classes.details}>
