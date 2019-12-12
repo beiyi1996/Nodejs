@@ -112,12 +112,17 @@ function App() {
   const [restaurant, setrestaurant] = useState(null);
   const classes = useStyles();
   const categoryClasses = categoryStyles();
+  const [headerData, setData] = useState([]);
 
   useEffect(() => {
     if (!restaurant) {
       getRestaurant();
     }
   });
+
+  useEffect(() => {
+    setData(restaurant);
+  }, [restaurant]);
 
   const getRestaurant = async () => {
     let res = await productService.getAll();
@@ -128,73 +133,36 @@ function App() {
 
   return (
     <Container maxWidth="md" className={classes.Container}>
-      <Header />
-      <Grid item xs={6} className={classes.item}>
-        <Card className={classes.card}>
-          <CardContent className={classes.content}>
-            <Typography className={classes.pos} color="textSecondary">
-              飯
-            </Typography>
-            <Typography variant="body2" component="p">
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-      </Grid>
-      <Grid item xs={6} className={classes.item}>
-        <Card className={classes.card}>
-          <CardContent className={classes.content}>
-            <Typography className={classes.pos} color="textSecondary">
-              麵
-            </Typography>
-            <Typography variant="body2" component="p">
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-      </Grid>
-      <Grid item xs={6} className={classes.item}>
-        <Card className={classes.card}>
-          <CardContent className={classes.content}>
-            <Typography className={classes.pos} color="textSecondary">
-              甜點
-            </Typography>
-            <Typography variant="body2" component="p">
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-      </Grid>
-      <Grid item xs={6} className={classes.item}>
-        <Card className={classes.card}>
-          <CardContent className={classes.content}>
-            <Typography className={classes.pos} color="textSecondary">
-              飲料
-            </Typography>
-            <Typography variant="body2" component="p">
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Learn More</Button>
-          </CardActions>
-        </Card>
-      </Grid>
+      <Header data={headerData} />
+      {restaurant ? (
+        restaurant.distinctByKind.map((kind, idx) => {
+          return (
+            <Grid item xs={6} className={classes.item} key={idx}>
+              <Card className={classes.card}>
+                <CardContent className={classes.content}>
+                  <Typography className={classes.pos} color="textSecondary">
+                    {kind}
+                  </Typography>
+                  <Typography variant="body2" component="p">
+                    <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small">Learn More</Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          );
+        })
+      ) : (
+        <p>NONONO KIND</p>
+      )}
       <Grid item xs={12} className={classes.item}>
         <h4>猜你喜歡...</h4>
         <Grid item xs={12} className={categoryClasses.randomBlock}>
           {restaurant ? (
             restaurant.randomRestaurants.map(result => {
-              console.log(12345, result);
+              // console.log(12345, result);
               return (
                 <div key={result._id} className={categoryClasses.div}>
                   <Card className={categoryClasses.card}>
@@ -202,7 +170,12 @@ function App() {
                   </Card>
                   <Grid item xs={12} className={classes.guessItem}>
                     <span className={classes.restaurantName}>{result.name}</span>
-                    <Badge color="secondary" overlap="circle" className={categoryClasses.badge} badgeContent={<span>{result.category.kind}</span>}></Badge>
+                    <Badge
+                      color="secondary"
+                      overlap="circle"
+                      className={categoryClasses.badge}
+                      badgeContent={<span>{result.category.kind}</span>}
+                    ></Badge>
                   </Grid>
                 </div>
               );

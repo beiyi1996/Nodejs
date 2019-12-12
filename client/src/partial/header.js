@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -27,12 +27,14 @@ import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import AddIcon from "@material-ui/icons/Add";
+import { async } from "rxjs/internal/scheduler/async";
 
 const drawerWidth = 138;
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    width: "100%"
   },
   menuButton: {
     marginRight: theme.spacing(2)
@@ -77,14 +79,20 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function MenuAppBar() {
+export default function MenuAppBar(props) {
   const classes = useStyles();
-  const [auth, setAuth] = React.useState(true);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [openD, setOpen] = React.useState(false);
+  const [auth, setAuth] = useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openD, setOpen] = useState(false);
   const theme = useTheme();
   const openU = Boolean(anchorEl);
+  const [kind, setKind] = useState([""]);
 
+  // useEffect(() => {
+  //   setKind(props.distinctByKind);
+  //   console.log("props", props.distinctByKind);
+  // }, [props.distinctByKind]);
+  console.log("234", props.data);
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -186,7 +194,14 @@ export default function MenuAppBar() {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails className={classes.details}>
             <List className={classes.list}>
-              <ListItem button>
+              {/* {props.data.map((kind, idx) => {
+                return (
+                  <ListItem button key={idx}>
+                    <ListItemText primary={kind} />
+                  </ListItem>
+                );
+              })} */}
+              {/* <ListItem button>
                 <ListItemText primary="飯" />
               </ListItem>
               <ListItem button>
@@ -197,7 +212,7 @@ export default function MenuAppBar() {
               </ListItem>
               <ListItem button>
                 <ListItemText primary="飲料" />
-              </ListItem>
+              </ListItem> */}
             </List>
           </ExpansionPanelDetails>
         </ExpansionPanel>
