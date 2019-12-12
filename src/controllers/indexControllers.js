@@ -2,19 +2,25 @@
 
 import Restaurant from "../../models/restaurant";
 import Category from "../../models/category";
+import { async } from "rxjs/internal/scheduler/async";
 
-const randomRenderRestaurant = (req, res, next) => {
-  Restaurant.find((err, data) => {
+const randomRenderRestaurant = async (req, res, next) => {
+  let kindDistinct = await distinctCategoryByKind();
+  await Restaurant.find((err, data) => {
     if (err) next(err);
-    console.log("data", data);
+    // console.log("data", data);
     res.status(200).json({
       code: 200,
       message: "OK",
-      randomRestaurants: data
+      randomRestaurants: data,
+      distinctByKind: kindDistinct
     });
   }).limit(10);
 };
 
-const getCategory = (req, res, next) => {};
+const distinctCategoryByKind = async () => {
+  const kindDistinct = await Category.distinct("kind");
+  return kindDistinct;
+};
 
-module.exports = { randomRenderRestaurant, getCategory };
+module.exports = { randomRenderRestaurant };
