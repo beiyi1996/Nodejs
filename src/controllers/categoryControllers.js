@@ -21,3 +21,46 @@ const createCategory = (req, res, next) => {
     });
   });
 };
+
+const updateCategory = (req, res, next) => {
+  const { area, kind } = req.body;
+  Category.findOneAndUpdate({ area: area, kind: kind }, req.body, (err, data) => {
+    if (err) next(err);
+    res.status(200).json({
+      code: 200,
+      message: `Update Category: ${area} -> ${kind}`
+    });
+  });
+};
+
+const deleteCategory = (req, res, next) => {
+  const { area, kind } = req.body;
+  Category.findOneAndDelete(
+    {
+      area: area,
+      kind: kind
+    },
+    (err, data) => {
+      if (err) next(err);
+
+      console.log("delete Category", data);
+      res.status(200).json({
+        code: 200,
+        message: `Delete Category: ${area} -> ${kind}`
+      });
+      console.log("delete end..");
+    }
+  );
+};
+
+const distinctCategoryByArea = (req, res, next) => {
+  const areaDistinct = Category.distinct("area");
+  console.log("areaDistinct", areaDistinct);
+  res.status(200).json({
+    code: 200,
+    message: "OK",
+    distinctByArea: areaDistinct
+  });
+};
+
+module.exports = { createCategory, updateCategory, deleteCategory, distinctCategoryByArea };
