@@ -44,6 +44,8 @@ router.post("/updaterestaurantdata", RestaurantController.updateRestaurantData);
 // 刪除資料
 router.post("/deleterestaurantdata", RestaurantController.deleteRestaurantData);
 
+router.get("/search");
+
 // 搜尋餐廳
 router.post("/search", RestaurantController.searchRestaurant);
 
@@ -62,9 +64,7 @@ router.get("/booking", (req, res) => {
 router.post("/booking", Validator.orderValidator(), OrderController.createOrder);
 
 // 完成頁
-router.get("/completed", (req, res) => {
-  res.send("<h1>This is Completed page!!</h1>");
-});
+// router.get("/completed");
 
 // 查看訂單
 router.get("/orders", OrderController.findOrders);
