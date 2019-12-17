@@ -8,6 +8,9 @@ import ForgotPassword from "./views/ForgotPassword";
 import Search from "./views/Search";
 import Detail from "./views/Detail";
 import Booking from "./views/Booking";
+import OrderDetails from "./views/OrderDtails";
+import Order from "./views/Oreder";
+import Member from "./views/Member";
 // import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
