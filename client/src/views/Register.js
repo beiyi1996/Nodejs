@@ -4,7 +4,7 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import MaskedInput from "../../node_modules/react-text-mask";
+import MaskedInput from "react-text-mask";
 import PropTypes from "prop-types";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -51,6 +51,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function TextMaskCustom(props) {
+  console.log("props", props);
   const { inputRef, ...other } = props;
 
   return (
@@ -78,10 +79,12 @@ function Register() {
   });
 
   const handleChange = name => event => {
+    console.log("???");
     setValues({
       ...values,
       [name]: event.target.value
     });
+    console.log("values", values);
   };
   return (
     <Container maxWidth="sm">
