@@ -7,11 +7,8 @@ import Button from "@material-ui/core/button";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Footer from "./Footer";
-import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "../../node_modules/@material-ui/pickers";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
@@ -19,6 +16,8 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import EventRoundedIcon from "@material-ui/icons/EventRounded";
 import clsx from "clsx";
+import ArrowLeftRoundedIcon from "@material-ui/icons/ArrowLeftRounded";
+import ArrowRightRoundedIcon from "@material-ui/icons/ArrowRightRounded";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -219,28 +218,195 @@ const useStyles = makeStyles(theme => ({
       fontFamily: "Microsoft JhengHei"
     }
   },
+  calendarGrid: {
+    border: "1px solid #DEDCCA"
+  },
+  week: {
+    display: "inline-block",
+    width: "calc(100% / 7)",
+    textAlign: "center",
+    color: "#606278",
+    padding: "2px 0"
+  },
   day: {
     display: "inline-block",
     width: "calc(100% / 7)",
     textAlign: "center",
-    color: "#606278"
+    color: "#606278",
+    padding: "2px 0",
+
+    "&:hover": {
+      cursor: "pointer",
+      backgroundColor: "#F4F1DE"
+    }
+  },
+  weekDayDiv: {
+    padding: 5,
+    fontSize: 14
   },
   weekend: {
-    color: "#E07A5F"
+    color: "#E07A5F",
+    padding: "2px 0",
+
+    "&:hover": {
+      cursor: "pointer",
+      backgroundColor: "#F4F1DE"
+    }
+  },
+  calendarHeader: {
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#F9F7ED",
+
+    "& > button": {
+      border: "none",
+      background: "none",
+      outline: "none",
+      color: "#E5927C",
+      padding: "3px 6px",
+
+      "&:hover": {
+        cursor: "pointer",
+        backgroundColor: "#F4F1DE"
+      }
+    }
+  },
+  month: {
+    display: "inline-block",
+    marginRight: 15
   }
 }));
 
+function Calendar() {
+  const classes = useStyles();
+  const today = new Date();
+  const [month, setMonth] = React.useState(today.getMonth());
+  const [year, setYear] = React.useState(today.getFullYear());
+  const [disabled, setDisabled] = React.useState(false);
+  const weekend = ["日", "一", "二", "三", "四", "五", "六"];
+  const monthEnName = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "Septemper",
+    "October",
+    "November",
+    "December"
+  ];
+
+  const handlePrevMonth = () => {
+    if (month === 0) {
+      setDisabled(true);
+    } else {
+      setMonth(month - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (month === 11) {
+      setYear(year + 1);
+      setMonth(0);
+      if (year > year + 2) {
+        setDisabled(true);
+      }
+    } else {
+      setMonth(month + 1);
+    }
+  };
+
+  const createWeekDay = () => {
+    const weekday = weekend.map((item, idx) => {
+      return (
+        <span key={idx} className={classes.week}>
+          {item}
+        </span>
+      );
+    });
+
+    return weekday;
+  };
+
+  const createCalendar = (year, month, disabled) => {
+    console.log("year", year, "month", month);
+    const days = new Date(year, month + 1, 0);
+    console.log("天數", days.getDate());
+    const dayArray = [];
+    let rows = [];
+    let cells = [];
+    for (let i = 1; i <= days.getDate(); i++) {
+      const todayDay = new Date(year, month, i).getDay();
+      dayArray.push([i, todayDay]);
+    }
+    dayArray.map((item, idx) => {
+      if (item[1] % 6 !== 0 || item[1] === 0) {
+        cells.push(item);
+      } else {
+        if (item[1] === 6) {
+          cells.push(item);
+        }
+        rows.push(cells);
+        cells = [];
+      }
+      if (idx === dayArray.length - 1) {
+        rows.push(cells);
+      }
+    });
+    console.log("rows", rows);
+
+    const calendar = rows.map((item, idx) => {
+      return (
+        <div key={idx}>
+          {item.map((item, idx) => {
+            const isWeekend = item[1] === 0 || item[1] === 6 ? true : false;
+            return (
+              <span
+                className={clsx(classes.day, {
+                  [classes.weekend]: isWeekend
+                })}
+                key={item[0]}
+              >
+                {item[0]}
+              </span>
+            );
+          })}
+        </div>
+      );
+    });
+
+    return calendar;
+  };
+
+  return (
+    <React.Fragment>
+      <div className={classes.calendarHeader}>
+        <button onClick={handlePrevMonth}>
+          <ArrowLeftRoundedIcon />
+        </button>
+        <div className={classes.header}>
+          <span className={classes.month}>{monthEnName[month]}</span>
+          <span>{year}</span>
+        </div>
+        <button onClick={handleNextMonth}>
+          <ArrowRightRoundedIcon />
+        </button>
+      </div>
+      <div className={classes.weekDayDiv}>{createWeekDay()}</div>
+      {createCalendar(year, month, disabled)}
+    </React.Fragment>
+  );
+}
+
 function Booking() {
   const classes = useStyles();
-  const [selectedDate, setSelectedDate] = React.useState(new Date("2014-08-18T21:11:54"));
   const [time, setTime] = React.useState("");
   const [adult, setAdult] = React.useState(0);
   const [children, setChildren] = React.useState(0);
-  const weekend = ["日", "一", "二", "三", "四", "五", "六"];
-
-  const handleDateChange = date => {
-    setSelectedDate(date);
-  };
 
   const handleChange = event => {
     setTime(event.target.value);
@@ -274,79 +440,11 @@ function Booking() {
     setChildren(children - 1);
   };
 
-  const renderCalendar = () => {
-    const today = new Date();
-    console.log("月份", today.getMonth());
-    const days = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    console.log("天數", days.getDate());
-    const dayArray = [];
-    let rows = [];
-    let cells = [];
-    for (let i = 1; i <= days.getDate(); i++) {
-      // console.log("i", i);
-      // console.log("today.getFullYear()", today.getFullYear());
-      // console.log("today.getMonth() + 1", today.getMonth());
-      const todayDay = new Date(today.getFullYear(), today.getMonth(), i).getDay();
-      // console.log("todayDay", todayDay);
-      dayArray.push([i, todayDay]);
-    }
-    // console.log("dayArray", dayArray);
-    dayArray.map((item, idx) => {
-      // console.log("item", item[1]);
-      if (item[1] % 6 !== 0 || item[1] === 0) {
-        // console.log("???");
-        cells.push(item);
-      } else {
-        if (item[1] === 6) {
-          cells.push(item);
-        }
-        rows.push(cells);
-        cells = [];
-      }
-      // console.log("dayArray.length", dayArray.length);
-      if (idx === dayArray.length - 1) {
-        rows.push(cells);
-      }
-    });
-    console.log("rows", rows);
-
-    const aa = rows.map((item, idx) => {
-      console.log("idx", idx);
-      console.log("item", item);
-      return (
-        <div>
-          {item.map((item, idx) => {
-            console.log("?????????", item);
-            const isWeekend = item[1] === 0 || item[1] === 6 ? true : false;
-            console.log("isWeekend", isWeekend);
-            return (
-              <span
-                className={clsx(classes.day, {
-                  [classes.weekend]: isWeekend
-                })}
-              >
-                {item[0]}
-              </span>
-            );
-          })}
-        </div>
-      );
-    });
-
-    return aa;
-  };
   return (
     <Container maxWidth="sm" className={classes.root}>
-      <div>
-        {weekend.map((item, idx) => {
-          return (
-            <span key={idx} className={classes.day}>
-              {item}
-            </span>
-          );
-        })}
-        <div>{renderCalendar()}</div>
-      </div>
+      <Grid item xs={12} className={classes.calendarGrid}>
+        <Calendar />
+      </Grid>
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
           <input type="text" name="searchbar" className={classes.searchBar} />
@@ -366,8 +464,8 @@ function Booking() {
             <Paper className={classes.paperRoot}>
               <ul className={classes.detailList}>
                 <li>
-                  <input type="text" onClick={renderCalendar} />
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <input type="text" />
+                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container justify="space-around">
                       <KeyboardDatePicker
                         disableToolbar
@@ -383,7 +481,7 @@ function Booking() {
                         }}
                       />
                     </Grid>
-                  </MuiPickersUtilsProvider>
+                  </MuiPickersUtilsProvider> */}
                 </li>
                 <li>
                   <FormControl className={classes.formControl}>
