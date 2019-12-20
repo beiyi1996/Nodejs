@@ -275,6 +275,23 @@ const useStyles = makeStyles(theme => ({
   month: {
     display: "inline-block",
     marginRight: 15
+  },
+  notThisMonth: {
+    "&:hover": {
+      cursor: "default",
+      backgroundColor: "#fff"
+    }
+  },
+  clicked: {
+    backgroundColor: "#F4F1DE"
+  },
+  disabledDay: {
+    color: "#EDEDF0",
+
+    "&:hover": {
+      backgroundColor: "#fff",
+      cursor: "default"
+    }
   }
 }));
 
@@ -284,6 +301,7 @@ function Calendar() {
   const [month, setMonth] = React.useState(today.getMonth());
   const [year, setYear] = React.useState(today.getFullYear());
   const [disabled, setDisabled] = React.useState(false);
+  let [date, setClickDate] = React.useState(0);
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
   const monthEnName = [
     "January",
@@ -301,10 +319,17 @@ function Calendar() {
   ];
 
   const handlePrevMonth = () => {
-    if (month === 0) {
+    const thisMonth = `${today.getFullYear()}${today.getMonth() + 1 - 1}`;
+    const changeMonth = `${year}${month}`;
+    if (changeMonth === thisMonth) {
       setDisabled(true);
     } else {
-      setMonth(month - 1);
+      if (month === 0) {
+        setMonth(month + 11);
+        setYear(year - 1);
+      } else {
+        setMonth(month - 1);
+      }
     }
   };
 
@@ -320,6 +345,10 @@ function Calendar() {
     }
   };
 
+  const handleClickDate = value => {
+    setClickDate((date = `${month}${value}`));
+  };
+
   const createWeekDay = () => {
     const weekday = weekend.map((item, idx) => {
       return (
@@ -332,16 +361,23 @@ function Calendar() {
     return weekday;
   };
 
-  const createCalendar = (year, month, disabled) => {
-    console.log("year", year, "month", month);
+  const createCalendar = (year, month) => {
+    // console.log("year", year, "month", month);
     const days = new Date(year, month + 1, 0);
-    console.log("天數", days.getDate());
+    // console.log("天數", days.getDate());
     const dayArray = [];
     let rows = [];
     let cells = [];
+    let firstDay = new Date(year, month, 1).getDay();
+    let lastDay = new Date(year, month, days.getDate()).getDay();
     for (let i = 1; i <= days.getDate(); i++) {
       const todayDay = new Date(year, month, i).getDay();
       dayArray.push([i, todayDay]);
+    }
+    // console.log("dayArray", dayArray[0]);
+    while (firstDay !== 0) {
+      cells.push([]);
+      firstDay--;
     }
     dayArray.map((item, idx) => {
       if (item[1] % 6 !== 0 || item[1] === 0) {
@@ -354,22 +390,37 @@ function Calendar() {
         cells = [];
       }
       if (idx === dayArray.length - 1) {
+        while (lastDay !== 6) {
+          cells.push([]);
+          lastDay++;
+        }
         rows.push(cells);
       }
     });
-    console.log("rows", rows);
-
+    // console.log("rows", rows);
     const calendar = rows.map((item, idx) => {
       return (
         <div key={idx}>
           {item.map((item, idx) => {
+            console.log(year + month + item[0], today.getFullYear() + today.getMonth() + today.getDate());
             const isWeekend = item[1] === 0 || item[1] === 6 ? true : false;
+            const notThisMonth = item.length === 0 ? true : false;
+            const clicked = `${year}${month}${item[0]}` === `${year}${date}` ? true : false;
+            const disabled =
+              today.getFullYear() + today.getMonth() + item[0] <
+              today.getFullYear() + today.getMonth() + today.getDate()
+                ? true
+                : false;
             return (
               <span
                 className={clsx(classes.day, {
-                  [classes.weekend]: isWeekend
+                  [classes.weekend]: isWeekend,
+                  [classes.notThisMonth]: notThisMonth,
+                  [classes.clicked]: clicked,
+                  [classes.disabledDay]: disabled
                 })}
-                key={item[0]}
+                key={idx}
+                onClick={() => handleClickDate(item[0])}
               >
                 {item[0]}
               </span>
@@ -397,7 +448,7 @@ function Calendar() {
         </button>
       </div>
       <div className={classes.weekDayDiv}>{createWeekDay()}</div>
-      {createCalendar(year, month, disabled)}
+      {createCalendar(year, month)}
     </React.Fragment>
   );
 }
@@ -464,7 +515,7 @@ function Booking() {
             <Paper className={classes.paperRoot}>
               <ul className={classes.detailList}>
                 <li>
-                  <input type="text" />
+                  <input type="date" />
                   {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container justify="space-around">
                       <KeyboardDatePicker
