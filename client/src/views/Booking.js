@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -82,15 +82,13 @@ const useStyles = makeStyles(theme => ({
   },
   detailList: {
     listStyle: "none",
-    paddingLeft: 10,
+    padding: "0 10px",
     fontFamily: "Microsoft JhengHei",
 
     "& > li": {
       margin: "5px 0",
-
-      "&:not(:first-child)": {
-        padding: "0 10px"
-      }
+      padding: "0 10px",
+      position: "relative"
     }
   },
   title: {
@@ -144,12 +142,13 @@ const useStyles = makeStyles(theme => ({
     resize: "none",
     padding: 5,
     outline: "none",
-    borderRadius: 5
+    borderRadius: 5,
+    width: "96%"
   },
   formControl: {
     width: "100%"
   },
-  count: {
+  label: {
     margin: "10px 0 3px",
     fontSize: 12
   },
@@ -219,7 +218,13 @@ const useStyles = makeStyles(theme => ({
     }
   },
   calendarGrid: {
-    border: "1px solid #DEDCCA"
+    border: "1px solid #DEDCCA",
+    position: "absolute",
+    display: "none",
+    backgroundColor: "#fff",
+    zIndex: 1,
+    width: "90%",
+    top: 43
   },
   week: {
     display: "inline-block",
@@ -234,6 +239,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
     color: "#606278",
     padding: "2px 0",
+    lineHeight: "30px",
 
     "&:hover": {
       cursor: "pointer",
@@ -269,6 +275,13 @@ const useStyles = makeStyles(theme => ({
       "&:hover": {
         cursor: "pointer",
         backgroundColor: "#F4F1DE"
+      },
+      "&:disabled": {
+        color: "#EDEDF0",
+        "&:hover": {
+          backgroundColor: "#F9F7ED",
+          cursor: "default"
+        }
       }
     }
   },
@@ -292,173 +305,49 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: "#fff",
       cursor: "default"
     }
+  },
+  disabledToday: {
+    color: "#F3CEC4",
+
+    "&:hover": {
+      backgroundColor: "#fff",
+      cursor: "default"
+    }
+  },
+  dateInput: {
+    position: "relative",
+    width: "95%",
+    outline: "none",
+    borderTop: "none",
+    borderLeft: "none",
+    borderRight: "none",
+    borderBottom: "1px solid #3D405B",
+    color: "#3D405B",
+    fontSize: 16,
+    fontFamily: "Microsoft JhengHei",
+    letterSpacing: 2
+  },
+  show: {
+    display: "block"
   }
 }));
 
-function Calendar() {
-  const classes = useStyles();
-  const today = new Date();
-  const [month, setMonth] = React.useState(today.getMonth());
-  const [year, setYear] = React.useState(today.getFullYear());
-  const [disabled, setDisabled] = React.useState(false);
-  let [date, setClickDate] = React.useState(0);
-  const weekend = ["日", "一", "二", "三", "四", "五", "六"];
-  const monthEnName = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "Septemper",
-    "October",
-    "November",
-    "December"
-  ];
-
-  const handlePrevMonth = () => {
-    const thisMonth = `${today.getFullYear()}${today.getMonth() + 1 - 1}`;
-    const changeMonth = `${year}${month}`;
-    if (changeMonth === thisMonth) {
-      setDisabled(true);
-    } else {
-      if (month === 0) {
-        setMonth(month + 11);
-        setYear(year - 1);
-      } else {
-        setMonth(month - 1);
-      }
-    }
-  };
-
-  const handleNextMonth = () => {
-    if (month === 11) {
-      setYear(year + 1);
-      setMonth(0);
-      if (year > year + 2) {
-        setDisabled(true);
-      }
-    } else {
-      setMonth(month + 1);
-    }
-  };
-
-  const handleClickDate = value => {
-    setClickDate((date = `${month}${value}`));
-  };
-
-  const createWeekDay = () => {
-    const weekday = weekend.map((item, idx) => {
-      return (
-        <span key={idx} className={classes.week}>
-          {item}
-        </span>
-      );
-    });
-
-    return weekday;
-  };
-
-  const createCalendar = (year, month) => {
-    // console.log("year", year, "month", month);
-    const days = new Date(year, month + 1, 0);
-    // console.log("天數", days.getDate());
-    const dayArray = [];
-    let rows = [];
-    let cells = [];
-    let firstDay = new Date(year, month, 1).getDay();
-    let lastDay = new Date(year, month, days.getDate()).getDay();
-    for (let i = 1; i <= days.getDate(); i++) {
-      const todayDay = new Date(year, month, i).getDay();
-      dayArray.push([i, todayDay]);
-    }
-    // console.log("dayArray", dayArray[0]);
-    while (firstDay !== 0) {
-      cells.push([]);
-      firstDay--;
-    }
-    dayArray.map((item, idx) => {
-      if (item[1] % 6 !== 0 || item[1] === 0) {
-        cells.push(item);
-      } else {
-        if (item[1] === 6) {
-          cells.push(item);
-        }
-        rows.push(cells);
-        cells = [];
-      }
-      if (idx === dayArray.length - 1) {
-        while (lastDay !== 6) {
-          cells.push([]);
-          lastDay++;
-        }
-        rows.push(cells);
-      }
-    });
-    // console.log("rows", rows);
-    const calendar = rows.map((item, idx) => {
-      return (
-        <div key={idx}>
-          {item.map((item, idx) => {
-            console.log(year + month + item[0], today.getFullYear() + today.getMonth() + today.getDate());
-            const isWeekend = item[1] === 0 || item[1] === 6 ? true : false;
-            const notThisMonth = item.length === 0 ? true : false;
-            const clicked = `${year}${month}${item[0]}` === `${year}${date}` ? true : false;
-            const disabled =
-              today.getFullYear() + today.getMonth() + item[0] <
-              today.getFullYear() + today.getMonth() + today.getDate()
-                ? true
-                : false;
-            return (
-              <span
-                className={clsx(classes.day, {
-                  [classes.weekend]: isWeekend,
-                  [classes.notThisMonth]: notThisMonth,
-                  [classes.clicked]: clicked,
-                  [classes.disabledDay]: disabled
-                })}
-                key={idx}
-                onClick={() => handleClickDate(item[0])}
-              >
-                {item[0]}
-              </span>
-            );
-          })}
-        </div>
-      );
-    });
-
-    return calendar;
-  };
-
-  return (
-    <React.Fragment>
-      <div className={classes.calendarHeader}>
-        <button onClick={handlePrevMonth}>
-          <ArrowLeftRoundedIcon />
-        </button>
-        <div className={classes.header}>
-          <span className={classes.month}>{monthEnName[month]}</span>
-          <span>{year}</span>
-        </div>
-        <button onClick={handleNextMonth}>
-          <ArrowRightRoundedIcon />
-        </button>
-      </div>
-      <div className={classes.weekDayDiv}>{createWeekDay()}</div>
-      {createCalendar(year, month)}
-    </React.Fragment>
-  );
-}
-
 function Booking() {
   const classes = useStyles();
-  const [time, setTime] = React.useState("");
-  const [adult, setAdult] = React.useState(0);
-  const [children, setChildren] = React.useState(0);
-
+  const [time, setTime] = useState("");
+  const [adult, setAdult] = useState(0);
+  const [children, setChildren] = useState(0);
+  const [date, setDate] = useState("");
+  const today = new Date();
+  const [month, setMonth] = useState(today.getMonth());
+  const [year, setYear] = useState(today.getFullYear());
+  const [disabledPrev, setDisabledPrev] = useState(true);
+  const [disabledNext, setDisabledNext] = useState(false);
+  const [isShowCalendar, setShowCalendar] = useState(false);
+  const inputRef = useRef(null);
+  let [clickDate, setClickDate] = useState("");
+  const weekend = ["日", "一", "二", "三", "四", "五", "六"];
+  const monthEnName = ["January", "February", "March", "April", "May", "June", "July", "August", "Septemper", "October", "November", "December"];
   const handleChange = event => {
     setTime(event.target.value);
   };
@@ -491,11 +380,164 @@ function Booking() {
     setChildren(children - 1);
   };
 
+  const Calendar = () => {
+    const handlePrevMonth = () => {
+      const thisMonth = `${today.getFullYear()}${today.getMonth()}`;
+      const changeMonth = `${year}${month}`;
+      if (changeMonth === thisMonth) {
+        setDisabledPrev(true);
+      } else {
+        setDisabledPrev(false);
+        setDisabledNext(false);
+        if (month === 0 && month + 11 === 11) {
+          setMonth(month + 11);
+          setYear(year - 1);
+          setDisabledPrev(true);
+        } else {
+          setMonth(month - 1);
+        }
+      }
+    };
+
+    const handleNextMonth = () => {
+      const todayMonth = today.getMonth() === 11 ? 0 : today.getMonth();
+      if (month === 11) {
+        setYear(year + 1);
+        setMonth(0);
+        setDisabledPrev(false);
+      } else {
+        setMonth(month + 1);
+        if (year === today.getFullYear() + 1 && month + 1 === todayMonth + 1) {
+          setDisabledNext(true);
+        }
+      }
+    };
+
+    const handleClickDate = (value, disabled, disabledToday) => {
+      if (disabled || disabledToday) {
+        return;
+      } else {
+        const clickedDate = `${year}/${month + 1}/${value}`;
+        setClickDate(clickedDate);
+        setShowCalendar(false);
+      }
+    };
+
+    const createWeekDay = () => {
+      const weekday = weekend.map((item, idx) => {
+        return (
+          <span key={idx} className={classes.week}>
+            {item}
+          </span>
+        );
+      });
+
+      return weekday;
+    };
+
+    const createCalendar = (year, month) => {
+      const days = new Date(year, month + 1, 0);
+      const dayArray = [];
+      let rows = [];
+      let cells = [];
+      let firstDay = new Date(year, month, 1).getDay();
+      let lastDay = new Date(year, month, days.getDate()).getDay();
+      for (let i = 1; i <= days.getDate(); i++) {
+        const todayDay = new Date(year, month, i).getDay();
+        dayArray.push([i, todayDay]);
+      }
+      while (firstDay !== 0) {
+        cells.push([]);
+        firstDay--;
+      }
+      dayArray.map((item, idx) => {
+        if (item[1] % 6 !== 0 || item[1] === 0) {
+          cells.push(item);
+        } else {
+          if (item[1] === 6) {
+            cells.push(item);
+          }
+          rows.push(cells);
+          cells = [];
+        }
+        if (idx === dayArray.length - 1) {
+          while (lastDay !== 6) {
+            cells.push([]);
+            lastDay++;
+          }
+          rows.push(cells);
+        }
+      });
+      // console.log("rows", rows);
+      const calendar = rows.map((item, idx) => {
+        return (
+          <div key={idx}>
+            {item.map((item, idx) => {
+              const isWeekend = item[1] === 0 || item[1] === 6 ? true : false;
+              const notThisMonth = item.length === 0 ? true : false;
+              const clicked = `${year}/${month + 1}/${item[0]}` === `${clickDate}` ? true : false;
+              const disabled = year === today.getFullYear() && month === today.getMonth() && item[0] < today.getDate() ? true : false;
+              const disabledToday = year === today.getFullYear() && month === today.getMonth() && item[0] === today.getDate() ? true : false;
+              return (
+                <span
+                  className={clsx(classes.day, {
+                    [classes.weekend]: isWeekend,
+                    [classes.notThisMonth]: notThisMonth,
+                    [classes.clicked]: clicked,
+                    [classes.disabledDay]: disabled,
+                    [classes.disabledToday]: disabledToday
+                  })}
+                  key={idx}
+                  onClick={() => handleClickDate(item[0], disabled, disabledToday)}
+                >
+                  {item[0]}
+                </span>
+              );
+            })}
+          </div>
+        );
+      });
+
+      return calendar;
+    };
+
+    useEffect(() => {
+      if (isShowCalendar) {
+        inputRef.current.focus();
+      }
+    }, [isShowCalendar]);
+
+    const toggleShowCalendar = () => {
+      setShowCalendar(!isShowCalendar);
+    };
+
+    return (
+      <React.Fragment>
+        <p className={classes.label}>日期</p>
+        <input type="input" className={classes.dateInput} onClick={toggleShowCalendar} ref={inputRef} value={clickDate} readOnly />
+        <FormHelperText>請選擇訂位日期!</FormHelperText>
+        <div className={clsx(classes.calendarGrid, { [classes.show]: isShowCalendar })}>
+          <div className={classes.calendarHeader}>
+            <button onClick={handlePrevMonth} disabled={disabledPrev ? true : false}>
+              <ArrowLeftRoundedIcon />
+            </button>
+            <div className={classes.header}>
+              <span className={classes.month}>{monthEnName[month]}</span>
+              <span>{year}</span>
+            </div>
+            <button onClick={handleNextMonth} disabled={disabledNext ? true : false}>
+              <ArrowRightRoundedIcon />
+            </button>
+          </div>
+          <div className={classes.weekDayDiv}>{createWeekDay()}</div>
+          {createCalendar(year, month)}
+        </div>
+      </React.Fragment>
+    );
+  };
+
   return (
     <Container maxWidth="sm" className={classes.root}>
-      <Grid item xs={12} className={classes.calendarGrid}>
-        <Calendar />
-      </Grid>
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
           <input type="text" name="searchbar" className={classes.searchBar} />
@@ -515,43 +557,21 @@ function Booking() {
             <Paper className={classes.paperRoot}>
               <ul className={classes.detailList}>
                 <li>
-                  <input type="date" />
-                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <Grid container justify="space-around">
-                      <KeyboardDatePicker
-                        disableToolbar
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id="date-picker-inline"
-                        label="日期"
-                        value={selectedDate}
-                        onChange={handleDateChange}
-                        KeyboardButtonProps={{
-                          "aria-label": "change date"
-                        }}
-                      />
-                    </Grid>
-                  </MuiPickersUtilsProvider> */}
+                  <Calendar />
                 </li>
                 <li>
                   <FormControl className={classes.formControl}>
                     <InputLabel id="demo-simple-select-helper-label">時間</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-helper-label"
-                      id="demo-simple-select-helper"
-                      value={time}
-                      onChange={handleChange}
-                    >
-                      <MenuItem value={10}>12:00</MenuItem>
-                      <MenuItem value={20}>13:00</MenuItem>
-                      <MenuItem value={30}>14:00</MenuItem>
+                    <Select labelId="demo-simple-select-helper-label" id="demo-simple-select-helper" value={time} onChange={handleChange}>
+                      <MenuItem value={12}>12:00</MenuItem>
+                      <MenuItem value={13}>13:00</MenuItem>
+                      <MenuItem value={14}>14:00</MenuItem>
                     </Select>
                     <FormHelperText>請選擇訂位時間!</FormHelperText>
                   </FormControl>
                 </li>
                 <li>
-                  <p className={classes.count}>人數</p>
+                  <p className={classes.label}>人數</p>
                   <div className={classes.countContainer}>
                     <div className={classes.counter}>
                       <span className={classes.title}>大人</span>
@@ -588,10 +608,10 @@ function Booking() {
                 </Typography>
                 <ul className={classes.orderDetail}>
                   <li>
-                    日期 : <span>2019/12/31</span>
+                    日期 : <span>{clickDate}</span>
                   </li>
                   <li>
-                    時間 : <span>19:00</span>
+                    時間 : <span>{`${time}:00`}</span>
                   </li>
                   <li>
                     人數 :
