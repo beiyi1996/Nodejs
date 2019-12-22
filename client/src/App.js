@@ -1,5 +1,5 @@
 import React from "react";
-import Home from "./views/Home";
+// import Home from "./views/Home";
 import Completed from "./views/Completed";
 import LogIn from "./views/LogIn";
 import Register from "./views/Register";
@@ -16,7 +16,7 @@ import Member from "./views/Member";
 function App() {
   return (
     <div className="App">
-      <Booking />
+      <Detail />
     </div>
   );
 }
