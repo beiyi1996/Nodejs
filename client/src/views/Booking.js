@@ -337,13 +337,13 @@ function Booking() {
   const [time, setTime] = useState("");
   const [adult, setAdult] = useState(0);
   const [children, setChildren] = useState(0);
-  const [date, setDate] = useState("");
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
   const [disabledPrev, setDisabledPrev] = useState(true);
   const [disabledNext, setDisabledNext] = useState(false);
   const [isShowCalendar, setShowCalendar] = useState(false);
+  const [notes, setNotes] = useState("");
   const inputRef = useRef(null);
   let [clickDate, setClickDate] = useState("");
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
@@ -378,6 +378,10 @@ function Booking() {
       return;
     }
     setChildren(children - 1);
+  };
+
+  const handleChangeNote = event => {
+    setNotes(event.target.value);
   };
 
   const Calendar = () => {
@@ -593,7 +597,7 @@ function Booking() {
                 </li>
                 <li>
                   <p className={classes.notes}>備註</p>
-                  <textarea name="notes" id="" cols="30" rows="5" className={classes.textArea}></textarea>
+                  <textarea name="notes" id="" cols="30" rows="5" className={classes.textArea} onChange={handleChangeNote}></textarea>
                 </li>
               </ul>
             </Paper>
@@ -611,7 +615,7 @@ function Booking() {
                     日期 : <span>{clickDate}</span>
                   </li>
                   <li>
-                    時間 : <span>{`${time}:00`}</span>
+                    時間 : <span>{time ? `${time}:00` : ""}</span>
                   </li>
                   <li>
                     人數 :
@@ -621,7 +625,7 @@ function Booking() {
                     </span>
                   </li>
                   <li>
-                    備註 : <span>我是備註, 可有可無</span>
+                    備註 : <span>{notes}</span>
                   </li>
                 </ul>
               </CardContent>
