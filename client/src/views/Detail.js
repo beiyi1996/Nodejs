@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -7,7 +7,10 @@ import Button from "@material-ui/core/button";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Footer from "./Footer";
-
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { googleMapKey } from "../password";
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -51,10 +54,10 @@ const useStyles = makeStyles(theme => ({
   restaurantImage: {
     width: "100%",
     height: "100%",
+    borderRadius: 10,
     "& > img": {
       width: "100%",
-      height: 200,
-      borderRadius: 10
+      height: 200
     }
   },
   restaurantName: {
@@ -113,14 +116,103 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     borderRadius: 10,
     fontFamily: "Microsoft JhengHei"
+  },
+  slider: {
+    "& > button::before": {
+      color: "#838596",
+
+      "&:hover": {
+        color: "#3D405B"
+      }
+    },
+    "& > button:first-child": {
+      left: 0,
+      zIndex: 1
+    },
+    "& > button:first-child ~ button": {
+      right: 0
+    },
+    "& > ul": {
+      display: "none !important"
+    }
   }
 }));
 
+const SimpleSlider = () => {
+  const classes = useStyles();
+  let settings = {
+    dots: true,
+    infinite: true,
+    speed: 300,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  };
+  return (
+    <Slider {...settings} className={classes.slider}>
+      <div className={classes.restaurantImage}>
+        <img src="http://fakeimg.pl/100x100?text=pic1&font=lobster" />
+      </div>
+      <div className={classes.restaurantImage}>
+        <img src="http://fakeimg.pl/100x100?text=pic2&font=lobster" />
+      </div>
+      <div className={classes.restaurantImage}>
+        <img src="http://fakeimg.pl/100x100?text=pic3&font=lobster" />
+      </div>
+      <div className={classes.restaurantImage}>
+        <img src="http://fakeimg.pl/100x100?text=pic4&font=lobster" />
+      </div>
+      <div className={classes.restaurantImage}>
+        <img src="http://fakeimg.pl/100x100?text=pic5&font=lobster" />
+      </div>
+      <div className={classes.restaurantImage}>
+        <img src="http://fakeimg.pl/100x100?text=pic6&font=lobster" />
+      </div>
+    </Slider>
+  );
+};
+
 function Detail() {
   const classes = useStyles();
+  // function initMap() {
+  //   const google = window.google;
+  //   // The location of Uluru
+  //   var uluru = { lat: -25.344, lng: 131.036 };
+  //   // The map, centered at Uluru
+  //   var map = new google.maps.Map(document.getElementById("map"), { zoom: 4, center: uluru });
+  //   // The marker, positioned at Uluru
+  //   var marker = new google.maps.Marker({ position: uluru, map: map });
+  // }
+
+  function Map({ options, onMount, className }) {
+    const ref = useRef();
+
+    useEffect(() => {
+      const onLoad = () => {
+        const map = new window.google.maps.Map(ref.current, options);
+        if (typeof onMount === `function`) onMount(map);
+      };
+      if (!window.google) {
+        const script = document.createElement(`script`);
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
+        document.head.append(script);
+        script.addEventListener(`load`, onLoad);
+        return () => script.removeEventListener(`load`, onLoad);
+      } else onLoad();
+    }, [onMount, options]);
+
+    return <div style={{ height: `60vh`, margin: `1em 0`, borderRadius: `0.5em` }} {...{ ref, className }} />;
+  }
+
+  Map.defaultProps = {
+    options: {
+      center: { lat: 48, lng: 8 },
+      zoom: 5
+    }
+  };
 
   return (
     <Container maxWidth="sm" className={classes.root}>
+      {console.log(googleMapKey)}
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
           <input type="text" name="searchbar" className={classes.searchBar} />
@@ -138,7 +230,7 @@ function Detail() {
         <Grid item xs={12}>
           <Grid item xs={12} className={classes.paperGrid}>
             <div className={classes.restaurantImage}>
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" />
+              <SimpleSlider />
             </div>
             <Paper className={classes.paperRoot}>
               <ul className={classes.detailList}>
@@ -167,7 +259,9 @@ function Detail() {
                   <span className={classes.content}>每位顧客最低消費為180元。</span>
                 </li>
               </ul>
-              <div className={classes.googleMap}></div>
+              <div className={classes.googleMap} id="map">
+                <Map />
+              </div>
               <div className={classes.paperFooter}>
                 <Button className={classes.booking}>我要訂位</Button>
               </div>
