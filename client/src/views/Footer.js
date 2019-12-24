@@ -14,11 +14,13 @@ const useStyles = makeStyles({
     left: 0
   },
   order: {
-    "&::after": {
+    "& > span > span:last-child": {
+      position: "relative"
+    },
+    "& > span > span:last-child::after": {
       content: "'99'",
       position: "absolute",
-      top: 3,
-      left: 70,
+      top: "-30px",
       borderRadius: 30,
       backgroundColor: "#E07A5F",
       color: "#fff",
