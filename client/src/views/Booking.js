@@ -91,11 +91,6 @@ const useStyles = makeStyles(theme => ({
       position: "relative"
     }
   },
-  title: {
-    display: "inline-block",
-    width: "100%",
-    color: "#838596"
-  },
   content: {
     paddingLeft: 15,
     display: "inline-block",
@@ -127,9 +122,6 @@ const useStyles = makeStyles(theme => ({
     display: "inline-block",
     margin: "0 2px",
     transform: "scale(0.8)"
-  },
-  title: {
-    fontSize: 14
   },
   pos: {
     marginBottom: 5,
@@ -347,7 +339,20 @@ function Booking() {
   const inputRef = useRef(null);
   let [clickDate, setClickDate] = useState("");
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
-  const monthEnName = ["January", "February", "March", "April", "May", "June", "July", "August", "Septemper", "October", "November", "December"];
+  const monthEnName = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "Septemper",
+    "October",
+    "November",
+    "December"
+  ];
   const handleChange = event => {
     setTime(event.target.value);
   };
@@ -471,6 +476,7 @@ function Booking() {
           }
           rows.push(cells);
         }
+        return true;
       });
       // console.log("rows", rows);
       const calendar = rows.map((item, idx) => {
@@ -480,8 +486,12 @@ function Booking() {
               const isWeekend = item[1] === 0 || item[1] === 6 ? true : false;
               const notThisMonth = item.length === 0 ? true : false;
               const clicked = `${year}/${month + 1}/${item[0]}` === `${clickDate}` ? true : false;
-              const disabled = year === today.getFullYear() && month === today.getMonth() && item[0] < today.getDate() ? true : false;
-              const disabledToday = year === today.getFullYear() && month === today.getMonth() && item[0] === today.getDate() ? true : false;
+              const disabled =
+                year === today.getFullYear() && month === today.getMonth() && item[0] < today.getDate() ? true : false;
+              const disabledToday =
+                year === today.getFullYear() && month === today.getMonth() && item[0] === today.getDate()
+                  ? true
+                  : false;
               return (
                 <span
                   className={clsx(classes.day, {
@@ -509,6 +519,7 @@ function Booking() {
       if (isShowCalendar) {
         inputRef.current.focus();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isShowCalendar]);
 
     const toggleShowCalendar = () => {
@@ -518,7 +529,14 @@ function Booking() {
     return (
       <React.Fragment>
         <p className={classes.label}>日期</p>
-        <input type="input" className={classes.dateInput} onClick={toggleShowCalendar} ref={inputRef} value={clickDate} readOnly />
+        <input
+          type="input"
+          className={classes.dateInput}
+          onClick={toggleShowCalendar}
+          ref={inputRef}
+          value={clickDate}
+          readOnly
+        />
         <FormHelperText>請選擇訂位日期!</FormHelperText>
         <div className={clsx(classes.calendarGrid, { [classes.show]: isShowCalendar })}>
           <div className={classes.calendarHeader}>
@@ -566,7 +584,12 @@ function Booking() {
                 <li>
                   <FormControl className={classes.formControl}>
                     <InputLabel id="demo-simple-select-helper-label">時間</InputLabel>
-                    <Select labelId="demo-simple-select-helper-label" id="demo-simple-select-helper" value={time} onChange={handleChange}>
+                    <Select
+                      labelId="demo-simple-select-helper-label"
+                      id="demo-simple-select-helper"
+                      value={time}
+                      onChange={handleChange}
+                    >
                       <MenuItem value={12}>12:00</MenuItem>
                       <MenuItem value={13}>13:00</MenuItem>
                       <MenuItem value={14}>14:00</MenuItem>
@@ -597,7 +620,14 @@ function Booking() {
                 </li>
                 <li>
                   <p className={classes.notes}>備註</p>
-                  <textarea name="notes" id="" cols="30" rows="5" className={classes.textArea} onChange={handleChangeNote}></textarea>
+                  <textarea
+                    name="notes"
+                    id=""
+                    cols="30"
+                    rows="5"
+                    className={classes.textArea}
+                    onChange={handleChangeNote}
+                  ></textarea>
                 </li>
               </ul>
             </Paper>
