@@ -9,6 +9,15 @@ import PropTypes from "prop-types";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
+import clsx from "clsx";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import IconButton from "@material-ui/core/IconButton";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormLabel from "@material-ui/core/FormLabel";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -51,7 +60,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function TextMaskCustom(props) {
-  console.log("props", props);
   const { inputRef, ...other } = props;
 
   return (
@@ -60,7 +68,29 @@ function TextMaskCustom(props) {
       ref={ref => {
         inputRef(ref ? ref.inputElement : null);
       }}
-      mask={["(", /[0-9]/, /\d/, /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/]}
+      mask={[
+        "(",
+        " ",
+        "0",
+        "9",
+        " ",
+        ")",
+        " ",
+        /\d/,
+        /\d/,
+        " ",
+        "-",
+        " ",
+        /\d/,
+        /\d/,
+        /\d/,
+        " ",
+        "-",
+        " ",
+        /\d/,
+        /\d/,
+        /\d/
+      ]}
       placeholderChar={"\u2000"}
       showMask
     />
@@ -74,17 +104,34 @@ TextMaskCustom.propTypes = {
 function Register() {
   const classes = useStyles();
   const [values, setValues] = React.useState({
-    textmask: "(09)  -    -     ",
-    numberformat: "4330"
+    textmask: "      -    -     ",
+    numberformat: "2330"
+  });
+  const [newValues, setNewValues] = React.useState({
+    amount: "",
+    password: "",
+    weight: "",
+    weightRange: "",
+    showPassword: false
   });
 
   const handleChange = name => event => {
-    console.log("???");
     setValues({
       ...values,
       [name]: event.target.value
     });
-    console.log("values", values);
+  };
+
+  const handlePasswordChange = prop => event => {
+    setNewValues({ ...newValues, [prop]: event.target.value });
+  };
+
+  const handleClickShowPassword = () => {
+    setNewValues({ ...newValues, showPassword: !newValues.showPassword });
+  };
+
+  const handleMouseDownPassword = event => {
+    event.preventDefault();
   };
   return (
     <Container maxWidth="sm">
@@ -95,8 +142,35 @@ function Register() {
         <Grid item xs={12} className={classes.formGrid}>
           <form className={classes.form} noValidate autoComplete="off">
             <TextField label="email" name="email" className={classes.input} />
-            <TextField label="password" name="password" className={classes.input} />
+            <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
+              <InputLabel htmlFor="standard-adornment-password">password</InputLabel>
+              <Input
+                id="standard-adornment-password"
+                type={newValues.showPassword ? "text" : "password"}
+                value={newValues.password}
+                onChange={handlePasswordChange("password")}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                    >
+                      {newValues.showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                name="password"
+              />
+            </FormControl>
             <TextField label="name" name="name" className={classes.input} />
+            <FormControl component="fieldset" className={classes.input}>
+              <FormLabel component="legend">gender</FormLabel>
+              <FormGroup aria-label="position" row>
+                <FormControlLabel value={0} control={<Checkbox color="primary" />} label="End" labelPlacement="end" />
+                <FormControlLabel value={1} control={<Checkbox color="primary" />} label="End" labelPlacement="end" />
+              </FormGroup>
+            </FormControl>
             <TextField label="gender" name="gender" className={classes.input} />
             <FormControl className={classes.input}>
               <InputLabel htmlFor="formatted-text-mask-input">phone</InputLabel>
