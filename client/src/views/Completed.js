@@ -45,7 +45,6 @@ const useStyles = makeStyles(theme => ({
 
 function Completed() {
   const classes = useStyles();
-  console.log("????");
   return (
     <Container maxWidth="sm">
       <Grid item xs={12} className={classes.container}>
@@ -56,7 +55,7 @@ function Completed() {
           <Paper className={classes.paperText}>
             <p className={classes.center}>感謝您的訂位!</p>
             <p>
-              訂單編號：<a href="">20191210812991</a>
+              訂單編號：<a href="https://www.youtube.com/watch?v=jL25Drh3Npo">20191210812991</a>
             </p>
             <p>請至網站「查詢訂單」查看此訂單明細。</p>
           </Paper>
