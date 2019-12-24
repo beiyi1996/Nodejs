@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -104,7 +104,12 @@ const useStyles = makeStyles(theme => ({
     padding: "0 5px",
     minHeight: 150,
     border: "1px solid #B8B9C3",
-    marginTop: 15
+    marginTop: 15,
+    position: "relative"
+  },
+  map: {
+    height: "30vh",
+    width: "100%"
   },
   paperFooter: {
     display: "flex",
@@ -150,22 +155,22 @@ const SimpleSlider = () => {
   return (
     <Slider {...settings} className={classes.slider}>
       <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic1&font=lobster" />
+        <img src="http://fakeimg.pl/100x100?text=pic1&font=lobster" alt="" />
       </div>
       <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic2&font=lobster" />
+        <img src="http://fakeimg.pl/100x100?text=pic2&font=lobster" alt="" />
       </div>
       <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic3&font=lobster" />
+        <img src="http://fakeimg.pl/100x100?text=pic3&font=lobster" alt="" />
       </div>
       <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic4&font=lobster" />
+        <img src="http://fakeimg.pl/100x100?text=pic4&font=lobster" alt="" />
       </div>
       <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic5&font=lobster" />
+        <img src="http://fakeimg.pl/100x100?text=pic5&font=lobster" alt="" />
       </div>
       <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic6&font=lobster" />
+        <img src="http://fakeimg.pl/100x100?text=pic6&font=lobster" alt="" />
       </div>
     </Slider>
   );
@@ -173,15 +178,11 @@ const SimpleSlider = () => {
 
 function Detail() {
   const classes = useStyles();
-  // function initMap() {
-  //   const google = window.google;
-  //   // The location of Uluru
-  //   var uluru = { lat: -25.344, lng: 131.036 };
-  //   // The map, centered at Uluru
-  //   var map = new google.maps.Map(document.getElementById("map"), { zoom: 4, center: uluru });
-  //   // The marker, positioned at Uluru
-  //   var marker = new google.maps.Marker({ position: uluru, map: map });
-  // }
+  const [from, setFrom] = useState({
+    name: "大心新泰式麵食 - 台北微風南京店",
+    address: "台北市松山區南京東路三段337號B2美食街",
+    phone: "02-2719-8369"
+  });
 
   function Map({ options, onMount, className }) {
     const ref = useRef();
@@ -200,14 +201,39 @@ function Detail() {
       } else onLoad();
     }, [onMount, options]);
 
-    return <div style={{ height: `60vh`, margin: `1em 0`, borderRadius: `0.5em` }} {...{ ref, className }} />;
+    return <div {...{ ref, className }} />;
   }
+
+  const addMarkers = () => map => {
+    const { address } = from;
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode(
+      {
+        address: address
+      },
+      (results, status) => {
+        if (status === "OK") {
+          map.setCenter(results[0].geometry.location);
+          const marker = new window.google.maps.Marker({
+            map,
+            position: results[0].geometry.location,
+            title: "",
+            visible: true
+          });
+          return marker;
+        } else {
+          alert("Geocode was not successful for the following reason: " + status);
+        }
+      }
+    );
+  };
 
   Map.defaultProps = {
     options: {
-      center: { lat: 48, lng: 8 },
-      zoom: 5
-    }
+      center: { lat: 25.033671, lng: 121.564427 },
+      zoom: 15
+    },
+    onMount: addMarkers()
   };
 
   return (
@@ -236,19 +262,19 @@ function Detail() {
               <ul className={classes.detailList}>
                 <li>
                   <span className={classes.title}>店家名稱 : </span>
-                  <span className={classes.content}>麥當勞-中山誠品店</span>
+                  <span className={classes.content}>大心新泰式麵食 - 台北微風南京店</span>
                 </li>
                 <li>
                   <span className={classes.title}>地址 : </span>
-                  <span className={classes.content}>台北市內湖區石潭路111號</span>
+                  <span className={classes.content}>台北市松山區南京東路三段337號B2美食街</span>
                 </li>
                 <li>
                   <span className={classes.title}>電話 : </span>
-                  <span className={classes.content}>03-523-2152</span>
+                  <span className={classes.content}>02-2719-8369</span>
                 </li>
                 <li>
                   <span className={classes.title}>用餐時間 : </span>
-                  <span className={classes.content}>09:00 ~ 20:00</span>
+                  <span className={classes.content}>11:00 – 21:30</span>
                 </li>
                 <li>
                   <span className={classes.title}>保留資訊 : </span>
@@ -260,7 +286,7 @@ function Detail() {
                 </li>
               </ul>
               <div className={classes.googleMap} id="map">
-                <Map />
+                <Map className={classes.map} />
               </div>
               <div className={classes.paperFooter}>
                 <Button className={classes.booking}>我要訂位</Button>
