@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
     "-webkit-line-clamp": "2",
     "-webkit-box-orient": "vertical",
     fontFamily: "Microsoft JhengHei",
-    fontSize: 17,
+    fontSize: 20,
     margin: "0 0 5px"
   },
   paperGrid: {
@@ -249,8 +249,8 @@ function Detail() {
           </div>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="h5" gutterBottom>
-            search word
+          <Typography variant="h5" gutterBottom className={classes.restaurantName}>
+            Restaurant Name..
           </Typography>
         </Grid>
         <Grid item xs={12}>

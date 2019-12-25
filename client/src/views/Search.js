@@ -106,9 +106,6 @@ const useStyles = makeStyles(theme => ({
   restaurantMore: {
     width: "35%",
     borderRadius: 10
-  },
-  divider: {
-    position: "absolute"
   }
 }));
 

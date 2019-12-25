@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -55,14 +55,14 @@ const useStyles = makeStyles(theme => ({
 
 function ModifiedPassword() {
   const classes = useStyles();
-  const [newValues, setNewValues] = React.useState({
+  const [newValues, setNewValues] = useState({
     amount: "",
     password: "",
     weight: "",
     weightRange: "",
     showPassword: false
   });
-  const [checkValues, setCheckValues] = React.useState({
+  const [checkValues, setCheckValues] = useState({
     amount: "",
     password: "",
     weight: "",
