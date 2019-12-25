@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import SearchIcon from "@material-ui/icons/Search";
 import Button from "@material-ui/core/button";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
@@ -18,6 +17,7 @@ import EventRoundedIcon from "@material-ui/icons/EventRounded";
 import clsx from "clsx";
 import ArrowLeftRoundedIcon from "@material-ui/icons/ArrowLeftRounded";
 import ArrowRightRoundedIcon from "@material-ui/icons/ArrowRightRounded";
+import Fade from "@material-ui/core/Fade";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,31 +34,6 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 10,
     display: "flex"
   },
-  searchBar: {
-    fontSize: 16,
-    color: "#3D405B",
-    border: "1px solid #B8B9C3",
-    borderRadius: 20,
-    width: "100%",
-    padding: "5px 15px 5px",
-
-    "&:focus": {
-      outline: "none"
-    }
-  },
-  searchIcon: {
-    marginLeft: "-40px"
-  },
-  searchBtn: {
-    borderRadius: 50,
-    height: 40,
-    minWidth: 40,
-    padding: 5
-  },
-  icon: {
-    verticalAlign: "text-bottom",
-    marginTop: 3
-  },
   restaurantName: {
     paddingLeft: 10,
     overflow: "hidden",
@@ -67,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     "-webkit-line-clamp": "2",
     "-webkit-box-orient": "vertical",
     fontFamily: "Microsoft JhengHei",
-    fontSize: 17,
+    fontSize: 20,
     margin: "0 0 5px"
   },
   paperGrid: {
@@ -91,17 +66,6 @@ const useStyles = makeStyles(theme => ({
       position: "relative"
     }
   },
-  content: {
-    paddingLeft: 15,
-    display: "inline-block",
-    color: "#4E5169"
-  },
-  googleMap: {
-    padding: "0 5px",
-    minHeight: 150,
-    border: "1px solid #B8B9C3",
-    marginTop: 15
-  },
   paperFooter: {
     display: "flex",
     justifyContent: "center",
@@ -117,11 +81,6 @@ const useStyles = makeStyles(theme => ({
     minWidth: 275,
     marginTop: 15,
     backgroundColor: "#F7F4E7"
-  },
-  bullet: {
-    display: "inline-block",
-    margin: "0 2px",
-    transform: "scale(0.8)"
   },
   pos: {
     marginBottom: 5,
@@ -336,6 +295,7 @@ function Booking() {
   const [disabledNext, setDisabledNext] = useState(false);
   const [isShowCalendar, setShowCalendar] = useState(false);
   const [notes, setNotes] = useState("");
+  const [checked, setChecked] = React.useState(false);
   const inputRef = useRef(null);
   let [clickDate, setClickDate] = useState("");
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
@@ -428,6 +388,7 @@ function Booking() {
       } else {
         const clickedDate = `${year}/${month + 1}/${value}`;
         setClickDate(clickedDate);
+        setChecked(prev => !prev);
         setShowCalendar(false);
       }
     };
@@ -523,6 +484,7 @@ function Booking() {
     }, [isShowCalendar]);
 
     const toggleShowCalendar = () => {
+      setChecked(prev => !prev);
       setShowCalendar(!isShowCalendar);
     };
 
@@ -539,18 +501,22 @@ function Booking() {
         />
         <FormHelperText>請選擇訂位日期!</FormHelperText>
         <div className={clsx(classes.calendarGrid, { [classes.show]: isShowCalendar })}>
-          <div className={classes.calendarHeader}>
-            <button onClick={handlePrevMonth} disabled={disabledPrev ? true : false}>
-              <ArrowLeftRoundedIcon />
-            </button>
-            <div className={classes.header}>
-              <span className={classes.month}>{monthEnName[month]}</span>
-              <span>{year}</span>
+          <Fade in={checked}>
+            <div>
+              <div className={classes.calendarHeader}>
+                <button onClick={handlePrevMonth} disabled={disabledPrev ? true : false}>
+                  <ArrowLeftRoundedIcon />
+                </button>
+                <div className={classes.header}>
+                  <span className={classes.month}>{monthEnName[month]}</span>
+                  <span>{year}</span>
+                </div>
+                <button onClick={handleNextMonth} disabled={disabledNext ? true : false}>
+                  <ArrowRightRoundedIcon />
+                </button>
+              </div>
             </div>
-            <button onClick={handleNextMonth} disabled={disabledNext ? true : false}>
-              <ArrowRightRoundedIcon />
-            </button>
-          </div>
+          </Fade>
           <div className={classes.weekDayDiv}>{createWeekDay()}</div>
           {createCalendar(year, month)}
         </div>
@@ -561,16 +527,8 @@ function Booking() {
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
-        <Grid item xs={12} className={classes.grid}>
-          <input type="text" name="searchbar" className={classes.searchBar} />
-          <div className={classes.searchIcon}>
-            <Button className={classes.searchBtn}>
-              <SearchIcon className={classes.icon} />
-            </Button>
-          </div>
-        </Grid>
         <Grid item xs={12}>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" gutterBottom className={classes.restaurantName}>
             Reataurant Name..
           </Typography>
         </Grid>
@@ -637,7 +595,7 @@ function Booking() {
                   <EventRoundedIcon className={classes.calendarIcon} />
                   <span>定位資訊</span>
                 </Typography>
-                <Typography variant="h5" component="h2">
+                <Typography variant="h5" component="h2" className={classes.restaurantName}>
                   restaurant name...
                 </Typography>
                 <ul className={classes.orderDetail}>
