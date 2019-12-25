@@ -29,7 +29,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import AddIcon from "@material-ui/icons/Add";
+import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 
 const drawerWidth = 180;
 
@@ -64,11 +64,6 @@ const useStyles = makeStyles(theme => ({
   item: {
     padding: "10px",
     overflow: "hidden"
-  },
-  bullet: {
-    display: "inline-block",
-    margin: "0 2px",
-    transform: "scale(0.8)"
   },
   title: {
     fontSize: 18,
@@ -191,7 +186,7 @@ function Home() {
   const classes = useStyles();
   const categoryClasses = categoryStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openU = Boolean(anchorEl);
 
@@ -208,10 +203,6 @@ function Home() {
       getRestaurant();
     }
   });
-
-  // useEffect(() => {
-  //   setData(restaurant);
-  // }, [restaurant]);
 
   const getRestaurant = async () => {
     let res = await productService.getAll();
@@ -299,7 +290,7 @@ function Home() {
           <Divider />
           <ExpansionPanel>
             <ExpansionPanelSummary
-              expandIcon={<AddIcon />}
+              expandIcon={<KeyboardArrowDownRoundedIcon />}
               aria-controls="panel1a-content"
               id="panel1a-header"
               className={classes.summary}
