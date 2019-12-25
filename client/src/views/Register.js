@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -14,10 +14,9 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormLabel from "@material-ui/core/FormLabel";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -56,6 +55,22 @@ const useStyles = makeStyles(theme => ({
     width: "40%",
     margin: "50px 0",
     fontFamily: "Microsoft JhengHei"
+  },
+  title: {
+    textAlign: "left",
+    display: "inline-block",
+    width: "25%"
+  },
+  radioInput: {
+    flexDirection: "row",
+    margin: "10px auto",
+    alignItems: "center",
+    justifyContent: "space-between",
+    fontFamily: "Microsoft JhengHei"
+  },
+  radio: {
+    width: "38%",
+    marginRight: 0
   }
 }));
 
@@ -103,17 +118,22 @@ TextMaskCustom.propTypes = {
 
 function Register() {
   const classes = useStyles();
-  const [values, setValues] = React.useState({
+  const [values, setValues] = useState({
     textmask: "      -    -     ",
     numberformat: "2330"
   });
-  const [newValues, setNewValues] = React.useState({
+  const [newValues, setNewValues] = useState({
     amount: "",
     password: "",
     weight: "",
     weightRange: "",
     showPassword: false
   });
+  const [value, setValue] = useState("female");
+
+  const handleRedioChange = event => {
+    setValue(event.target.value);
+  };
 
   const handleChange = name => event => {
     setValues({
@@ -164,14 +184,29 @@ function Register() {
               />
             </FormControl>
             <TextField label="name" name="name" className={classes.input} />
-            <FormControl component="fieldset" className={classes.input}>
-              <FormLabel component="legend">gender</FormLabel>
-              <FormGroup aria-label="position" row>
-                <FormControlLabel value={0} control={<Checkbox color="primary" />} label="End" labelPlacement="end" />
-                <FormControlLabel value={1} control={<Checkbox color="primary" />} label="End" labelPlacement="end" />
-              </FormGroup>
-            </FormControl>
-            <TextField label="gender" name="gender" className={classes.input} />
+            <RadioGroup
+              aria-label="gender"
+              name="gender2"
+              className={classes.radioInput}
+              value={value}
+              onChange={handleRedioChange}
+            >
+              <span className={classes.title}>gender</span>
+              <FormControlLabel
+                value="female"
+                control={<Radio color="primary" />}
+                label="男"
+                labelPlacement="end"
+                className={classes.radio}
+              />
+              <FormControlLabel
+                value="male"
+                control={<Radio color="primary" />}
+                label="女"
+                labelPlacement="end"
+                className={classes.radio}
+              />
+            </RadioGroup>
             <FormControl className={classes.input}>
               <InputLabel htmlFor="formatted-text-mask-input">phone</InputLabel>
               <Input
