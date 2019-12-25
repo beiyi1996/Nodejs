@@ -10,7 +10,6 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   container: {
-    border: "1px solid grey",
     fontFamily: "Microsoft JhengHei"
   },
   paper: {
@@ -37,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 10
   },
   button: {
-    width: "70%",
+    width: "60%",
     margin: "10px 0",
     fontFamily: "Microsoft JhengHei"
   }
@@ -49,7 +48,7 @@ function Completed() {
     <Container maxWidth="sm">
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.paper}>
-          <img src="http://fakeimg.pl/200x200?text=logo&font=lobster" alt="" className={classes.logo} />
+          <img src="http://fakeimg.pl/130x130?text=logo&font=lobster" alt="" className={classes.logo} />
         </Grid>
         <Grid item xs={12}>
           <Paper className={classes.paperText}>
