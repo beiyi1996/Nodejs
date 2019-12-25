@@ -26,9 +26,9 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import AddIcon from "@material-ui/icons/Add";
 import CreateRoundedIcon from "@material-ui/icons/CreateRounded";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
+import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 
 const drawerWidth = 180;
 
@@ -62,16 +62,6 @@ const useStyles = makeStyles(theme => ({
   title: {
     fontSize: 18,
     flexGrow: 1
-  },
-  pos: {
-    marginBottom: 12,
-    textAlign: "right",
-    position: "absolute",
-    right: "10px",
-    top: "5px",
-    color: "snow",
-    fontWeight: "bold",
-    fontFamily: "Microsoft JhengHei"
   },
   appBar: {
     transition: theme.transitions.create(["margin", "width"], {
@@ -184,7 +174,7 @@ function Orders() {
   const [restaurant, setrestaurant] = useState(null);
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openU = Boolean(anchorEl);
 
@@ -204,10 +194,8 @@ function Orders() {
 
   const getRestaurant = async () => {
     let res = await productService.getAll();
-    console.log("app res", res);
     setrestaurant(res);
   };
-  console.log("restaurant", restaurant);
 
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);
@@ -288,7 +276,7 @@ function Orders() {
           <Divider />
           <ExpansionPanel>
             <ExpansionPanelSummary
-              expandIcon={<AddIcon />}
+              expandIcon={<KeyboardArrowDownRoundedIcon />}
               aria-controls="panel1a-content"
               id="panel1a-header"
               className={classes.summary}
