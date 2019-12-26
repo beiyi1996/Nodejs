@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import SearchIcon from "@material-ui/icons/Search";
@@ -8,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
 import Footer from "./Footer";
+import { param } from "express-validator";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -111,16 +113,48 @@ const useStyles = makeStyles(theme => ({
 
 function Search() {
   const classes = useStyles();
+  const [restaurant, setRestaurant] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchKeyWord, setSearchKeyWord] = useState("");
+
+  useEffect(() => {
+    if (!restaurant) {
+      getRestaurant();
+      setIsSearching(true);
+    }
+  });
+
+  const getRestaurant = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const kind = urlParams.get("kind");
+    console.log("kind", kind);
+    let res = await productService.searchByKind(kind);
+    console.log("111", res.restaurants);
+    setRestaurant(res.restaurants);
+    setIsSearching(false);
+  };
+
+  const handleChange = e => {
+    setSearchKeyWord(e.target.value);
+  };
 
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
-          <input type="text" name="searchbar" className={classes.searchBar} />
+          <input
+            type="text"
+            name="searchbar"
+            className={classes.searchBar}
+            value={searchKeyWord}
+            onChange={handleChange}
+          />
           <div className={classes.searchIcon}>
-            <Button className={classes.searchBtn}>
-              <SearchIcon className={classes.icon} />
-            </Button>
+            <Link to={`/search?${param}=${paramValue}`}>
+              <Button className={classes.searchBtn}>
+                <SearchIcon className={classes.icon} />
+              </Button>
+            </Link>
           </div>
         </Grid>
         <Grid item xs={12}>
@@ -129,74 +163,27 @@ function Search() {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Grid item xs={12} className={classes.paperGrid}>
-            <div className={classes.restaurantImage}>
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" />
-            </div>
-            <Paper className={classes.paperRoot}>
-              <p className={classes.restaurantName}>Restaurant Name.....</p>
-              <div className={classes.paperFooter}>
-                <Typography component="div" className={classes.chipDiv}>
-                  <Chip label="北部" className={classes.chip} />
-                  <Chip label="甜點" className={classes.chip} />
-                  {/* <span className={classes.badge}>北區</span>
-                <span className={classes.badge}>甜點</span> */}
-                </Typography>
-                <Button className={classes.restaurantMore}>more</Button>
-              </div>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} className={classes.paperGrid}>
-            <div className={classes.restaurantImage}>
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" />
-            </div>
-            <Paper className={classes.paperRoot}>
-              <p className={classes.restaurantName}>Restaurant Name.....</p>
-              <div className={classes.paperFooter}>
-                <Typography component="div" className={classes.chipDiv}>
-                  <Chip label="中部" className={classes.chip} />
-                  <Chip label="飲料" className={classes.chip} />
-                  {/* <span className={classes.badge}>北區</span>
-                <span className={classes.badge}>甜點</span> */}
-                </Typography>
-                <Button className={classes.restaurantMore}>more</Button>
-              </div>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} className={classes.paperGrid}>
-            <div className={classes.restaurantImage}>
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" />
-            </div>
-            <Paper className={classes.paperRoot}>
-              <p className={classes.restaurantName}>Restaurant Name.....</p>
-              <div className={classes.paperFooter}>
-                <Typography component="div" className={classes.chipDiv}>
-                  <Chip label="南部" className={classes.chip} />
-                  <Chip label="米食" className={classes.chip} />
-                  {/* <span className={classes.badge}>北區</span>
-                <span className={classes.badge}>甜點</span> */}
-                </Typography>
-                <Button className={classes.restaurantMore}>more</Button>
-              </div>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} className={classes.paperGrid}>
-            <div className={classes.restaurantImage}>
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" />
-            </div>
-            <Paper className={classes.paperRoot}>
-              <p className={classes.restaurantName}>Restaurant Name.....</p>
-              <div className={classes.paperFooter}>
-                <Typography component="div" className={classes.chipDiv}>
-                  <Chip label="北部" className={classes.chip} />
-                  <Chip label="麵食" className={classes.chip} />
-                  {/* <span className={classes.badge}>北區</span>
-                <span className={classes.badge}>甜點</span> */}
-                </Typography>
-                <Button className={classes.restaurantMore}>more</Button>
-              </div>
-            </Paper>
-          </Grid>
+          {restaurant && restaurant.length !== 0 && isSearching === false ? (
+            restaurant.map(item => (
+              <Grid item xs={12} className={classes.paperGrid} key={item._id}>
+                <div className={classes.restaurantImage}>
+                  <img src="http://fakeimg.pl/100x100?font=lobster" alt="" />
+                </div>
+                <Paper className={classes.paperRoot}>
+                  <p className={classes.restaurantName}>{item.name}</p>
+                  <div className={classes.paperFooter}>
+                    <Typography component="div" className={classes.chipDiv}>
+                      <Chip label={item.category.area} className={classes.chip} />
+                      <Chip label={item.category.kind} className={classes.chip} />
+                    </Typography>
+                    <Button className={classes.restaurantMore}>more</Button>
+                  </div>
+                </Paper>
+              </Grid>
+            ))
+          ) : (
+            <p>今天吃點別的吧!!!</p>
+          )}
         </Grid>
       </Grid>
       <Footer />
