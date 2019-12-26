@@ -11,16 +11,24 @@ import Booking from "./views/Booking";
 import OrderDetails from "./views/OrderDtails";
 import Order from "./views/Oreder";
 import Member from "./views/Member";
-import { Route } from "react-router-dom";
-// import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
 function App() {
   return (
     <div className="App">
-      <Home />
-      <Route path="/" exact component={Home} />
-      <Route path="/a" component={Search} />
-      <Route path="/b" component={Detail} />
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route path="/search" component={Search} />
+        <Route path="/search/:name/:id" component={Detail} />
+        <Route path="/register" component={Register} />
+        <Route path="/login" component={LogIn} />
+        <Route path="/booking" component={Booking} />
+        <Route path="/order" component={Order} />
+        <Route path="/orderdetails/:order_id" component={OrderDetails} />
+        <Route path="/completed" component={Completed} />
+        <Route path="/modifiedpassword" component={ModifiedPassword} />
+        <Route path="/forgotpassword" component={ForgotPassword} />
+      </Switch>
     </div>
   );
 }
