@@ -1,5 +1,6 @@
 /*jshint esversion: 6 */
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import productService from "../services/productService";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
@@ -302,9 +303,11 @@ function Home() {
                 {restaurant ? (
                   restaurant.distinctByKind.map((kind, idx) => {
                     return (
-                      <ListItem button key={idx}>
-                        <ListItemText primary={kind} />
-                      </ListItem>
+                      <Link to={`/search?kind=${kind}`} key={idx}>
+                        <ListItem button>
+                          <ListItemText primary={kind} />
+                        </ListItem>
+                      </Link>
                     );
                   })
                 ) : (
@@ -342,7 +345,9 @@ function Home() {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Button size="small">Learn More</Button>
+                        <Link to={`/search?kind=${kind}`}>
+                          <Button size="small">Learn More</Button>
+                        </Link>
                       </CardActions>
                     </Card>
                   </Grid>
