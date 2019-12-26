@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import HomeRoundedIcon from "@material-ui/icons/HomeRounded";
@@ -42,9 +43,15 @@ export default function SimpleBottomNavigation() {
       showLabels
       className={classes.root}
     >
-      <BottomNavigationAction label="Home" icon={<HomeRoundedIcon />} />
-      <BottomNavigationAction label="Order" icon={<RestaurantRoundedIcon />} className={classes.order} />
-      <BottomNavigationAction label="Account" icon={<AccountCircleRoundedIcon />} />
+      <BottomNavigationAction component={Link} to="/" label="Home" icon={<HomeRoundedIcon />} />
+      <BottomNavigationAction
+        component={Link}
+        to="/order"
+        label="Order"
+        icon={<RestaurantRoundedIcon />}
+        className={classes.order}
+      />
+      <BottomNavigationAction component={Link} to="/member" label="Account" icon={<AccountCircleRoundedIcon />} />
     </BottomNavigation>
   );
 }
