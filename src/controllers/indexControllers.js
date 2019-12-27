@@ -23,4 +23,16 @@ const distinctCategory = async keyWord => {
   return kindDistinct;
 };
 
-module.exports = { randomRenderRestaurant, distinctCategory };
+const getAllCategory = async (req, res, next) => {
+  const allArea = await Category.distinct("area");
+  const allKind = await Category.distinct("kind");
+  res.status(200).json({
+    code: 200,
+    all_category: {
+      allArea,
+      allKind
+    }
+  });
+};
+
+module.exports = { randomRenderRestaurant, distinctCategory, getAllCategory };
