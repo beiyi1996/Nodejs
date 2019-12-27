@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -9,7 +11,6 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
 import Footer from "./Footer";
-import { param } from "express-validator";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -116,22 +117,46 @@ function Search() {
   const [restaurant, setRestaurant] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchKeyWord, setSearchKeyWord] = useState("");
-
+  const [category, setCategory] = useState();
+  const history = useHistory();
   useEffect(() => {
     if (!restaurant) {
       getRestaurant();
+      getAllCategory();
       setIsSearching(true);
     }
-  });
+  }, [restaurant]);
+
+  useEffect(() => {
+    if (searchKeyWord) {
+      console.log("in if");
+      // setSearchURL(`/search?${param}=${searchKeyWord}`);
+      async function fetching() {
+        await productService.searchByKeyWord(searchKeyWord);
+      }
+      fetching();
+    }
+  }, [searchKeyWord]);
 
   const getRestaurant = async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const kind = urlParams.get("kind");
-    console.log("kind", kind);
-    let res = await productService.searchByKind(kind);
+    const keyWord = urlParams.get("searchKeyWord");
+    let res = await productService.searchByKeyWord(keyWord);
     console.log("111", res.restaurants);
     setRestaurant(res.restaurants);
     setIsSearching(false);
+  };
+
+  const getAllCategory = async () => {
+    let res = await productService.getAllCatrgory();
+    console.log("ressssss", res.all_category);
+    setCategory(res.all_category);
+  };
+
+  const handleSubmit = async () => {
+    history.push(`/search?searchKeyWord=${searchKeyWord}`);
+    let res = await productService.searchByKeyWord(searchKeyWord);
+    setRestaurant(res.restaurants);
   };
 
   const handleChange = e => {
@@ -150,11 +175,9 @@ function Search() {
             onChange={handleChange}
           />
           <div className={classes.searchIcon}>
-            <Link to={`/search?${param}=${paramValue}`}>
-              <Button className={classes.searchBtn}>
-                <SearchIcon className={classes.icon} />
-              </Button>
-            </Link>
+            <Button className={classes.searchBtn} onClick={handleSubmit}>
+              <SearchIcon className={classes.icon} />
+            </Button>
           </div>
         </Grid>
         <Grid item xs={12}>
