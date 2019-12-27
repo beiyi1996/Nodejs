@@ -303,7 +303,7 @@ function Home() {
                 {restaurant ? (
                   restaurant.distinctByKind.map((kind, idx) => {
                     return (
-                      <Link to={`/search?kind=${kind}`} key={idx}>
+                      <Link to={`/search?searchKeyWord=${kind}`} key={idx}>
                         <ListItem button>
                           <ListItemText primary={kind} />
                         </ListItem>
@@ -345,7 +345,7 @@ function Home() {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Link to={`/search?kind=${kind}`}>
+                        <Link to={`/search?searchKeyWord=${kind}`}>
                           <Button size="small">Learn More</Button>
                         </Link>
                       </CardActions>
