@@ -91,4 +91,7 @@ router.post("/updateCategory", CategoryController.updateCategory);
 
 // 刪除類別
 router.post("/deleteCategory", CategoryController.deleteCategory);
+
+// 取得所有類別
+router.get("/getCategory", IndexController.getAllCategory);
 module.exports = router;
