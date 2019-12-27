@@ -126,18 +126,28 @@ async function findByKind(kind, res, next) {
   );
 }
 
-const searchRestaurant = (req, res, next) => {
-  const { area, kind, name } = req.query;
-  if (area) {
-    console.log("area", area);
-    findByArea(area, res, next);
-  } else if (kind) {
-    console.log("kind", kind);
-    findByKind(kind, res, next);
-  } else if (name) {
-    console.log("name", name);
-    findByName(name, res, next);
-  }
+const searchRestaurant = async (req, res, next) => {
+  const { searchKeyWord } = req.query;
+  // console.log("req.query", req.query);
+  const searchResult = [];
+  const restaurants = await Restaurant.find();
+  restaurants.map(item => {
+    if (item.name.indexOf(searchKeyWord) === 0) {
+      searchResult.push(item);
+    } else if (item.address.indexOf(searchKeyWord) === 0) {
+      searchResult.push(item);
+    } else if (item.category.kind.indexOf(searchKeyWord) === 0 || item.category.area.indexOf(searchKeyWord) === 0) {
+      searchResult.push(item);
+    } else {
+      return false;
+    }
+  });
+  // console.log("searchResult", searchResult);
+  res.status(200).json({
+    code: 200,
+    message: `find restaurant by ${searchKeyWord} : ${searchKeyWord}`,
+    restaurants: searchResult
+  });
 };
 
 const getRestaurantDetail = (req, res, next) => {
