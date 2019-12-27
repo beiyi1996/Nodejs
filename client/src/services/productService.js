@@ -29,20 +29,15 @@ export default {
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
-  searchByKind: async kind => {
-    return await fetch(`http://localhost:5000/search?kind=${kind}`, { method: "POST" })
+  searchByKeyWord: async searchKeyWord => {
+    return await fetch(`http://localhost:5000/search?searchKeyWord=${searchKeyWord}`, { method: "POST" })
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
-  searchByName: async name => {
-    return await fetch(`http://localhost:5000/search?name=${name}`)
+  getAllCatrgory: async () => {
+    return await fetch("http://localhost:5000/getCategory")
       .then(res => res.json())
-      .catch(error => console.error("Error:", error));
-  },
-  searchByArea: async area => {
-    return await fetch(`http://localhost:5000/search?area=${area}`)
-      .then(res => res.json())
-      .catch(error => console.error("Error:", error));
+      .catch(error => console.log("Error:", error));
   },
   getRestaurantDetail: async (name, id) => {
     return await fetch(`http://localhost:5000/search/${name}/${id}`)
