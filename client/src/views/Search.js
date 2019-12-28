@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import productService from "../services/productService";
+import classNames from "classnames";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import SearchIcon from "@material-ui/icons/Search";
@@ -30,6 +31,7 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 20,
     width: "100%",
     padding: "5px 15px 5px",
+    fontFamily: "Microsoft JhengHei",
 
     "&:focus": {
       outline: "none"
@@ -109,30 +111,77 @@ const useStyles = makeStyles(theme => ({
   restaurantMore: {
     width: "35%",
     borderRadius: 10
+  },
+  keyWord: {
+    fontFamily: "Microsoft JhengHei",
+    padding: "10px 10px 0px",
+    color: "#3D405B",
+    fontSize: 16
+  },
+  saerchListItem: {
+    padding: 10,
+    backgroundColor: "#FEFDFC",
+    border: "1px solid #B8B9C3",
+    borderTop: "none",
+    width: "90%",
+    margin: "0 auto",
+
+    "& > p": {
+      padding: 10,
+      margin: "5px 0",
+      fontFamily: "Microsoft JhengHei",
+      color: "#4E5169",
+      "&:hover": {
+        fontWeight: "bold",
+        backgroundColor: "#F6DAD3",
+        cursor: "pointer"
+      }
+    }
+  },
+  searchNone: {
+    padding: 10,
+    margin: "5px 0",
+    fontFamily: "Microsoft JhengHei",
+    color: "#4E5169",
+    fontWeight: "normal",
+    "&:hover": {
+      fontWeight: "inherit",
+      backgroundColor: "#FEFDFC",
+      cursor: "default"
+    }
+  },
+  urlParams: {
+    color: "#E07A5F",
+    fontWeight: "bold"
   }
 }));
 
 function Search() {
   const classes = useStyles();
   const [restaurant, setRestaurant] = useState(null);
-  const [isSearching, setIsSearching] = useState(false);
   const [searchKeyWord, setSearchKeyWord] = useState("");
   const [category, setCategory] = useState();
+  const [searchResult, setSearchResult] = useState([]);
+  const [urlParams, setURLParams] = useState("");
+  const [blur, setBlur] = useState(true);
   const history = useHistory();
   useEffect(() => {
     if (!restaurant) {
       getRestaurant();
       getAllCategory();
-      setIsSearching(true);
     }
-  }, [restaurant]);
+  }, []);
 
   useEffect(() => {
     if (searchKeyWord) {
       console.log("in if");
-      // setSearchURL(`/search?${param}=${searchKeyWord}`);
       async function fetching() {
-        await productService.searchByKeyWord(searchKeyWord);
+        let res = await productService.searchByKeyWord(searchKeyWord);
+        console.log(123, res, res.restaurants.length);
+        if (res.restaurants.length > 0) {
+          console.log("res 有資料");
+          await setSearchResult(res.restaurants);
+        }
       }
       fetching();
     }
@@ -141,15 +190,14 @@ function Search() {
   const getRestaurant = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const keyWord = urlParams.get("searchKeyWord");
+    setURLParams(keyWord);
     let res = await productService.searchByKeyWord(keyWord);
     console.log("111", res.restaurants);
     setRestaurant(res.restaurants);
-    setIsSearching(false);
   };
 
   const getAllCategory = async () => {
     let res = await productService.getAllCatrgory();
-    console.log("ressssss", res.all_category);
     setCategory(res.all_category);
   };
 
@@ -160,20 +208,32 @@ function Search() {
   };
 
   const handleChange = e => {
+    setSearchResult([]);
+    setBlur(false);
     setSearchKeyWord(e.target.value);
+  };
+
+  const renderSearchResult = () => {
+    console.log("list item", searchResult);
+    if (searchKeyWord.length > 0 && blur === false) {
+      if (searchResult.length > 0) {
+        const list = searchResult.map((item, idx) => <p key={idx}>{item.name}</p>);
+        return <div className={classes.saerchListItem}>{list}</div>;
+      } else {
+        return <h4 className={classNames(classes.searchNone, classes.saerchListItem)}>抱歉, 沒有您想要搜尋的餐廳資訊!!</h4>;
+      }
+    }
+  };
+
+  const handleBlur = () => {
+    setBlur(true);
   };
 
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
-          <input
-            type="text"
-            name="searchbar"
-            className={classes.searchBar}
-            value={searchKeyWord}
-            onChange={handleChange}
-          />
+          <input type="text" name="searchbar" className={classes.searchBar} value={searchKeyWord} onChange={handleChange} onBlur={handleBlur} />
           <div className={classes.searchIcon}>
             <Button className={classes.searchBtn} onClick={handleSubmit}>
               <SearchIcon className={classes.icon} />
@@ -181,12 +241,15 @@ function Search() {
           </div>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="h5" gutterBottom>
-            search word
+          {renderSearchResult()}
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h5" gutterBottom className={classes.keyWord}>
+            為您推薦 <span className={classes.urlParams}>{urlParams}</span> 相關的餐廳 ..
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          {restaurant && restaurant.length !== 0 && isSearching === false ? (
+          {restaurant && restaurant.length !== 0 ? (
             restaurant.map(item => (
               <Grid item xs={12} className={classes.paperGrid} key={item._id}>
                 <div className={classes.restaurantImage}>
