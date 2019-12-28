@@ -130,23 +130,28 @@ const searchRestaurant = async (req, res, next) => {
   const { searchKeyWord } = req.query;
   // console.log("req.query", req.query);
   const searchResult = [];
+  let distinctSearchResult = [];
   const restaurants = await Restaurant.find();
+  const conditionField = ["name", "address"];
   restaurants.map(item => {
-    if (item.name.indexOf(searchKeyWord) === 0) {
-      searchResult.push(item);
-    } else if (item.address.indexOf(searchKeyWord) === 0) {
-      searchResult.push(item);
-    } else if (item.category.kind.indexOf(searchKeyWord) === 0 || item.category.area.indexOf(searchKeyWord) === 0) {
-      searchResult.push(item);
-    } else {
-      return false;
+    const categoryArray = [item.category.kind, item.category.area];
+    for (let field of conditionField) {
+      if (item[field].indexOf(searchKeyWord) >= 0) {
+        searchResult.push(item);
+      }
     }
+    for (let category of categoryArray) {
+      if (category.indexOf(searchKeyWord) >= 0) {
+        searchResult.push(item);
+      }
+    }
+    distinctSearchResult = [...new Set(searchResult)];
   });
   // console.log("searchResult", searchResult);
   res.status(200).json({
     code: 200,
     message: `find restaurant by ${searchKeyWord} : ${searchKeyWord}`,
-    restaurants: searchResult
+    restaurants: distinctSearchResult
   });
 };
 
