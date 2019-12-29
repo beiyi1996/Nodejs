@@ -53,7 +53,7 @@ router.post("/search", RestaurantController.searchRestaurant);
 router.get("/", IndexController.randomRenderRestaurant);
 
 // 產品介紹頁
-router.get("/search/:name/:_id", RestaurantController.getRestaurantDetail);
+router.get("/detail/:name/:_id", RestaurantController.getRestaurantDetail);
 
 // 訂購產品頁
 router.get("/booking", (req, res) => {
