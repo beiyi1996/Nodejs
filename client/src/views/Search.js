@@ -204,7 +204,9 @@ function Search() {
   const handleSubmit = async () => {
     history.push(`/search?searchKeyWord=${searchKeyWord}`);
     let res = await productService.searchByKeyWord(searchKeyWord);
+    setURLParams(searchKeyWord);
     setRestaurant(res.restaurants);
+    setBlur(true);
   };
 
   const handleChange = e => {
@@ -213,11 +215,22 @@ function Search() {
     setSearchKeyWord(e.target.value);
   };
 
+  const handleClickItem = item => {
+    setSearchKeyWord(item.name);
+    setURLParams(item.name);
+    setRestaurant([item]);
+    setBlur(true);
+  };
+
   const renderSearchResult = () => {
     console.log("list item", searchResult);
     if (searchKeyWord.length > 0 && blur === false) {
       if (searchResult.length > 0) {
-        const list = searchResult.map((item, idx) => <p key={idx}>{item.name}</p>);
+        const list = searchResult.map((item, idx) => (
+          <p key={idx} onClick={() => handleClickItem(item)}>
+            {item.name}
+          </p>
+        ));
         return <div className={classes.saerchListItem}>{list}</div>;
       } else {
         return <h4 className={classNames(classes.searchNone, classes.saerchListItem)}>抱歉, 沒有您想要搜尋的餐廳資訊!!</h4>;
@@ -225,15 +238,11 @@ function Search() {
     }
   };
 
-  const handleBlur = () => {
-    setBlur(true);
-  };
-
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
-          <input type="text" name="searchbar" className={classes.searchBar} value={searchKeyWord} onChange={handleChange} onBlur={handleBlur} />
+          <input type="text" name="searchbar" className={classes.searchBar} value={searchKeyWord} onChange={handleChange} />
           <div className={classes.searchIcon}>
             <Button className={classes.searchBtn} onClick={handleSubmit}>
               <SearchIcon className={classes.icon} />
@@ -262,7 +271,11 @@ function Search() {
                       <Chip label={item.category.area} className={classes.chip} />
                       <Chip label={item.category.kind} className={classes.chip} />
                     </Typography>
-                    <Button className={classes.restaurantMore}>more</Button>
+                    <Link to={`/detail/${item.name}/${item._id}`}>
+                      <Button className={classes.restaurantMore} onClick={() => productService.getRestaurantDetail(item.name, item._id)}>
+                        more
+                      </Button>
+                    </Link>
                   </div>
                 </Paper>
               </Grid>
