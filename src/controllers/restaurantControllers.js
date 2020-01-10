@@ -156,7 +156,7 @@ const searchRestaurant = async (req, res, next) => {
 };
 
 const getRestaurantDetail = (req, res, next) => {
-  const { name, _id } = req.params;
+  const { name, _id } = req.query;
   console.log("name", name, "_id", _id);
   Restaurant.findOne(
     {
