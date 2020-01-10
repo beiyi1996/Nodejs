@@ -1,5 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import SearchIcon from "@material-ui/icons/Search";
@@ -11,6 +14,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { googleMapKey } from "../password";
+import classNames from "classnames";
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -140,6 +145,43 @@ const useStyles = makeStyles(theme => ({
     "& > ul": {
       display: "none !important"
     }
+  },
+  searchResultGrid: {
+    position: "absolute",
+    zIndex: 1,
+    width: "87%"
+  },
+  saerchListItem: {
+    padding: 10,
+    backgroundColor: "#FEFDFC",
+    border: "1px solid #B8B9C3",
+    borderTop: "none",
+    width: "100%",
+    margin: "0 auto",
+
+    "& > p": {
+      padding: 10,
+      margin: "5px 0",
+      fontFamily: "Microsoft JhengHei",
+      color: "#4E5169",
+      "&:hover": {
+        fontWeight: "bold",
+        backgroundColor: "#F6DAD3",
+        cursor: "pointer"
+      }
+    }
+  },
+  searchNone: {
+    padding: 10,
+    margin: "5px 0",
+    fontFamily: "Microsoft JhengHei",
+    color: "#4E5169",
+    fontWeight: "normal",
+    "&:hover": {
+      fontWeight: "inherit",
+      backgroundColor: "#FEFDFC",
+      cursor: "default"
+    }
   }
 }));
 
@@ -176,36 +218,85 @@ const SimpleSlider = () => {
   );
 };
 
+var times = 0;
 function Detail() {
   const classes = useStyles();
-  const [from, setFrom] = useState({
-    name: "大心新泰式麵食 - 台北微風南京店",
-    address: "台北市松山區南京東路三段337號B2美食街",
-    phone: "02-2719-8369"
-  });
+  const [form, setForm] = useState(null);
+  const [queryName, setQueryName] = useState("");
+  const [searchKeyWord, setSearchKeyWord] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [blur, setBlur] = useState(true);
+  const [searching, setIsSearching] = useState(false);
+  const history = useHistory();
 
+  // const MemoMap = useCallback(<Map className={classes.map} />, []);
+
+  useEffect(() => {
+    if (searchKeyWord) {
+      console.log("search key word change...");
+      setIsSearching(true);
+      async function fetching() {
+        let res = await productService.searchByKeyWord(searchKeyWord);
+        console.log(123, res, res.restaurants.length);
+        if (res.restaurants.length > 0) {
+          console.log("res 有資料");
+          setSearchResult(res.restaurants);
+        }
+      }
+      fetching();
+    }
+  }, [searchKeyWord]);
+
+  const getRestaurantDetail = useCallback(async () => {
+    console.log("[getRestaurantDetail]取得資料開始");
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get("name");
+    const _id = urlParams.get("_id");
+    const res = await productService.getRestaurantDetail(name, _id);
+    console.log("res", res);
+    setQueryName(name);
+    setForm({
+      name: name,
+      address: res.restaurant.address,
+      phone: res.restaurant.phone
+    });
+
+    console.log("[getRestaurantDetail]取得資料結束");
+  });
   function Map({ options, onMount, className }) {
     const ref = useRef();
-
     useEffect(() => {
-      const onLoad = () => {
+      const onLoad = async () => {
         const map = new window.google.maps.Map(ref.current, options);
-        if (typeof onMount === `function`) onMount(map);
+        if (form) {
+          console.log("in if.....");
+          onMount(map);
+        }
       };
+
       if (!window.google) {
         const script = document.createElement(`script`);
         script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
         document.head.append(script);
-        script.addEventListener(`load`, onLoad);
-        return () => script.removeEventListener(`load`, onLoad);
-      } else onLoad();
-    }, [onMount, options]);
-
+        if (!form) {
+          console.log("!form??????????");
+          getRestaurantDetail();
+        } else {
+          script.addEventListener(`load`, onLoad);
+          return () => script.removeEventListener(`load`, onLoad);
+        }
+        console.log("form 有資料了");
+      } else {
+        console.log("else ???????");
+        onLoad();
+      }
+    }, []);
     return <div {...{ ref, className }} />;
   }
 
-  const addMarkers = () => map => {
-    const { address } = from;
+  const createMarker = () => map => {
+    console.log("form", form);
+    const { address } = form;
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode(
       {
@@ -213,6 +304,7 @@ function Detail() {
       },
       (results, status) => {
         if (status === "OK") {
+          console.log("OK???", results[0].geometry.location);
           map.setCenter(results[0].geometry.location);
           const marker = new window.google.maps.Marker({
             map,
@@ -230,10 +322,43 @@ function Detail() {
 
   Map.defaultProps = {
     options: {
-      center: { lat: 25.033671, lng: 121.564427 },
       zoom: 15
     },
-    onMount: addMarkers()
+    onMount: createMarker()
+  };
+
+  const renderSearchResult = () => {
+    console.log("list item", searchResult);
+    if (searchKeyWord.length > 0 && blur === false) {
+      if (searchResult.length > 0) {
+        const list = searchResult.map((item, idx) => (
+          <p key={idx} onClick={() => handleClickItem(item)}>
+            {item.name}
+          </p>
+        ));
+        return <div className={classes.saerchListItem}>{list}</div>;
+      } else {
+        return <h4 className={classNames(classes.searchNone, classes.saerchListItem)}>抱歉, 沒有您想要搜尋的餐廳資訊!!</h4>;
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    history.push(`/search?searchKeyWord=${searchKeyWord}`);
+    setQueryName(searchKeyWord);
+    setBlur(true);
+  };
+
+  const handleClickItem = item => {
+    setSearchKeyWord(item.name);
+    setQueryName(item.name);
+    setBlur(true);
+  };
+
+  const handleChange = e => {
+    setSearchResult([]);
+    setBlur(false);
+    setSearchKeyWord(e.target.value);
   };
 
   return (
@@ -241,16 +366,19 @@ function Detail() {
       {console.log(googleMapKey)}
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
-          <input type="text" name="searchbar" className={classes.searchBar} />
+          <input type="text" name="searchbar" className={classes.searchBar} value={searchKeyWord} onChange={handleChange} />
           <div className={classes.searchIcon}>
             <Button className={classes.searchBtn}>
-              <SearchIcon className={classes.icon} />
+              <SearchIcon className={classes.icon} onClick={handleSubmit} />
             </Button>
           </div>
         </Grid>
+        <Grid item xs={12} className={classes.searchResultGrid}>
+          {renderSearchResult()}
+        </Grid>
         <Grid item xs={12}>
           <Typography variant="h5" gutterBottom className={classes.restaurantName}>
-            Restaurant Name..
+            {form ? form.name : queryName}
           </Typography>
         </Grid>
         <Grid item xs={12}>
@@ -262,15 +390,15 @@ function Detail() {
               <ul className={classes.detailList}>
                 <li>
                   <span className={classes.title}>店家名稱 : </span>
-                  <span className={classes.content}>大心新泰式麵食 - 台北微風南京店</span>
+                  <span className={classes.content}>{form ? form.name : ""}</span>
                 </li>
                 <li>
                   <span className={classes.title}>地址 : </span>
-                  <span className={classes.content}>台北市松山區南京東路三段337號B2美食街</span>
+                  <span className={classes.content}>{form ? form.address : ""}</span>
                 </li>
                 <li>
                   <span className={classes.title}>電話 : </span>
-                  <span className={classes.content}>02-2719-8369</span>
+                  <span className={classes.content}>{form ? form.phone : ""}</span>
                 </li>
                 <li>
                   <span className={classes.title}>用餐時間 : </span>
@@ -287,9 +415,12 @@ function Detail() {
               </ul>
               <div className={classes.googleMap} id="map">
                 <Map className={classes.map} />
+                {/* {MemoMap} */}
               </div>
               <div className={classes.paperFooter}>
-                <Button className={classes.booking}>我要訂位</Button>
+                <Link to="/booking">
+                  <Button className={classes.booking}>我要訂位</Button>
+                </Link>
               </div>
             </Paper>
           </Grid>
