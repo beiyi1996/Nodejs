@@ -40,7 +40,7 @@ export default {
       .catch(error => console.log("Error:", error));
   },
   getRestaurantDetail: async (name, id) => {
-    return await fetch(`http://localhost:5000/detail/${name}/${id}`)
+    return await fetch(`http://localhost:5000/detail?name=${name}&_id=${id}`)
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
