@@ -118,6 +118,11 @@ const useStyles = makeStyles(theme => ({
     color: "#3D405B",
     fontSize: 16
   },
+  searchResultGrid: {
+    position: "absolute",
+    zIndex: 1,
+    width: "87%"
+  },
   saerchListItem: {
     padding: 10,
     backgroundColor: "#FEFDFC",
@@ -249,7 +254,7 @@ function Search() {
             </Button>
           </div>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} className={classes.searchResultGrid}>
           {renderSearchResult()}
         </Grid>
         <Grid item xs={12}>
@@ -271,7 +276,7 @@ function Search() {
                       <Chip label={item.category.area} className={classes.chip} />
                       <Chip label={item.category.kind} className={classes.chip} />
                     </Typography>
-                    <Link to={`/detail/${item.name}/${item._id}`}>
+                    <Link to={`/detail?name=${item.name}&_id=${item._id}`}>
                       <Button className={classes.restaurantMore} onClick={() => productService.getRestaurantDetail(item.name, item._id)}>
                         more
                       </Button>
