@@ -229,8 +229,6 @@ function Detail() {
   const [searching, setIsSearching] = useState(false);
   const history = useHistory();
 
-  // const MemoMap = useCallback(<Map className={classes.map} />, []);
-
   useEffect(() => {
     if (searchKeyWord) {
       console.log("search key word change...");
@@ -247,7 +245,7 @@ function Detail() {
     }
   }, [searchKeyWord]);
 
-  const getRestaurantDetail = useCallback(async () => {
+  const getRestaurantDetail = async () => {
     console.log("[getRestaurantDetail]取得資料開始");
     const urlParams = new URLSearchParams(window.location.search);
     const name = urlParams.get("name");
@@ -262,33 +260,59 @@ function Detail() {
     });
 
     console.log("[getRestaurantDetail]取得資料結束");
-  });
+  };
+  const MemoMap = useCallback(<Map className={classes.map} />, []);
   function Map({ options, onMount, className }) {
+    console.log("Map function is working!!", onMount);
     const ref = useRef();
     useEffect(() => {
       const onLoad = async () => {
+        console.log("onLoad??????");
         const map = new window.google.maps.Map(ref.current, options);
+        console.log("map", map);
         if (form) {
           console.log("in if.....");
           onMount(map);
         }
       };
 
+      const script = document.createElement(`script`);
       if (!window.google) {
-        const script = document.createElement(`script`);
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
-        document.head.append(script);
-        if (!form) {
-          console.log("!form??????????");
-          getRestaurantDetail();
-        } else {
-          script.addEventListener(`load`, onLoad);
-          return () => script.removeEventListener(`load`, onLoad);
-        }
+        const testPromise = new Promise((resolve, reject) => {
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
+          document.head.append(script);
+          async function oo() {
+            if (!form) {
+              console.log("!form??????????");
+              await getRestaurantDetail();
+              console.log("await ???????????????");
+              script.addEventListener(`load`, onLoad);
+              resolve(true);
+            }
+          }
+          oo();
+        });
+
+        testPromise.then(value => {
+          console.log("2ed then????????????", value);
+          onLoad();
+          script.removeEventListener(`load`, onLoad);
+        });
+
+        console.log("testPromise", testPromise);
+        // const script = document.createElement(`script`);
+        // script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
+        // document.head.append(script);
+        // if (!form) {
+        //   console.log("!form??????????");
+        //   getRestaurantDetail();
+        // } else {
+        //   script.addEventListener(`load`, onLoad);
+        //   return () => script.removeEventListener(`load`, onLoad);
+        // }
         console.log("form 有資料了");
       } else {
         console.log("else ???????");
-        onLoad();
       }
     }, []);
     return <div {...{ ref, className }} />;
@@ -338,7 +362,9 @@ function Detail() {
         ));
         return <div className={classes.saerchListItem}>{list}</div>;
       } else {
-        return <h4 className={classNames(classes.searchNone, classes.saerchListItem)}>抱歉, 沒有您想要搜尋的餐廳資訊!!</h4>;
+        return (
+          <h4 className={classNames(classes.searchNone, classes.saerchListItem)}>抱歉, 沒有您想要搜尋的餐廳資訊!!</h4>
+        );
       }
     }
   };
@@ -366,7 +392,13 @@ function Detail() {
       {console.log(googleMapKey)}
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
-          <input type="text" name="searchbar" className={classes.searchBar} value={searchKeyWord} onChange={handleChange} />
+          <input
+            type="text"
+            name="searchbar"
+            className={classes.searchBar}
+            value={searchKeyWord}
+            onChange={handleChange}
+          />
           <div className={classes.searchIcon}>
             <Button className={classes.searchBtn}>
               <SearchIcon className={classes.icon} onClick={handleSubmit} />
@@ -414,8 +446,8 @@ function Detail() {
                 </li>
               </ul>
               <div className={classes.googleMap} id="map">
-                <Map className={classes.map} />
-                {/* {MemoMap} */}
+                {/* <Map className={classes.map} /> */}
+                {MemoMap}
               </div>
               <div className={classes.paperFooter}>
                 <Link to="/booking">
