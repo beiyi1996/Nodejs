@@ -259,68 +259,54 @@ function Detail() {
       phone: res.restaurant.phone
     });
 
-    console.log("[getRestaurantDetail]取得資料結束");
+    console.log("[getRestaurantDetail]取得資料結束", res);
+    return res.restaurant;
   };
-  const MemoMap = useCallback(<Map className={classes.map} />, []);
+
   function Map({ options, onMount, className }) {
     console.log("Map function is working!!", onMount);
     const ref = useRef();
     useEffect(() => {
-      const onLoad = async () => {
-        console.log("onLoad??????");
+      const onLoad = address => {
+        console.log(5, "onLoad??????", ref.current, window.google, options);
         const map = new window.google.maps.Map(ref.current, options);
-        console.log("map", map);
-        if (form) {
-          console.log("in if.....");
-          onMount(map);
-        }
+        console.log("in if.....");
+        onMount && onMount(map, address);
       };
 
       const script = document.createElement(`script`);
       if (!window.google) {
-        const testPromise = new Promise((resolve, reject) => {
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
-          document.head.append(script);
-          async function oo() {
-            if (!form) {
-              console.log("!form??????????");
-              await getRestaurantDetail();
-              console.log("await ???????????????");
-              script.addEventListener(`load`, onLoad);
-              resolve(true);
-            }
-          }
-          oo();
-        });
-
-        testPromise.then(value => {
-          console.log("2ed then????????????", value);
-          onLoad();
-          script.removeEventListener(`load`, onLoad);
-        });
-
-        console.log("testPromise", testPromise);
-        // const script = document.createElement(`script`);
-        // script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
-        // document.head.append(script);
-        // if (!form) {
-        //   console.log("!form??????????");
-        //   getRestaurantDetail();
-        // } else {
-        //   script.addEventListener(`load`, onLoad);
-        //   return () => script.removeEventListener(`load`, onLoad);
-        // }
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
+        document.head.append(script);
         console.log("form 有資料了");
       } else {
         console.log("else ???????");
       }
+      const testPromise = new Promise((resolve, reject) => {
+        async function oo() {
+          if (!form) {
+            console.log("await ???????????????");
+            script.addEventListener(`load`, onLoad);
+            return await getRestaurantDetail();
+          }
+        }
+        resolve(oo());
+      });
+      console.log(3, "ref", ref);
+      testPromise.then(value => {
+        console.log("2ed then????????????", value.address);
+        console.log(4, "ref :", ref);
+        onLoad(value.address);
+        script.removeEventListener(`load`, onLoad);
+      });
+
+      console.log("testPromise", testPromise);
     }, []);
     return <div {...{ ref, className }} />;
   }
 
-  const createMarker = () => map => {
-    console.log("form", form);
-    const { address } = form;
+  const createMarker = () => (map, address) => {
+    console.log("createMarker is working", address);
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode(
       {
@@ -344,12 +330,14 @@ function Detail() {
     );
   };
 
-  Map.defaultProps = {
+  const mapProps = {
     options: {
       zoom: 15
     },
     onMount: createMarker()
   };
+
+  const MemoMap = useCallback(<Map className={classes.map} {...mapProps} />, []);
 
   const renderSearchResult = () => {
     console.log("list item", searchResult);
@@ -371,6 +359,7 @@ function Detail() {
 
   const handleSubmit = async () => {
     history.push(`/search?searchKeyWord=${searchKeyWord}`);
+    console.log("document.head", document.head.childNodes);
     setQueryName(searchKeyWord);
     setBlur(true);
   };
