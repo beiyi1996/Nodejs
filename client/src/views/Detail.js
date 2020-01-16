@@ -353,7 +353,6 @@ function Detail() {
 
   const handleSubmit = async () => {
     history.push(`/search?searchKeyWord=${searchKeyWord}`);
-    console.log("document.head", document.head.childNodes);
     setQueryName(searchKeyWord);
     setBlur(true);
   };
