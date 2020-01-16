@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/button";
@@ -280,6 +282,12 @@ const useStyles = makeStyles(theme => ({
   },
   show: {
     display: "block"
+  },
+  hide: {
+    display: "none"
+  },
+  error: {
+    borderBottom: "2px solid #f44336 !important"
   }
 }));
 
@@ -295,7 +303,10 @@ function Booking() {
   const [disabledNext, setDisabledNext] = useState(false);
   const [isShowCalendar, setShowCalendar] = useState(false);
   const [notes, setNotes] = useState("");
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(false);
+  const [dateError, setDateError] = useState(false);
+  const [timeError, setTimeError] = useState(false);
+  const [adultError, setAdultError] = useState(false);
   const inputRef = useRef(null);
   let [clickDate, setClickDate] = useState("");
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
@@ -313,8 +324,11 @@ function Booking() {
     "November",
     "December"
   ];
+  const history = useHistory();
+
   const handleChange = event => {
     setTime(event.target.value);
+    setTimeError(false);
   };
 
   const handleClickPlusAdult = () => {
@@ -322,6 +336,7 @@ function Booking() {
       return;
     }
     setAdult(adult + 1);
+    setAdultError(false);
   };
 
   const handleClickMinusAdult = () => {
@@ -350,21 +365,26 @@ function Booking() {
   };
 
   const Calendar = () => {
-    const handlePrevMonth = () => {
-      const thisMonth = `${today.getFullYear()}${today.getMonth()}`;
-      const changeMonth = `${year}${month}`;
+    let changeMonth = "";
+    const thisMonth = `${today.getFullYear()}${today.getMonth()}`;
+
+    useEffect(() => {
+      changeMonth = `${year}${month}`;
+      setMonth(month);
       if (changeMonth === thisMonth) {
         setDisabledPrev(true);
+      }
+    }, [month, changeMonth]);
+
+    const handlePrevMonth = () => {
+      setDisabledPrev(false);
+      setDisabledNext(false);
+      if (month === 0 && month + 11 === 11) {
+        setMonth(month + 11);
+        setYear(year - 1);
+        setDisabledPrev(true);
       } else {
-        setDisabledPrev(false);
-        setDisabledNext(false);
-        if (month === 0 && month + 11 === 11) {
-          setMonth(month + 11);
-          setYear(year - 1);
-          setDisabledPrev(true);
-        } else {
-          setMonth(month - 1);
-        }
+        setMonth(month - 1);
       }
     };
 
@@ -374,9 +394,13 @@ function Booking() {
         setYear(year + 1);
         setMonth(0);
         setDisabledPrev(false);
+        if (year === today.getFullYear() + 1 && month + 1 === todayMonth + 1) {
+          setDisabledNext(true);
+        }
       } else {
         setMonth(month + 1);
-        if (year === today.getFullYear() + 1 && month + 1 === todayMonth + 1) {
+        setDisabledPrev(false);
+        if (year === today.getFullYear() && month + 1 === todayMonth + 1) {
           setDisabledNext(true);
         }
       }
@@ -388,6 +412,7 @@ function Booking() {
       } else {
         const clickedDate = `${year}/${month + 1}/${value}`;
         setClickDate(clickedDate);
+        setDateError(false);
         setChecked(prev => !prev);
         setShowCalendar(false);
       }
@@ -493,13 +518,15 @@ function Booking() {
         <p className={classes.label}>日期</p>
         <input
           type="input"
-          className={classes.dateInput}
+          className={clsx(classes.dateInput, { [classes.error]: dateError })}
           onClick={toggleShowCalendar}
           ref={inputRef}
           value={clickDate}
           readOnly
         />
-        <FormHelperText>請選擇訂位日期!</FormHelperText>
+        <FormHelperText className={clsx({ [classes.hide]: clickDate !== "" ? true : false })}>
+          請選擇訂位日期!
+        </FormHelperText>
         <div className={clsx(classes.calendarGrid, { [classes.show]: isShowCalendar })}>
           <Fade in={checked}>
             <div>
@@ -522,6 +549,32 @@ function Booking() {
         </div>
       </React.Fragment>
     );
+  };
+
+  const verification = () => {
+    const errorText = "請填選訂位日期, 時間, 至少 1 位大人";
+    if (clickDate !== "" && time !== "" && adult !== 0) {
+      console.log("驗證通過");
+      return true;
+    } else {
+      if (clickDate === "") {
+        setDateError(true);
+      }
+      if (time === "") {
+        setTimeError(true);
+      }
+      if (adult === 0) {
+        setAdultError(true);
+      }
+      alert(errorText);
+    }
+  };
+
+  const onSubmit = () => {
+    const verifyResult = verification();
+    if (verifyResult) {
+      history.push("/completed");
+    }
   };
 
   return (
@@ -547,12 +600,15 @@ function Booking() {
                       id="demo-simple-select-helper"
                       value={time}
                       onChange={handleChange}
+                      error={timeError}
                     >
                       <MenuItem value={12}>12:00</MenuItem>
                       <MenuItem value={13}>13:00</MenuItem>
                       <MenuItem value={14}>14:00</MenuItem>
                     </Select>
-                    <FormHelperText>請選擇訂位時間!</FormHelperText>
+                    <FormHelperText className={clsx({ [classes.hide]: time !== "" ? true : false })}>
+                      請選擇訂位時間!
+                    </FormHelperText>
                   </FormControl>
                 </li>
                 <li>
@@ -562,7 +618,13 @@ function Booking() {
                       <span className={classes.title}>大人</span>
                       <div className={classes.btnGroup}>
                         <button onClick={handleClickMinusAdult}>-</button>
-                        <input name="adult" type="text" value={adult} readOnly />
+                        <input
+                          name="adult"
+                          type="text"
+                          value={adult}
+                          readOnly
+                          className={clsx({ [classes.error]: adultError })}
+                        />
                         <button onClick={handleClickPlusAdult}>+</button>
                       </div>
                     </div>
@@ -613,13 +675,15 @@ function Booking() {
                     </span>
                   </li>
                   <li>
-                    備註 : <span>{notes}</span>
+                    備註 : <span>{notes !== "" ? notes : "無備註"}</span>
                   </li>
                 </ul>
               </CardContent>
             </Card>
             <div className={classes.paperFooter}>
-              <Button className={classes.booking}>確認訂位</Button>
+              <Button className={classes.booking} onClick={() => onSubmit()}>
+                確認訂位
+              </Button>
             </div>
           </Grid>
         </Grid>
