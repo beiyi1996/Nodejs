@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -37,6 +38,13 @@ const useStyles = makeStyles(theme => ({
 
 function ForgotPassword() {
   const classes = useStyles();
+
+  useEffect(() => {
+    async function forgetPassword() {
+      await productService.forgotPassword();
+      console.log("發送忘記密碼郵件!!!");
+    }
+  }, []);
 
   return (
     <Container maxWidth="sm" className={classes.root}>
