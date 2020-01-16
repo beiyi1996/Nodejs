@@ -9,8 +9,19 @@ export default {
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
-  logIn: async () => {
-    return await fetch("http://localhost:5000/login")
+  logIn: async (email, password) => {
+    console.log("email", email);
+    console.log("password", password);
+    const data = { email, password };
+    console.log("data", data);
+    console.log("JSON.stringify(data)", JSON.stringify(data));
+    return await fetch("http://localhost:5000/login", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: new Headers({
+        "Content-Type": "application/json"
+      })
+    })
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
