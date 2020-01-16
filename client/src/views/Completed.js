@@ -1,5 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -36,7 +37,6 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 10
   },
   button: {
-    width: "60%",
     margin: "10px 0",
     fontFamily: "Microsoft JhengHei"
   }
@@ -56,16 +56,20 @@ function Completed() {
             <p>
               訂單編號：<a href="https://www.youtube.com/watch?v=jL25Drh3Npo">20191210812991</a>
             </p>
-            <p>請至網站「查詢訂單」查看此訂單明細。</p>
+            <p>請至網站「查詢訂單」查看訂單明細。</p>
           </Paper>
         </Grid>
         <Grid item xs={12} className={classes.buttonGrid}>
-          <Button variant="outlined" className={classes.button}>
-            查看訂單
-          </Button>
-          <Button variant="outlined" className={classes.button}>
-            回首頁
-          </Button>
+          <Link to="/">
+            <Button variant="outlined" className={classes.button}>
+              回首頁
+            </Button>
+          </Link>
+          <Link to="/order">
+            <Button variant="outlined" className={classes.button}>
+              查看訂單
+            </Button>
+          </Link>
         </Grid>
       </Grid>
     </Container>
