@@ -1,6 +1,7 @@
 /*jshint esversion: 6 */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import productService from "../services/productService";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
@@ -190,6 +191,7 @@ function Home() {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openU = Boolean(anchorEl);
+  const history = useHistory();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -218,6 +220,10 @@ function Home() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogIn = () => {
+    history.push("/login");
   };
 
   return (
@@ -268,6 +274,7 @@ function Home() {
                 open={openU}
                 onClose={handleClose}
               >
+                <MenuItem onClick={handleLogIn}>登入</MenuItem>
                 <MenuItem onClick={handleClose}>查詢訂單</MenuItem>
                 <MenuItem onClick={handleClose}>登出</MenuItem>
               </Menu>
