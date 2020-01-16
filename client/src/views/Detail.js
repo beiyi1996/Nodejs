@@ -268,45 +268,39 @@ function Detail() {
     const ref = useRef();
     useEffect(() => {
       const onLoad = address => {
-        console.log(5, "onLoad??????", ref.current, window.google, options);
         const map = new window.google.maps.Map(ref.current, options);
-        console.log("in if.....");
         onMount && onMount(map, address);
       };
 
       const script = document.createElement(`script`);
       if (!window.google) {
         script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
+        script.async = true;
+        script.defer = true;
         document.head.append(script);
-        console.log("form 有資料了");
       } else {
-        console.log("else ???????");
+        console.log("google map script is exist!");
       }
-      const testPromise = new Promise((resolve, reject) => {
+      const googleMapPromise = new Promise((resolve, reject) => {
         async function oo() {
           if (!form) {
-            console.log("await ???????????????");
             script.addEventListener(`load`, onLoad);
             return await getRestaurantDetail();
           }
         }
         resolve(oo());
       });
-      console.log(3, "ref", ref);
-      testPromise.then(value => {
-        console.log("2ed then????????????", value.address);
-        console.log(4, "ref :", ref);
+      googleMapPromise.then(value => {
         onLoad(value.address);
         script.removeEventListener(`load`, onLoad);
       });
 
-      console.log("testPromise", testPromise);
+      console.log("googleMapPromise", googleMapPromise);
     }, []);
     return <div {...{ ref, className }} />;
   }
 
   const createMarker = () => (map, address) => {
-    console.log("createMarker is working", address);
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode(
       {
@@ -435,7 +429,6 @@ function Detail() {
                 </li>
               </ul>
               <div className={classes.googleMap} id="map">
-                {/* <Map className={classes.map} /> */}
                 {MemoMap}
               </div>
               <div className={classes.paperFooter}>
