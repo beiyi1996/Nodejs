@@ -27,7 +27,8 @@ const useStyles = makeStyles(theme => ({
   warning: {
     backgroundColor: "#F9F7ED",
     color: "#E07A5F",
-    padding: 5
+    padding: 5,
+    lineHeight: 1.5
   },
   errorIcon: {
     fontSize: 18,
@@ -41,9 +42,12 @@ function ForgotPassword() {
 
   useEffect(() => {
     async function forgetPassword() {
-      await productService.forgotPassword();
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get("email");
+      await productService.forgotPassword(email);
       console.log("發送忘記密碼郵件!!!");
     }
+    forgetPassword();
   }, []);
 
   return (
@@ -55,12 +59,12 @@ function ForgotPassword() {
         <Grid item xs={10} className={classes.grid}>
           <Typography variant="body1" gutterBottom className={classes.typography}>
             我們已寄送email, 請至您的信箱查看修改密碼分頁。
-            <p className={classes.warning}>
-              <ErrorIcon className={classes.errorIcon} />
-              提醒您, 更改密碼具有時效性, 建議10分鐘內盡速修改完成! <br />
-              謝謝您!
-            </p>
           </Typography>
+          <div className={classes.warning}>
+            <ErrorIcon className={classes.errorIcon} />
+            提醒您, 更改密碼具有時效性, 建議10分鐘內盡速修改完成! <br />
+            謝謝您!
+          </div>
         </Grid>
       </Grid>
     </Container>
