@@ -58,14 +58,19 @@ const logIn = async (req, res, next) => {
           console.log("This email is unregistered");
           res.redirect("/register"); // 會員未註冊
         }
-        console.log(333, member);
+        console.log(333, member.name);
         Bcrypt.compare(password, member.password, (err, result) => {
           console.log("result", result);
           if (result) {
             isLogIn = true;
             req.session.member = member.name;
             req.session.isLogIn = isLogIn;
-            res.redirect("/");
+            // res.redirect(301, "/");
+            res.status(200).json({
+              code: 200,
+              member: member.name,
+              login: isLogIn
+            });
             console.log("req.session", req.session);
           } else {
             res.status(401).json({
@@ -122,7 +127,7 @@ function createTokenAndSaveDB(email, next) {
       data.modified_time = time;
       Member(data).save((err, member) => {
         if (err) next(err);
-        console.log("member", member);
+        console.log(1234, "member", member);
       });
       createMail(data.email, data.token).catch(console.error);
     }
@@ -130,7 +135,7 @@ function createTokenAndSaveDB(email, next) {
 }
 
 const forgotPassword = (req, res, next) => {
-  console.log("22222");
+  console.log("22222", req.body);
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -151,7 +156,7 @@ const forgotPassword = (req, res, next) => {
 };
 
 const modifiedPasswordGET = (req, res, next) => {
-  console.log("req.query", req.query);
+  console.log("modifiedPasswordGet req.query", req.query);
   const { token } = req.query;
   let now = new Date();
   Member.findOne(
@@ -159,12 +164,16 @@ const modifiedPasswordGET = (req, res, next) => {
       token: token
     },
     (err, data) => {
+      console.log("data", data);
       if (err) next(err);
       console.log("now", typeof now, now.getTime());
       let maturityTime = data.create_token_time.getTime() + 600000;
       console.log("maturityTime", typeof maturityTime, maturityTime);
       if (now.getTime() < maturityTime) {
-        res.status(200).send("<h1>this is modified password page, 記得要把使用者的帳號render出來!!</h1>");
+        res.status(200).json({
+          code: 200,
+          email: data.email
+        });
       } else {
         createTokenAndSaveDB(data.email);
         res.send("<h1>您的驗證已過期, 麻煩您點選底下的連結重新獲得驗證碼。</h1>");
@@ -174,6 +183,7 @@ const modifiedPasswordGET = (req, res, next) => {
 };
 
 const modifiedPasswordPOST = (req, res, next) => {
+  console.log("Modified password post is working!!!", res.body);
   const { email, password } = req.body;
   Member.findOne(
     {
