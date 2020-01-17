@@ -3,6 +3,7 @@ import express from "express";
 import path from "path";
 import bodyParser from "body-parser";
 import session from "express-session";
+import cookieSession from "cookie-session";
 import router from "./src/router";
 import cors from "cors";
 import connectMongo from "connect-mongo";
@@ -17,13 +18,22 @@ app.use(cors());
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// parse application/json
-app.use(bodyParser.json());
-app.use(router);
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/build/index.html"));
-});
+// app.use(
+//   cookieSession({
+//     name: "cookiesession",
+//     keys: [
+//       /* secret keys */
+//       "key1",
+//       "key2"
+//     ],
+//     cookie: {
+//       secure: true,
+//       httpOnly: true
+//     },
+//     // Cookie Options
+//     maxAge: 600 * 1000 // 24 hours
+//   })
+// );
 
 app.use(
   session({
@@ -31,9 +41,21 @@ app.use(
     resave: false,
     saveUninitialized: true, // session默認直接分配給你一個加密過的key,false: server 真的存資料到 session時, 才分配cookie key
     store: new MongoStore({ url: "mongodb://localhost:27017/sessiondb" }),
-    cookie: { maxAge: 600 * 1000 }
+    cookie: {
+      maxAge: 600 * 1000,
+      httpOnly: true,
+      secure: true
+    }
   })
 );
+
+// parse application/json
+app.use(bodyParser.json());
+app.use(router);
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+});
 
 app.use((req, res) => {
   res.send("404 Not found...");
@@ -47,3 +69,4 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => console.log(`server is running at port ${port}...`));
+module.exports = app;
