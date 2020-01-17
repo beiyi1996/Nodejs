@@ -57,6 +57,7 @@ const useStyles = makeStyles(theme => ({
 function LogIn() {
   const classes = useStyles();
   const [email, setEmail] = useState("");
+  const [error, setError] = useState(false);
   const [values, setValues] = useState({
     amount: "",
     password: "",
@@ -83,8 +84,13 @@ function LogIn() {
   };
 
   const handleLogIn = async (email, password) => {
-    const logIn = await productService.logIn(email, password);
-    console.log("logIn", logIn);
+    const res = await productService.logIn(email, password);
+    console.log("res", res);
+    if (res.login) {
+      history.push("/");
+    } else {
+      setError(true);
+    }
   };
 
   const handleForgetPassword = () => {
@@ -92,7 +98,7 @@ function LogIn() {
     if (email === "") {
       alert("請先填入註冊時的email");
     } else {
-      history.push("/forgotpassword");
+      history.push(`/forgotpassword?email=${email}`);
     }
   };
 
@@ -124,6 +130,7 @@ function LogIn() {
                   </InputAdornment>
                 }
                 name="password"
+                error={error}
               />
             </FormControl>
           </form>
