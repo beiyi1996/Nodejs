@@ -30,13 +30,34 @@ export default {
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
-  forgotPassword: async () => {
-    return await fetch("http://localhost:5000/forgotpassword")
+  forgotPassword: async email => {
+    console.log("email", email);
+    const data = { email };
+    console.log("data", data, JSON.stringify(data));
+    return await fetch(`http://localhost:5000/forgotpassword?email=${email}`, {
+      method: "POST",
+      headers: new Headers({
+        "Content-Type": "application/json"
+      }),
+      body: JSON.stringify(data)
+    })
+      .then(res => console.log("forgetPassword res status", res.status))
+      .catch(error => console.log("Error:", error));
+  },
+  modifiedPasswordGET: async token => {
+    return await fetch(`http://localhost:5000/modifiedpassword?token=${token}`)
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
-  modifiedPassword: async () => {
-    return await fetch("http://localhost:5000/modifiedpassword")
+  modifiedPasswordPOST: async (token, email, password) => {
+    const data = { email, password };
+    return await fetch(`http://localhost:5000/modifiedpassword?token=${token}`, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: new Headers({
+        "Content-Type": "application/json"
+      })
+    })
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
