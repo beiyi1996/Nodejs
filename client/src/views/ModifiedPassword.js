@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -12,6 +13,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { useEffect } from "react";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -55,6 +57,8 @@ const useStyles = makeStyles(theme => ({
 
 function ModifiedPassword() {
   const classes = useStyles();
+  const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
   const [newValues, setNewValues] = useState({
     amount: "",
     password: "",
@@ -69,6 +73,19 @@ function ModifiedPassword() {
     weightRange: "",
     showPassword: false
   });
+
+  useEffect(() => {
+    console.log(123456, "modified password useEffect");
+    async function getModifiedPasswordPage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      setToken(token);
+      const res = await productService.modifiedPasswordGET(token);
+      console.log("get modified password!!!", res);
+      setEmail(res.email);
+    }
+    getModifiedPasswordPage();
+  }, []);
 
   const handleChange = prop => event => {
     setNewValues({ ...newValues, [prop]: event.target.value });
@@ -89,6 +106,16 @@ function ModifiedPassword() {
   const handleMouseDownPassword = event => {
     event.preventDefault();
   };
+
+  const handleModifiedPassword = async () => {
+    console.log("handle modified password");
+    if (newValues.password !== checkValues.password) {
+      alert("密碼與確認密碼不同, 請再次確認");
+    } else {
+      let res = await productService.modifiedPasswordPOST(token, email, checkValues.password);
+      console.log("res", res);
+    }
+  };
   return (
     <Container maxWidth="sm">
       <Grid item xs={12} className={classes.container}>
@@ -97,13 +124,8 @@ function ModifiedPassword() {
         </Grid>
         <Grid item xs={12} className={classes.formGrid}>
           <form className={classes.form} noValidate autoComplete="off">
-            <TextField
-              label="email"
-              name="email"
-              disabled={true}
-              defaultValue="example@gmail.com"
-              className={classes.input}
-            />
+            {console.log("email", email)}
+            <TextField label="email" name="email" disabled={true} value={email} className={classes.input} />
             <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
               <InputLabel htmlFor="standard-adornment-password">new password</InputLabel>
               <Input
@@ -149,7 +171,7 @@ function ModifiedPassword() {
           </form>
         </Grid>
         <Grid item xs={12} className={classes.buttonGrid}>
-          <Button variant="outlined" className={classes.button}>
+          <Button variant="outlined" className={classes.button} onClick={handleModifiedPassword}>
             儲存修改
           </Button>
         </Grid>
