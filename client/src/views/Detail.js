@@ -274,10 +274,15 @@ function Detail() {
 
       const script = document.createElement(`script`);
       if (!window.google) {
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
-        script.async = true;
-        script.defer = true;
-        document.head.append(script);
+        const scriptPromise = new Promise((resolve, reject) => {
+          document.head.append(script);
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
+          script.async = true;
+          script.defer = true;
+          resolve(true);
+        });
+
+        scriptPromise.then(console.log("google map script is appended!"));
       } else {
         console.log("google map script is exist!");
       }
