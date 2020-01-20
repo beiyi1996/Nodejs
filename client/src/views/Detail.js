@@ -227,6 +227,7 @@ function Detail() {
   const [searchResult, setSearchResult] = useState([]);
   const [blur, setBlur] = useState(true);
   const [searching, setIsSearching] = useState(false);
+  const [restaurantName, setRestaurantName] = useState("");
   const history = useHistory();
 
   useEffect(() => {
@@ -252,6 +253,7 @@ function Detail() {
     const _id = urlParams.get("_id");
     const res = await productService.getRestaurantDetail(name, _id);
     console.log("res", res);
+    setRestaurantName(name);
     setQueryName(name);
     setForm({
       name: name,
@@ -275,10 +277,10 @@ function Detail() {
       const script = document.createElement(`script`);
       if (!window.google) {
         const scriptPromise = new Promise((resolve, reject) => {
-          document.head.append(script);
           script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
           script.async = true;
           script.defer = true;
+          document.head.append(script);
           resolve(true);
         });
 
@@ -436,7 +438,7 @@ function Detail() {
                 {MemoMap}
               </div>
               <div className={classes.paperFooter}>
-                <Link to="/booking">
+                <Link to={`/booking?restaurantName=${restaurantName}`}>
                   <Button className={classes.booking}>我要訂位</Button>
                 </Link>
               </div>
