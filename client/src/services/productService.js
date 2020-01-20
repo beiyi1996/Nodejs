@@ -1,5 +1,6 @@
 export default {
   getAll: async () => {
+    console.log("service getAll is working!!!");
     return await fetch("http://localhost:5000/")
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
@@ -81,8 +82,15 @@ export default {
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
-  createOrder: async () => {
-    return await fetch("http://localhost:5000/orders")
+  createOrder: async (date, time, adult, children, notes, restaurant_name) => {
+    const data = { date, time, adult, children, notes, restaurant_name };
+    return await fetch("http://localhost:5000/orders", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: new Headers({
+        "Content-Type": "application/json"
+      })
+    })
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
