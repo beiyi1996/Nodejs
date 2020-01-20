@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/button";
@@ -570,9 +570,11 @@ function Booking() {
     }
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const verifyResult = verification();
     if (verifyResult) {
+      const order = await productService.createOrder(clickDate, time, adult, children, notes);
+      console.log("order", order);
       history.push("/completed");
     }
   };
