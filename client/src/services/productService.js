@@ -26,8 +26,15 @@ export default {
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
-  logOut: async () => {
-    return await fetch("http://localhost:5000/logout")
+  logOut: async logInStatus => {
+    const data = { logInStatus };
+    return await fetch("http://localhost:5000/logout", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: new Headers({
+        "Content-Type": "application/json"
+      })
+    })
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
@@ -77,20 +84,23 @@ export default {
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
-  booking: async () => {
-    return await fetch("http://localhost:5000/booking")
-      .then(res => res.json())
-      .catch(error => console.log("Error:", error));
-  },
-  createOrder: async (date, time, adult, children, notes, restaurant_name) => {
-    const data = { date, time, adult, children, notes, restaurant_name };
-    return await fetch("http://localhost:5000/orders", {
+  booking: async (date, time, adult, children, notes, restaurant_name, sessionStorageData) => {
+    console.log("booking is working!!!", sessionStorageData);
+    const timeString = `${time}:00`;
+    const data = { date, timeString, adult, children, notes, restaurant_name, sessionStorageData };
+    console.log("data", data);
+    return await fetch("http://localhost:5000/booking", {
       method: "POST",
       body: JSON.stringify(data),
       headers: new Headers({
         "Content-Type": "application/json"
       })
     })
+      .then(res => res.json())
+      .catch(error => console.log("Error:", error));
+  },
+  createOrder: async () => {
+    return await fetch("http://localhost:5000/orders")
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
