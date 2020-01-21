@@ -277,32 +277,47 @@ function Detail() {
       const script = document.createElement(`script`);
       if (!window.google) {
         const scriptPromise = new Promise((resolve, reject) => {
+          document.head.append(script);
           script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
           script.async = true;
           script.defer = true;
-          document.head.append(script);
           resolve(true);
         });
 
-        scriptPromise.then(console.log("google map script is appended!"));
+        scriptPromise
+          .then(async () => {
+            console.log("google map script is appended!");
+            async function oo() {
+              if (!form) {
+                script.addEventListener(`load`, onLoad);
+                return await getRestaurantDetail();
+              }
+            }
+            return await oo();
+          })
+          .then(value => {
+            console.log("2ed then.....", value);
+            onLoad(value.address);
+            script.removeEventListener(`load`, onLoad);
+          });
       } else {
         console.log("google map script is exist!");
-      }
-      const googleMapPromise = new Promise((resolve, reject) => {
-        async function oo() {
-          if (!form) {
-            script.addEventListener(`load`, onLoad);
-            return await getRestaurantDetail();
+        const googleMapPromise = new Promise((resolve, reject) => {
+          async function oo() {
+            if (!form) {
+              script.addEventListener(`load`, onLoad);
+              return await getRestaurantDetail();
+            }
           }
-        }
-        resolve(oo());
-      });
-      googleMapPromise.then(value => {
-        onLoad(value.address);
-        script.removeEventListener(`load`, onLoad);
-      });
+          resolve(oo());
+        });
+        googleMapPromise.then(value => {
+          onLoad(value.address);
+          script.removeEventListener(`load`, onLoad);
+        });
 
-      console.log("googleMapPromise", googleMapPromise);
+        console.log("googleMapPromise", googleMapPromise);
+      }
     }, []);
     return <div {...{ ref, className }} />;
   }
@@ -378,7 +393,6 @@ function Detail() {
 
   return (
     <Container maxWidth="sm" className={classes.root}>
-      {console.log(googleMapKey)}
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
           <input
