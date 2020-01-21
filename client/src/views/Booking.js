@@ -307,6 +307,7 @@ function Booking() {
   const [dateError, setDateError] = useState(false);
   const [timeError, setTimeError] = useState(false);
   const [adultError, setAdultError] = useState(false);
+  const [restaurantName, setRestaurantName] = useState("");
   const inputRef = useRef(null);
   let [clickDate, setClickDate] = useState("");
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
@@ -325,6 +326,12 @@ function Booking() {
     "December"
   ];
   const history = useHistory();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const restaurantName = urlParams.get("restaurantName");
+    setRestaurantName(restaurantName);
+  }, []);
 
   const handleChange = event => {
     setTime(event.target.value);
@@ -573,9 +580,17 @@ function Booking() {
   const onSubmit = async () => {
     const verifyResult = verification();
     if (verifyResult) {
-      const order = await productService.createOrder(clickDate, time, adult, children, notes);
+      const sessionUser = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
+      console.log("user.login", sessionUser.login);
+      const order = await productService.booking(clickDate, time, adult, children, notes, restaurantName, sessionUser);
       console.log("order", order);
-      history.push("/completed");
+      if (order.code === 200) {
+        history.push("/completed");
+      } else if (order.code === 301) {
+        alert("You're not log in!");
+        sessionStorage.clear();
+        history.push("/login");
+      }
     }
   };
 
@@ -584,7 +599,7 @@ function Booking() {
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12}>
           <Typography variant="h5" gutterBottom className={classes.restaurantName}>
-            Reataurant Name..
+            {restaurantName}
           </Typography>
         </Grid>
         <Grid item xs={12}>
@@ -660,7 +675,7 @@ function Booking() {
                   <span>定位資訊</span>
                 </Typography>
                 <Typography variant="h5" component="h2" className={classes.restaurantName}>
-                  restaurant name...
+                  {restaurantName}
                 </Typography>
                 <ul className={classes.orderDetail}>
                   <li>
