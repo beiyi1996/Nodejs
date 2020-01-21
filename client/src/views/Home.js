@@ -190,6 +190,8 @@ function Home() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [showLogInButton, setShowLogInButton] = useState(true);
+  const [sessionStroage, setSessionStorage] = useState({});
   const openU = Boolean(anchorEl);
   const history = useHistory();
 
@@ -202,10 +204,20 @@ function Home() {
   };
 
   useEffect(() => {
+    console.log("sessionStorage", JSON.parse(sessionStorage.getItem("user")));
+    const sessionStorageData =
+      sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
     if (!restaurant) {
       getRestaurant();
     }
-  });
+    if (Object.keys(sessionStorageData).length > 0) {
+      console.log("有sessionStorage , 表示已登入");
+      setSessionStorage(sessionStorageData);
+      setShowLogInButton(false);
+    } else {
+      setShowLogInButton(true);
+    }
+  }, []);
 
   const getRestaurant = async () => {
     let res = await productService.getAll();
@@ -224,6 +236,16 @@ function Home() {
 
   const handleLogIn = () => {
     history.push("/login");
+  };
+
+  const handleLogOut = async () => {
+    const res = await productService.logOut(sessionStroage.login);
+    console.log("log out res", res);
+    if (res.code === 200) {
+      sessionStorage.clear();
+      setShowLogInButton(true);
+      handleClose();
+    }
   };
 
   return (
@@ -274,9 +296,14 @@ function Home() {
                 open={openU}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleLogIn}>登入</MenuItem>
-                <MenuItem onClick={handleClose}>查詢訂單</MenuItem>
-                <MenuItem onClick={handleClose}>登出</MenuItem>
+                {showLogInButton ? (
+                  <MenuItem onClick={handleLogIn}>登入</MenuItem>
+                ) : (
+                  <div>
+                    <MenuItem onClick={handleClose}>查詢訂單</MenuItem>
+                    <MenuItem onClick={handleLogOut}>登出</MenuItem>
+                  </div>
+                )}
               </Menu>
             </div>
           </Toolbar>
