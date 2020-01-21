@@ -70,20 +70,20 @@ const orderValidator = () => {
       }
       return true;
     }),
-    body("time").custom(time => {
+    body("timeString").custom(time => {
       if (typeof time !== "string") {
         throw new Error("Time is required field");
       }
       return true;
     }),
     body("adult").custom(adult => {
-      if (typeof adult !== "string") {
+      if (typeof adult !== "number") {
         throw new Error("Adult is required field");
       }
       return true;
     }),
     body("children").custom(children => {
-      if (typeof children !== "string") {
+      if (typeof children !== "number") {
         throw new Error("Children is required field");
       }
       return true;
