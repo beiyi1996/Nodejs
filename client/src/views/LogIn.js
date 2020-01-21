@@ -85,8 +85,10 @@ function LogIn() {
 
   const handleLogIn = async (email, password) => {
     const res = await productService.logIn(email, password);
-    console.log("res", res);
+    const currentTime = new Date().getTime();
+    const user = Object.assign({}, res, { time: currentTime });
     if (res.login) {
+      sessionStorage.setItem("user", JSON.stringify(user));
       history.push("/");
     } else {
       setError(true);
