@@ -35,13 +35,19 @@ async function sendCompletedMail(email, orderId) {
 }
 
 const createOrder = async (req, res, next) => {
+  console.log("server createOrder is working!!!");
   try {
-    const { date, time, adult, children, notes, restaurant_name } = req.body;
-    console.log("-------req.session", req.session.member);
-    let dateTime = new Date(`${date} ${time}`);
-    if (!req.session.isLogIn) {
+    const { date, timeString, adult, children, notes, restaurant_name, sessionStorageData } = req.body;
+    console.log("-------req.body", req.body, date, timeString);
+    let dateTime = new Date(`${date} ${timeString}`);
+    console.log("dateTime", dateTime);
+    const limitTime = dateTime.getTime() + 600000;
+    console.log("sessionStorage.time", sessionStorageData.time);
+    console.log(123, "limitTime", limitTime, "now", Date.now());
+    console.log("Date.now() > limitTime", Date.now() > limitTime);
+    if (!sessionStorageData.login || Date.now() > limitTime) {
       console.log("Not log in..");
-      return res.redirect("/login");
+      return res.status(301).json({ code: 301, message: "Not log in" });
     }
 
     const errors = validationResult(req);
@@ -54,7 +60,7 @@ const createOrder = async (req, res, next) => {
     }
     const member = await Member.findOne(
       {
-        name: req.session.member
+        name: sessionStorageData.member
       },
       {
         _id: 1,
@@ -82,7 +88,10 @@ const createOrder = async (req, res, next) => {
       });
       console.log("order", order);
       await sendCompletedMail(member.email, order._id);
-      res.redirect("/completed");
+      res.status(200).json({
+        code: 200,
+        message: "order is created"
+      });
     } else {
       errObj(res, "500", "memberID or restaurantID is null");
     }
