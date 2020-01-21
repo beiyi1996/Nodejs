@@ -205,8 +205,9 @@ const modifiedPasswordPOST = (req, res, next) => {
 };
 
 const logOut = (req, res, next) => {
+  console.log("logout req.body", req.body);
   try {
-    if (req.session.isLogIn) {
+    if (req.body.logInStatus) {
       req.session.destroy();
       res.status(200).json({
         code: 200,
