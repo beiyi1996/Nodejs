@@ -24,7 +24,7 @@ function App() {
         <Route path="/login" component={LogIn} />
         <Route path="/booking" component={Booking} />
         <Route path="/order" component={Order} />
-        <Route path="/orderdetails/:order_id" component={OrderDetails} />
+        <Route path="/orderdetails" component={OrderDetails} />
         <Route path="/completed" component={Completed} />
         <Route path="/modifiedpassword" component={ModifiedPassword} />
         <Route path="/forgotpassword" component={ForgotPassword} />
