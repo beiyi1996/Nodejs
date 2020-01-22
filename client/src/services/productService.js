@@ -99,18 +99,19 @@ export default {
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
-  createOrder: async () => {
-    return await fetch("http://localhost:5000/orders")
+  getAllOrders: async userName => {
+    return await fetch(`http://localhost:5000/orders?name=${userName}`)
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
   getOrderDetails: async order_id => {
-    return await fetch(`http://localhost:5000/orderdetails/${order_id}`)
+    console.log("service order_id", order_id);
+    return await fetch(`http://localhost:5000/orderdetails?order_ID=${order_id}`)
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
   editOrderDetails: async order_id => {
-    return await fetch(`http://localhost:5000/orderdetails/${order_id}/edit`)
+    return await fetch(`http://localhost:5000/orderdetails/${order_id}`)
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
@@ -118,5 +119,10 @@ export default {
     return await fetch(`http://localhost:5000/orderdetails/${order_id}/cancell`)
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
+  },
+  checkLogInStatus: async name => {
+    return await fetch(`http://localhost:5000/checkLogInStatus?name=${name}`)
+      .then(res => console.log("check log in status", res))
+      .catch(error => console.log("check log in status Error", error));
   }
 };
