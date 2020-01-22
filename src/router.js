@@ -70,7 +70,7 @@ router.post("/booking", Validator.orderValidator(), OrderController.createOrder)
 router.get("/orders", OrderController.findOrders);
 
 // 查看訂單明細
-router.get("/orderdetails/:order_id", OrderController.findOrderDetails);
+router.get("/orderdetails", OrderController.findOrderDetails);
 
 // 修改訂單頁
 router.get("/orderdetails/:order_id/edit", (req, res) => {
@@ -91,6 +91,9 @@ router.post("/updateCategory", CategoryController.updateCategory);
 
 // 刪除類別
 router.post("/deleteCategory", CategoryController.deleteCategory);
+
+// 確認登入狀態
+router.post("/checkLogInStatus", MemberController.checkLogInStatus);
 
 // 取得所有類別
 router.get("/getCategory", IndexController.getAllCategory);
