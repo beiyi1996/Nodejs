@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Container from "@material-ui/core/Container";
@@ -44,6 +44,13 @@ const useStyles = makeStyles(theme => ({
 
 function Completed() {
   const classes = useStyles();
+  const [userName, setUserName] = useState("");
+  useEffect(() => {
+    const user = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
+    console.log("completed page user", user);
+    setUserName(user.member);
+  }, []);
+
   return (
     <Container maxWidth="sm">
       <Grid item xs={12} className={classes.container}>
@@ -65,7 +72,7 @@ function Completed() {
               回首頁
             </Button>
           </Link>
-          <Link to="/order">
+          <Link to={`/order?name=${userName}`}>
             <Button variant="outlined" className={classes.button}>
               查看訂單
             </Button>
