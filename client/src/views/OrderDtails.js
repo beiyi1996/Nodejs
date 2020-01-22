@@ -414,7 +414,8 @@ function OrderDetails() {
     if (!restaurant) {
       getRestaurant();
     }
-  });
+    getOrderDetails();
+  }, []);
 
   const getRestaurant = async () => {
     let res = await productService.getAll();
@@ -422,6 +423,15 @@ function OrderDetails() {
     setrestaurant(res);
   };
   console.log("restaurant", restaurant);
+
+  const getOrderDetails = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log("urlParams", urlParams);
+    const order_ID = urlParams.get("order_ID");
+    console.log("order_ID", order_ID);
+    const res = await productService.getOrderDetails(order_ID);
+    console.log(111, "get order details res", res);
+  };
 
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);
