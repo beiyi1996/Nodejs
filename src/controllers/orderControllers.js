@@ -41,11 +41,21 @@ const createOrder = async (req, res, next) => {
     console.log("-------req.body", req.body, date, timeString);
     let dateTime = new Date(`${date} ${timeString}`);
     console.log("dateTime", dateTime);
-    const limitTime = dateTime.getTime() + 600000;
-    console.log("sessionStorage.time", sessionStorageData.time);
-    console.log(123, "limitTime", limitTime, "now", Date.now());
-    console.log("Date.now() > limitTime", Date.now() > limitTime);
-    if (!sessionStorageData.login || Date.now() > limitTime) {
+    const member = await Member.findOne(
+      {
+        name: sessionStorageData.member
+      },
+      {
+        _id: 1,
+        email: 1,
+        token: 1,
+        create_token_time: 1
+      }
+    );
+    console.log(888, !member.token, member.create_token_time);
+    const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
+    console.log("limitTime", limitTime, "now", Date.now());
+    if (!member.token || Date.now() > limitTime) {
       console.log("Not log in..");
       return res.status(301).json({ code: 301, message: "Not log in" });
     }
@@ -58,16 +68,6 @@ const createOrder = async (req, res, next) => {
       });
       return;
     }
-    const member = await Member.findOne(
-      {
-        name: sessionStorageData.member
-      },
-      {
-        _id: 1,
-        email: 1
-      }
-    );
-    console.log(888, member.email);
     const restaurantID = await Restaurant.findOne(
       {
         name: restaurant_name
@@ -101,11 +101,25 @@ const createOrder = async (req, res, next) => {
 };
 
 const findOrders = async (req, res, next) => {
+  const { name } = req.query;
+  console.log("name", name);
+  const member = await Member.findOne(
+    { name: name },
+    {
+      _id: 1,
+      email: 1,
+      token: 1,
+      create_token_time: 1
+    }
+  );
+  console.log("member", member);
+  const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
+  console.log("limitTime", limitTime);
   try {
-    if (req.session.isLogIn) {
+    if (member.token || Date.now() < limitTime) {
       const memberID = await Member.findOne(
         {
-          name: req.session.member
+          name: name
         },
         {
           _id: 1
@@ -128,6 +142,8 @@ const findOrders = async (req, res, next) => {
 };
 
 const findOrderDetails = async (req, res, next) => {
+  const { order_Id } = req.query;
+  console.log("find Order Details order_Id", order_Id);
   try {
     if (req.session.isLogIn) {
       console.log(999, req.params.order_id);
