@@ -1,6 +1,7 @@
 /*jshint esversion: 6 */
 import React, { useState, useEffect } from "react";
 import productService from "../services/productService";
+import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
@@ -156,12 +157,17 @@ const useStyles = makeStyles(theme => ({
     top: 0,
     right: 0,
 
+    "& > a": {
+      "& > button": {
+        minWidth: "auto",
+        "& > span > svg": {
+          color: "#7FABAB"
+        }
+      }
+    },
     "& > button": {
       minWidth: "auto",
-
-      "&:first-child": {
-        color: "#7FABAB"
-      },
+      lineHeight: "initial",
 
       "&:nth-child(2)": {
         color: "#E07A5F"
@@ -176,6 +182,7 @@ function Orders() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [orders, setOrders] = useState([]);
   const openU = Boolean(anchorEl);
 
   const handleDrawerOpen = () => {
@@ -190,11 +197,19 @@ function Orders() {
     if (!restaurant) {
       getRestaurant();
     }
-  });
+    getAllOrders();
+  }, []);
 
   const getRestaurant = async () => {
     let res = await productService.getAll();
     setrestaurant(res);
+  };
+
+  const getAllOrders = async () => {
+    const user = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
+    const res = await productService.getAllOrders(user.member);
+    console.log("get all orders res", res);
+    setOrders(res);
   };
 
   const handleMenu = event => {
@@ -313,142 +328,66 @@ function Orders() {
           })}
         >
           <div className={classes.drawerHeader} />
-          <Grid item xs={12} className={classes.orderContent}>
-            <Typography className={classes.orderTitle}>
-              <span>訂單編號 : </span>
-              <span>_idxxxxxxxxxxxxxxxxx</span>
-            </Typography>
-            <Typography className={classes.orderTitle}>
-              <span>成立訂單 : </span>
-              <span>2019/12/31 - 12:00</span>
-            </Typography>
-            <Card className={classes.card}>
-              <ul className={classes.orderDetail}>
-                <li>
-                  日期 : <span>2019/12/31</span>
-                </li>
-                <li>
-                  時間 : <span>19:00</span>
-                </li>
-                <li>
-                  人數 : <span>2 大人 2小孩</span>
-                </li>
-                <li>
-                  備註 : <span>我是備註, 可有可無</span>
-                </li>
-              </ul>
-              <div className={classes.featureBtn}>
-                <Button>
-                  <CreateRoundedIcon />
-                </Button>
-                <Button>
-                  <DeleteRoundedIcon />
-                </Button>
-              </div>
-            </Card>
-          </Grid>
-          <Grid item xs={12} className={classes.orderContent}>
-            <Typography className={classes.orderTitle}>
-              <span>訂單編號 : </span>
-              <span>_idxxxxxxxxxxxxxxxxx</span>
-            </Typography>
-            <Typography className={classes.orderTitle}>
-              <span>成立訂單 : </span>
-              <span>2019/12/31 - 12:00</span>
-            </Typography>
-            <Card className={classes.card}>
-              <ul className={classes.orderDetail}>
-                <li>
-                  日期 : <span>2019/12/31</span>
-                </li>
-                <li>
-                  時間 : <span>19:00</span>
-                </li>
-                <li>
-                  人數 : <span>2 大人 2小孩</span>
-                </li>
-                <li>
-                  備註 : <span>我是備註, 可有可無</span>
-                </li>
-              </ul>
-              <div className={classes.featureBtn}>
-                <Button>
-                  <CreateRoundedIcon />
-                </Button>
-                <Button>
-                  <DeleteRoundedIcon />
-                </Button>
-              </div>
-            </Card>
-          </Grid>
-          <Grid item xs={12} className={classes.orderContent}>
-            <Typography className={classes.orderTitle}>
-              <span>訂單編號 : </span>
-              <span>_idxxxxxxxxxxxxxxxxx</span>
-            </Typography>
-            <Typography className={classes.orderTitle}>
-              <span>成立訂單 : </span>
-              <span>2019/12/31 - 12:00</span>
-            </Typography>
-            <Card className={classes.card}>
-              <ul className={classes.orderDetail}>
-                <li>
-                  日期 : <span>2019/12/31</span>
-                </li>
-                <li>
-                  時間 : <span>19:00</span>
-                </li>
-                <li>
-                  人數 : <span>2 大人 2小孩</span>
-                </li>
-                <li>
-                  備註 : <span>我是備註, 可有可無</span>
-                </li>
-              </ul>
-              <div className={classes.featureBtn}>
-                <Button>
-                  <CreateRoundedIcon />
-                </Button>
-                <Button>
-                  <DeleteRoundedIcon />
-                </Button>
-              </div>
-            </Card>
-          </Grid>
-          <Grid item xs={12} className={classes.orderContent}>
-            <Typography className={classes.orderTitle}>
-              <span>訂單編號 : </span>
-              <span>_idxxxxxxxxxxxxxxxxx</span>
-            </Typography>
-            <Typography className={classes.orderTitle}>
-              <span>成立訂單 : </span>
-              <span>2019/12/31 - 12:00</span>
-            </Typography>
-            <Card className={classes.card}>
-              <ul className={classes.orderDetail}>
-                <li>
-                  日期 : <span>2019/12/31</span>
-                </li>
-                <li>
-                  時間 : <span>19:00</span>
-                </li>
-                <li>
-                  人數 : <span>2 大人 2小孩</span>
-                </li>
-                <li>
-                  備註 : <span>我是備註, 可有可無</span>
-                </li>
-              </ul>
-              <div className={classes.featureBtn}>
-                <Button>
-                  <CreateRoundedIcon />
-                </Button>
-                <Button>
-                  <DeleteRoundedIcon />
-                </Button>
-              </div>
-            </Card>
-          </Grid>
+          {orders ? (
+            orders.map(item => {
+              const formatDateTime = new Date(item.dateTime);
+              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth()} / ${formatDateTime.getDate()}`;
+              const minutes =
+                formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `${formatDateTime.getMinutes()}0`;
+              const time = `${formatDateTime.getHours()} : ${minutes}`;
+              const createDateTime = new Date(item.create_time);
+              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth()} / ${createDateTime.getDate()}`;
+              const createMinutes =
+                createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `${createDateTime.getMinutes()}0`;
+              const createTime = `${createDateTime.getHours()} : ${createMinutes}`;
+              return (
+                <Grid item xs={12} className={classes.orderContent} key={item.create_time}>
+                  <Typography className={classes.orderTitle}>
+                    <span>訂單編號 : </span>
+                    <span>{item._id}</span>
+                  </Typography>
+                  <Typography className={classes.orderTitle}>
+                    <span>成立訂單 : </span>
+                    <span>
+                      {createDate} - {createTime}
+                    </span>
+                  </Typography>
+                  <Card className={classes.card}>
+                    <ul className={classes.orderDetail}>
+                      <li>
+                        日期 : <span>{date}</span>
+                      </li>
+                      <li>
+                        時間 : <span>{time}</span>
+                      </li>
+                      <li>
+                        人數 :{" "}
+                        <span>
+                          {item.adult} 大人 {item.children}小孩
+                        </span>
+                      </li>
+                      <li>
+                        備註 : <span>{item.notes}</span>
+                      </li>
+                    </ul>
+                    <div className={classes.featureBtn}>
+                      <Link to={`/orderdetails?order_ID=${item._id}`}>
+                        <Button>
+                          {/* onClick={handleEditOrderDetail} */}
+                          <CreateRoundedIcon />
+                        </Button>
+                      </Link>
+                      <Button>
+                        <DeleteRoundedIcon />
+                      </Button>
+                    </div>
+                  </Card>
+                </Grid>
+              );
+            })
+          ) : (
+            <div>還沒找到喜歡的餐廳嗎?? 快回首頁在搜尋一下吧!!</div>
+          )}
         </main>
       </div>
     </Container>
