@@ -277,47 +277,35 @@ function Detail() {
       const script = document.createElement(`script`);
       if (!window.google) {
         const scriptPromise = new Promise((resolve, reject) => {
-          document.head.append(script);
+          document.body.append(script);
           script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
           script.async = true;
           script.defer = true;
+          script.addEventListener(`load`, onLoad);
           resolve(true);
         });
 
-        scriptPromise
-          .then(async () => {
-            console.log("google map script is appended!");
-            async function oo() {
-              if (!form) {
-                script.addEventListener(`load`, onLoad);
-                return await getRestaurantDetail();
-              }
-            }
-            return await oo();
-          })
-          .then(value => {
-            console.log("2ed then.....", value);
-            onLoad(value.address);
-            script.removeEventListener(`load`, onLoad);
-          });
+        scriptPromise.then(() => {
+          console.log("google map script is appended!");
+        });
       } else {
         console.log("google map script is exist!");
-        const googleMapPromise = new Promise((resolve, reject) => {
-          async function oo() {
-            if (!form) {
-              script.addEventListener(`load`, onLoad);
-              return await getRestaurantDetail();
-            }
-          }
-          resolve(oo());
-        });
-        googleMapPromise.then(value => {
-          onLoad(value.address);
-          script.removeEventListener(`load`, onLoad);
-        });
-
-        console.log("googleMapPromise", googleMapPromise);
       }
+
+      const googleMapPromise = new Promise((resolve, reject) => {
+        async function oo() {
+          if (!form) {
+            return await getRestaurantDetail();
+          }
+        }
+        resolve(oo());
+      });
+      googleMapPromise.then(value => {
+        onLoad(value.address);
+        script.removeEventListener(`load`, onLoad);
+      });
+
+      console.log("googleMapPromise", googleMapPromise);
     }, []);
     return <div {...{ ref, className }} />;
   }
