@@ -66,6 +66,7 @@ const logIn = async (req, res, next) => {
             req.session.member = member.name;
             req.session.isLogIn = isLogIn;
             // res.redirect(301, "/");
+            createTokenAndSaveDB(email, "login", next);
             res.status(200).json({
               code: 200,
               member: member.name,
@@ -111,8 +112,9 @@ async function createMail(email, token) {
   });
 }
 
-function createTokenAndSaveDB(email, next) {
+function createTokenAndSaveDB(email, type, next) {
   console.log(333, "email", email);
+  console.log(666, "createToken and Save db type", type);
   let buffer = Crypto.randomBytes(32);
   let time = new Date();
   Member.findOne(
@@ -129,7 +131,12 @@ function createTokenAndSaveDB(email, next) {
         if (err) next(err);
         console.log(1234, "member", member);
       });
-      createMail(data.email, data.token).catch(console.error);
+
+      if (type === "login") {
+        return console.log("token is saved in db");
+      } else {
+        createMail(data.email, data.token).catch(console.error);
+      }
     }
   );
 }
@@ -147,7 +154,7 @@ const forgotPassword = (req, res, next) => {
     }
     const { email } = req.body;
     console.log("email", email);
-    createTokenAndSaveDB(email, next);
+    createTokenAndSaveDB(email, "forgotPassword", next);
     res.send("<h1>forgot password, we are sent a validation code with your email. please check your email.</h1>");
   } catch (err) {
     console.log("error!");
@@ -224,11 +231,30 @@ const logOut = (req, res, next) => {
   }
 };
 
+const checkLogInStatus = (req, res, next) => {
+  const { name } = req.name;
+  const member = Member.findOne({ name: name }, { _id: 1, name: 1, token: 1, create_token_time: 1 });
+  console.log("member", member);
+  const limitTime = mwmber.create_token_time !== null ? member.create_token_time + 600000 : 0;
+  if (!member.token || Date.now() > limitTime) {
+    res.status(301).json({
+      code: 301,
+      message: "You are not log in"
+    });
+  } else {
+    res.status(200).json({
+      code: 200,
+      message: "You are log in"
+    });
+  }
+};
+
 module.exports = {
   register,
   logIn,
   forgotPassword,
   modifiedPasswordGET,
   modifiedPasswordPOST,
-  logOut
+  logOut,
+  checkLogInStatus
 };
