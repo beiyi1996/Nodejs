@@ -110,13 +110,22 @@ export default {
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
-  editOrderDetails: async order_id => {
-    return await fetch(`http://localhost:5000/orderdetails/${order_id}`)
+  saveModifiedOrderDetails: async (order_id, clickDate, time, adult, children, notes) => {
+    const timeString = `${time}:00`;
+    const data = { clickDate, timeString, adult, children, notes };
+    console.log("save change order details data", data);
+    return await fetch(`http://localhost:5000/orderdetails/save?order_ID=${order_id}`, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: new Headers({
+        "Content-Type": "application/json"
+      })
+    })
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
   cancelModifiedOrderDetails: async order_id => {
-    return await fetch(`http://localhost:5000/orderdetails/${order_id}/cancell`)
+    return await fetch(`http://localhost:5000/orderdetails/cancel?order_ID=${order_id}`)
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
