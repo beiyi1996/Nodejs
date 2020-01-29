@@ -72,16 +72,11 @@ router.get("/orders", OrderController.findOrders);
 // 查看訂單明細
 router.get("/orderdetails", OrderController.findOrderDetails);
 
-// 修改訂單頁
-router.get("/orderdetails/:order_id/edit", (req, res) => {
-  res.send("<h1>This is modified order details page!!</h1>");
-});
-
 // 確認修改訂單
-router.post("/orderdetails/:order_id/edit", OrderController.modifiedOrderDetails);
+router.post("/orderdetails/save", OrderController.modifiedOrderDetails);
 
 // 取消訂單
-router.post("/orderdetails/:order_id/cancell", OrderController.cancelledOrderDetail);
+router.post("/orderdetails/cancel", OrderController.cancelledOrderDetail);
 
 // 新增類別
 router.post("/createCategory", CategoryController.createCategory);
