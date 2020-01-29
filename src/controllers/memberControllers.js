@@ -1,4 +1,3 @@
-/*jshint esversion: 6 */
 import Member from "../../models/member";
 import Bcrypt from "bcryptjs";
 import Crypto from "crypto";
@@ -59,6 +58,8 @@ const logIn = async (req, res, next) => {
           res.redirect("/register"); // 會員未註冊
         }
         console.log(333, member.name);
+        console.log("member.password", member.password);
+        console.log("body.password", Bcrypt.hashSync(password, 10));
         Bcrypt.compare(password, member.password, (err, result) => {
           console.log("result", result);
           if (result) {
@@ -108,7 +109,7 @@ async function createMail(email, token) {
     to: email, // list of receivers
     subject: "forget password", // Subject line
     text: "forget password email", // plain text body
-    html: `<h3>請至連結更改密碼 : <a href="http://10.30.3.137:3000/modifiedpassword?token=${token}">修改密碼</a></h3>` // html body
+    html: `<h3>請至連結更改密碼 : <a href="http://localhost:3000/modifiedpassword?token=${token}">修改密碼</a></h3>` // html body
   });
 }
 
@@ -232,7 +233,7 @@ const logOut = (req, res, next) => {
 };
 
 const checkLogInStatus = (req, res, next) => {
-  const { name } = req.name;
+  const { name } = req.body;
   const member = Member.findOne({ name: name }, { _id: 1, name: 1, token: 1, create_token_time: 1 });
   console.log("member", member);
   const limitTime = mwmber.create_token_time !== null ? member.create_token_time + 600000 : 0;
