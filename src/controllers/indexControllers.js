@@ -4,7 +4,6 @@ import Restaurant from "../../models/restaurant";
 import Category from "../../models/category";
 
 const randomRenderRestaurant = async (req, res, next) => {
-  console.log("req.session.member", req.session.member);
   let kindDistinct = await distinctCategory("kind");
   await Restaurant.find((err, data) => {
     if (err) next(err);
