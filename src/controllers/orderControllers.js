@@ -1,5 +1,3 @@
-/*jshint esversion: 6 */
-
 import Order from "../../models/order";
 import Member from "../../models/member";
 import Restaurant from "../../models/restaurant";
@@ -41,22 +39,53 @@ const createOrder = async (req, res, next) => {
     console.log("-------req.body", req.body, date, timeString);
     let dateTime = new Date(`${date} ${timeString}`);
     console.log("dateTime", dateTime);
-    const member = await Member.findOne(
-      {
-        name: sessionStorageData.member
-      },
-      {
-        _id: 1,
-        email: 1,
-        token: 1,
-        create_token_time: 1
+    if (Object.keys(sessionStorageData).length > 0) {
+      const member = await Member.findOne(
+        {
+          name: sessionStorageData.member
+        },
+        {
+          _id: 1,
+          email: 1,
+          token: 1,
+          create_token_time: 1
+        }
+      );
+      console.log(888, !member.token, member.create_token_time);
+      const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
+      console.log("limitTime", limitTime, "now", Date.now());
+      if (!member.token || Date.now() > limitTime) {
+        console.log("Not log in..");
+        return res.status(301).json({ code: 301, message: "Not log in" });
       }
-    );
-    console.log(888, !member.token, member.create_token_time);
-    const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
-    console.log("limitTime", limitTime, "now", Date.now());
-    if (!member.token || Date.now() > limitTime) {
-      console.log("Not log in..");
+      const restaurantID = await Restaurant.findOne(
+        {
+          name: restaurant_name
+        },
+        {
+          _id: 1
+        }
+      );
+      if (member && restaurantID) {
+        const order = await Order.create({
+          dateTime,
+          adult,
+          children,
+          notes,
+          restaurant_id: restaurantID._id,
+          member_id: member._id,
+          status: "Confirmed"
+        });
+        console.log("order", order);
+        await sendCompletedMail(member.email, order._id);
+        res.status(200).json({
+          code: 200,
+          message: "order is created"
+        });
+      } else {
+        errObj(res, "500", "memberID or restaurantID is null");
+      }
+    } else {
       return res.status(301).json({ code: 301, message: "Not log in" });
     }
 
@@ -67,33 +96,6 @@ const createOrder = async (req, res, next) => {
         errors: errors.array()
       });
       return;
-    }
-    const restaurantID = await Restaurant.findOne(
-      {
-        name: restaurant_name
-      },
-      {
-        _id: 1
-      }
-    );
-    if (member && restaurantID) {
-      const order = await Order.create({
-        dateTime,
-        adult,
-        children,
-        notes,
-        restaurant_id: restaurantID._id,
-        member_id: member._id,
-        status: "Confirmed"
-      });
-      console.log("order", order);
-      await sendCompletedMail(member.email, order._id);
-      res.status(200).json({
-        code: 200,
-        message: "order is created"
-      });
-    } else {
-      errObj(res, "500", "memberID or restaurantID is null");
     }
   } catch (error) {
     return next(error);
@@ -142,28 +144,27 @@ const findOrders = async (req, res, next) => {
 };
 
 const findOrderDetails = async (req, res, next) => {
-  const { order_Id } = req.query;
-  console.log("find Order Details order_Id", order_Id);
+  console.log(123456, "findOrderDetails ???????");
+  const { order_ID } = req.query;
+  console.log("find Order Details order_Id", order_ID);
   try {
-    if (req.session.isLogIn) {
-      console.log(999, req.params.order_id);
-      const memberID = await Member.findOne(
-        {
-          name: req.session.member
-        },
-        {
-          _id: 1
-        }
-      );
+    const memberID = await Order.findOne({ _id: order_ID }, { member_id: 1 });
+    const member = await Member.findOne({ _id: memberID.member_id }, { _id: 1, email: 1, token: 1, create_token_time: 1 });
+    const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
+    if (member.token && Date.now() < limitTime) {
       const orderDetails = await Order.findOne({
-        member_id: memberID._id,
-        _id: req.params.order_id
+        member_id: memberID.member_id,
+        _id: order_ID
       });
       console.log("find Order Details", orderDetails);
-      res.json(orderDetails);
+      res.json({ code: 200, orderDetails });
     } else {
+      console.log("else????", member.token && Date.now() < limitTime);
       console.log("Not log in...");
-      res.redirect("/login");
+      res.status(301).json({
+        code: 301,
+        message: "12345???You are not log in"
+      });
     }
   } catch (err) {
     return next(err);
@@ -171,36 +172,38 @@ const findOrderDetails = async (req, res, next) => {
 };
 
 const modifiedOrderDetails = async (req, res, next) => {
+  console.log("modified order details is working!!!");
+  const { order_ID } = req.query;
   try {
-    if (req.session.isLogIn) {
-      const { order_id } = req.params;
-      const { adult, children, date, time, notes } = req.body;
-      let dateTime = new Date(`${date} ${time}`);
-      const memberID = await Member.findOne(
-        {
-          name: req.session.member
-        },
-        {
-          _id: 1
-        }
-      );
+    const memberID = await Order.findOne({ _id: order_ID }, { member_id: 1 });
+    const member = await Member.findOne({ _id: memberID.member_id }, { _id: 1, email: 1, token: 1, create_token_time: 1 });
+    const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
+    if (member.token && Date.now() < limitTime) {
+      const { adult, children, clickDate, timeString, notes } = req.body;
+      console.log("clickDate", clickDate);
+      console.log("timeString", timeString);
+      console.log(12345, `${clickDate} ${timeString}`);
+      let dateTime = new Date(`${clickDate} ${timeString}`);
+      console.log("dateTime", dateTime);
       const order = await Order.findOne({
-        _id: order_id
+        _id: order_ID
       })
-        .update({
+        .updateOne({
           adult,
           children,
           dateTime,
           notes,
-          status: "Confirmed"
+          status: "Confirmed",
+          create_time: Date.now(),
+          modified_time: Date.now()
         })
         .then(() => {
           return Order.find({
-            member_id: memberID._id
+            member_id: memberID.member_id
           });
         });
       console.log("order", order);
-      res.json(order);
+      res.status(200).json({ code: 200, message: "saved order detail change", order: order });
     } else {
       console.log("Not log in...");
       res.redirect("/login");
