@@ -1,4 +1,3 @@
-/*jshint esversion: 6 */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
@@ -205,8 +204,7 @@ function Home() {
 
   useEffect(() => {
     console.log("sessionStorage", JSON.parse(sessionStorage.getItem("user")));
-    const sessionStorageData =
-      sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
+    const sessionStorageData = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
     if (!restaurant) {
       getRestaurant();
     }
@@ -248,6 +246,14 @@ function Home() {
     }
   };
 
+  const handleCheckOrderDetails = async () => {
+    const sessionStorageData = JSON.parse(sessionStorage.getItem("user"));
+    console.log(8390, "sessionStorageData", sessionStorageData);
+    const res = await productService.getAllOrders(sessionStorageData.member);
+    console.log("handle check order details res", res);
+    history.push("/order");
+  };
+
   return (
     <Container maxWidth="md">
       <div className={classes.root}>
@@ -259,26 +265,14 @@ function Home() {
           })}
         >
           <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, open && classes.hide)}
-            >
+            <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" className={clsx(classes.menuButton, open && classes.hide)}>
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap className={classes.title}>
               Gourmand
             </Typography>
             <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-list-grow"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
+              <IconButton aria-label="account of current user" aria-controls="menu-list-grow" aria-haspopup="true" onClick={handleMenu} color="inherit">
                 <AccountCircle />
               </IconButton>
               <Menu
@@ -300,7 +294,7 @@ function Home() {
                   <MenuItem onClick={handleLogIn}>登入</MenuItem>
                 ) : (
                   <div>
-                    <MenuItem onClick={handleClose}>查詢訂單</MenuItem>
+                    <MenuItem onClick={handleCheckOrderDetails}>查詢訂單</MenuItem>
                     <MenuItem onClick={handleLogOut}>登出</MenuItem>
                   </div>
                 )}
@@ -318,18 +312,11 @@ function Home() {
           }}
         >
           <div className={classes.drawerHeader}>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-            </IconButton>
+            <IconButton onClick={handleDrawerClose}>{theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}</IconButton>
           </div>
           <Divider />
           <ExpansionPanel>
-            <ExpansionPanelSummary
-              expandIcon={<KeyboardArrowDownRoundedIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-              className={classes.summary}
-            >
+            <ExpansionPanelSummary expandIcon={<KeyboardArrowDownRoundedIcon />} aria-controls="panel1a-content" id="panel1a-header" className={classes.summary}>
               <Typography className={classes.heading}>餐廳分類</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.details}>
@@ -404,12 +391,7 @@ function Home() {
                       </Card>
                       <Grid item xs={12} className={classes.guessItem}>
                         <span className={classes.restaurantName}>{result.name}</span>
-                        <Badge
-                          color="secondary"
-                          overlap="circle"
-                          className={categoryClasses.badge}
-                          badgeContent={<span>{result.category.kind}</span>}
-                        ></Badge>
+                        <Badge color="secondary" overlap="circle" className={categoryClasses.badge} badgeContent={<span>{result.category.kind}</span>}></Badge>
                       </Grid>
                     </div>
                   );
