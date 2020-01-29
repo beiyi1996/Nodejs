@@ -1,4 +1,3 @@
-/*jshint esversion: 6 */
 import React, { useState, useEffect } from "react";
 import productService from "../services/productService";
 import { Link } from "react-router-dom";
@@ -231,26 +230,14 @@ function Orders() {
           })}
         >
           <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, open && classes.hide)}
-            >
+            <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" className={clsx(classes.menuButton, open && classes.hide)}>
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap className={classes.title}>
               Gourmand
             </Typography>
             <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-list-grow"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
+              <IconButton aria-label="account of current user" aria-controls="menu-list-grow" aria-haspopup="true" onClick={handleMenu} color="inherit">
                 <AccountCircle />
               </IconButton>
               <Menu
@@ -284,18 +271,11 @@ function Orders() {
           }}
         >
           <div className={classes.drawerHeader}>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-            </IconButton>
+            <IconButton onClick={handleDrawerClose}>{theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}</IconButton>
           </div>
           <Divider />
           <ExpansionPanel>
-            <ExpansionPanelSummary
-              expandIcon={<KeyboardArrowDownRoundedIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-              className={classes.summary}
-            >
+            <ExpansionPanelSummary expandIcon={<KeyboardArrowDownRoundedIcon />} aria-controls="panel1a-content" id="panel1a-header" className={classes.summary}>
               <Typography className={classes.heading}>餐廳分類</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.details}>
@@ -331,14 +311,12 @@ function Orders() {
           {orders ? (
             orders.map(item => {
               const formatDateTime = new Date(item.dateTime);
-              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth()} / ${formatDateTime.getDate()}`;
-              const minutes =
-                formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `${formatDateTime.getMinutes()}0`;
+              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() + 1} / ${formatDateTime.getDate()}`;
+              const minutes = formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `${formatDateTime.getMinutes()}0`;
               const time = `${formatDateTime.getHours()} : ${minutes}`;
               const createDateTime = new Date(item.create_time);
-              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth()} / ${createDateTime.getDate()}`;
-              const createMinutes =
-                createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `${createDateTime.getMinutes()}0`;
+              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() + 1} / ${createDateTime.getDate()}`;
+              const createMinutes = createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `${createDateTime.getMinutes()}0`;
               const createTime = `${createDateTime.getHours()} : ${createMinutes}`;
               return (
                 <Grid item xs={12} className={classes.orderContent} key={item.create_time}>
@@ -373,7 +351,6 @@ function Orders() {
                     <div className={classes.featureBtn}>
                       <Link to={`/orderdetails?order_ID=${item._id}`}>
                         <Button>
-                          {/* onClick={handleEditOrderDetail} */}
                           <CreateRoundedIcon />
                         </Button>
                       </Link>
