@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useHistory } from "react-router-dom";
+import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -74,54 +76,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function TextMaskCustom(props) {
-  const { inputRef, ...other } = props;
-
-  return (
-    <MaskedInput
-      {...other}
-      ref={ref => {
-        inputRef(ref ? ref.inputElement : null);
-      }}
-      mask={[
-        "(",
-        " ",
-        "0",
-        "9",
-        " ",
-        ")",
-        " ",
-        /\d/,
-        /\d/,
-        " ",
-        "-",
-        " ",
-        /\d/,
-        /\d/,
-        /\d/,
-        " ",
-        "-",
-        " ",
-        /\d/,
-        /\d/,
-        /\d/
-      ]}
-      placeholderChar={"\u2000"}
-      showMask
-    />
-  );
-}
-
-TextMaskCustom.propTypes = {
-  inputRef: PropTypes.func.isRequired
-};
-
 function Register() {
   const classes = useStyles();
-  const [values, setValues] = useState({
-    textmask: "      -    -     ",
-    numberformat: "2330"
-  });
+  const [phone, setPhone] = useState("");
   const [newValues, setNewValues] = useState({
     amount: "",
     password: "",
@@ -129,15 +86,17 @@ function Register() {
     weightRange: "",
     showPassword: false
   });
-  const [value, setValue] = useState("female");
+  const [gender, setGender] = useState("female");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
 
   const handleRedioChange = event => {
-    setValue(event.target.value);
+    setGender(event.target.value);
   };
 
   const handleChange = name => event => {
-    setValues({
-      ...values,
+    setPhone({
+      ...phone,
       [name]: event.target.value
     });
   };
@@ -153,6 +112,20 @@ function Register() {
   const handleMouseDownPassword = event => {
     event.preventDefault();
   };
+
+  const handleChangeEmail = e => {
+    setEmail(e.target.value);
+  };
+
+  const handleChangeName = e => {
+    setName(e.target.value);
+  };
+
+  const handleRegister = async (email, password, name, gender, phone) => {
+    const genderNumber = gender === "male" ? 0 : 1;
+    const res = await productService.register(email, password, name, genderNumber, phone);
+    console.log("res", res);
+  };
   return (
     <Container maxWidth="sm">
       <Grid item xs={12} className={classes.container}>
@@ -161,7 +134,7 @@ function Register() {
         </Grid>
         <Grid item xs={12} className={classes.formGrid}>
           <form className={classes.form} noValidate autoComplete="off">
-            <TextField label="email" name="email" className={classes.input} />
+            <TextField label="email" name="email" className={classes.input} onChange={handleChangeEmail} />
             <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
               <InputLabel htmlFor="standard-adornment-password">password</InputLabel>
               <Input
@@ -183,24 +156,24 @@ function Register() {
                 name="password"
               />
             </FormControl>
-            <TextField label="name" name="name" className={classes.input} />
+            <TextField label="name" name="name" className={classes.input} onChange={handleChangeName} />
             <RadioGroup
               aria-label="gender"
-              name="gender2"
+              name="gender"
               className={classes.radioInput}
-              value={value}
+              value={gender}
               onChange={handleRedioChange}
             >
               <span className={classes.title}>gender</span>
               <FormControlLabel
-                value="female"
+                value="male"
                 control={<Radio color="primary" />}
                 label="男"
                 labelPlacement="end"
                 className={classes.radio}
               />
               <FormControlLabel
-                value="male"
+                value="female"
                 control={<Radio color="primary" />}
                 label="女"
                 labelPlacement="end"
@@ -208,18 +181,19 @@ function Register() {
               />
             </RadioGroup>
             <FormControl className={classes.input}>
-              <InputLabel htmlFor="formatted-text-mask-input">phone</InputLabel>
-              <Input
-                value={values.textmask}
-                onChange={handleChange("textmask")}
-                id="formatted-text-mask-input"
-                inputComponent={TextMaskCustom}
-              />
+              <InputLabel>phone</InputLabel>
+              <TextField label="name" name="name" className={classes.input} onChange={handleChangeName} />
+              <TextField label="name" name="name" className={classes.input} onChange={handleChangeName} />
+              <TextField label="name" name="name" className={classes.input} onChange={handleChangeName} />
             </FormControl>
           </form>
         </Grid>
         <Grid item xs={12} className={classes.buttonGrid}>
-          <Button variant="outlined" className={classes.button}>
+          <Button
+            variant="outlined"
+            className={classes.button}
+            onClick={() => handleRegister(email, newValues.password, name, gender, phone.textmask)}
+          >
             註冊
           </Button>
         </Grid>
