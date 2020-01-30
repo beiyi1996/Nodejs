@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import productService from "../services/productService";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
@@ -183,6 +183,13 @@ function Orders() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [orders, setOrders] = useState([]);
   const openU = Boolean(anchorEl);
+  const [sessionStroage, setSessionStorage] = useState({});
+  const history = useHistory();
+  const listItem = [
+    { title: "查看訂單", href: `/orders?name=${sessionStroage.member}` },
+    { title: "首頁", href: "/" },
+    { title: "聯絡我們", href: "#" }
+  ];
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -206,9 +213,16 @@ function Orders() {
 
   const getAllOrders = async () => {
     const user = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
-    const res = await productService.getAllOrders(user.member);
-    console.log("get all orders res", res);
-    setOrders(res);
+    setSessionStorage(user);
+    if (user.member) {
+      const res = await productService.getAllOrders(user.member);
+      console.log("get all orders res", res);
+      setOrders(res);
+    } else {
+      alert("請先登入, 即可查看訂單! 謝謝!");
+      sessionStorage.clear();
+      history.push("/login");
+    }
   };
 
   const handleMenu = event => {
@@ -217,6 +231,47 @@ function Orders() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleDeleteOrder = async order_ID => {
+    console.log("handle delete order order_ID", order_ID);
+    const deleteOrder = window.confirm("請問您確定要刪除此筆訂單嗎?");
+    if (deleteOrder) {
+      const deleteOrder = await productService.deleteOrderDetails(order_ID);
+      console.log("deleteOrder", deleteOrder);
+      if (deleteOrder.code === 400) {
+        alert("您已超過最晚取消預約時間, 無法將您的訂單移除!");
+      } else if (deleteOrder.code === 301) {
+        alert("您已登入超過10分鐘, 系統為確保您的資料安全, 已將您登出!! 請您再次登入進行修改, 謝謝!");
+        sessionStorage.clear();
+        history.push("/login");
+      } else {
+        await getAllOrders();
+        alert(`已將您的訂單編號為 (${order_ID}) 訂單刪除!`);
+      }
+    }
+  };
+
+  const handleCheckOrderDetails = async () => {
+    const sessionStorageData = JSON.parse(sessionStorage.getItem("user"));
+    console.log(8390, "sessionStorageData", sessionStorageData);
+    const res = await productService.getAllOrders(sessionStorageData.member);
+    console.log("handle check order details res", res);
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    console.log("user", user);
+    handleClose();
+    history.push(`/orders?name=${user.member}`);
+  };
+
+  const handleLogOut = async () => {
+    const res = await productService.logOut(sessionStroage.login);
+    console.log("log out res", res);
+    if (res.code === 200) {
+      sessionStorage.clear();
+      alert("已將您的帳號登出!");
+      history.push("/");
+      handleClose();
+    }
   };
 
   return (
@@ -230,14 +285,26 @@ function Orders() {
           })}
         >
           <Toolbar>
-            <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" className={clsx(classes.menuButton, open && classes.hide)}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, open && classes.hide)}
+            >
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap className={classes.title}>
               Gourmand
             </Typography>
             <div>
-              <IconButton aria-label="account of current user" aria-controls="menu-list-grow" aria-haspopup="true" onClick={handleMenu} color="inherit">
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-list-grow"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
                 <AccountCircle />
               </IconButton>
               <Menu
@@ -255,8 +322,8 @@ function Orders() {
                 open={openU}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>查詢訂單</MenuItem>
-                <MenuItem onClick={handleClose}>登出</MenuItem>
+                <MenuItem onClick={handleCheckOrderDetails}>查詢訂單</MenuItem>
+                <MenuItem onClick={handleLogOut}>登出</MenuItem>
               </Menu>
             </div>
           </Toolbar>
@@ -271,11 +338,18 @@ function Orders() {
           }}
         >
           <div className={classes.drawerHeader}>
-            <IconButton onClick={handleDrawerClose}>{theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}</IconButton>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
           </div>
           <Divider />
           <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<KeyboardArrowDownRoundedIcon />} aria-controls="panel1a-content" id="panel1a-header" className={classes.summary}>
+            <ExpansionPanelSummary
+              expandIcon={<KeyboardArrowDownRoundedIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+              className={classes.summary}
+            >
               <Typography className={classes.heading}>餐廳分類</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.details}>
@@ -283,9 +357,11 @@ function Orders() {
                 {restaurant ? (
                   restaurant.distinctByKind.map((kind, idx) => {
                     return (
-                      <ListItem button key={idx}>
-                        <ListItemText primary={kind} />
-                      </ListItem>
+                      <Link to={`/search?searchKeyWord=${kind}`} key={idx}>
+                        <ListItem button>
+                          <ListItemText primary={kind} />
+                        </ListItem>
+                      </Link>
                     );
                   })
                 ) : (
@@ -295,10 +371,12 @@ function Orders() {
             </ExpansionPanelDetails>
           </ExpansionPanel>
           <List>
-            {["查看訂單", "首頁", "聯絡我們"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemText primary={text} />
-              </ListItem>
+            {listItem.map((item, index) => (
+              <Link to={item.href} key={index}>
+                <ListItem button>
+                  <ListItemText primary={item.title} />
+                </ListItem>
+              </Link>
             ))}
           </List>
         </Drawer>
@@ -311,12 +389,16 @@ function Orders() {
           {orders ? (
             orders.map(item => {
               const formatDateTime = new Date(item.dateTime);
-              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() + 1} / ${formatDateTime.getDate()}`;
-              const minutes = formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `${formatDateTime.getMinutes()}0`;
+              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() +
+                1} / ${formatDateTime.getDate()}`;
+              const minutes =
+                formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `${formatDateTime.getMinutes()}0`;
               const time = `${formatDateTime.getHours()} : ${minutes}`;
               const createDateTime = new Date(item.create_time);
-              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() + 1} / ${createDateTime.getDate()}`;
-              const createMinutes = createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `${createDateTime.getMinutes()}0`;
+              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() +
+                1} / ${createDateTime.getDate()}`;
+              const createMinutes =
+                createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `${createDateTime.getMinutes()}0`;
               const createTime = `${createDateTime.getHours()} : ${createMinutes}`;
               return (
                 <Grid item xs={12} className={classes.orderContent} key={item.create_time}>
@@ -354,7 +436,7 @@ function Orders() {
                           <CreateRoundedIcon />
                         </Button>
                       </Link>
-                      <Button>
+                      <Button onClick={() => handleDeleteOrder(item._id)}>
                         <DeleteRoundedIcon />
                       </Button>
                     </div>
