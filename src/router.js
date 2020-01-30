@@ -11,17 +11,9 @@ import Validator from "./validator";
 
 const router = express.Router();
 // 會員註冊
-router.get("/register", (req, res) => {
-  res.send("<h1>This is register page!</h1>");
-});
-
 router.post("/register", Validator.memberValidator("register"), MemberController.register);
 
 // 會員登入
-router.get("/login", (req, res) => {
-  res.send("<h1>This is LogIn page!</h1>");
-});
-
 router.post("/login", Validator.memberValidator("login"), MemberController.logIn);
 
 // 忘記密碼
@@ -76,7 +68,7 @@ router.get("/orderdetails", OrderController.findOrderDetails);
 router.post("/orderdetails/save", OrderController.modifiedOrderDetails);
 
 // 取消訂單
-router.post("/orderdetails/cancel", OrderController.cancelledOrderDetail);
+router.get("/orderdetails/delete", OrderController.deleteOrderDetail);
 
 // 新增類別
 router.post("/createCategory", CategoryController.createCategory);
