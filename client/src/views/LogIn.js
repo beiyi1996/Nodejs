@@ -95,6 +95,11 @@ function LogIn() {
     }
   };
 
+  const handleRegister = () => {
+    console.log("handle register is working!!");
+    history.push("/register");
+  };
+
   const handleForgetPassword = () => {
     console.log("handleforgetpassword is working");
     if (email === "") {
@@ -138,9 +143,14 @@ function LogIn() {
           </form>
         </Grid>
         <Grid item xs={12} className={classes.buttonGrid}>
-          <Button variant="outlined" className={classes.button} onClick={() => handleLogIn(email, values.password)}>
-            登入
-          </Button>
+          <Grid item xs={12}>
+            <Button variant="outlined" className={classes.button} onClick={() => handleLogIn(email, values.password)}>
+              登入
+            </Button>
+            <Button variant="outlined" className={classes.button} onClick={handleRegister}>
+              註冊
+            </Button>
+          </Grid>
           <Button variant="outlined" className={classes.button} onClick={handleForgetPassword}>
             忘記密碼
           </Button>
