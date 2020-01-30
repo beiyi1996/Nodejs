@@ -5,8 +5,16 @@ export default {
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
-  register: async () => {
-    return await fetch("http://localhost:5000/register")
+  register: async (email, password, name, gender, phone) => {
+    const data = { email, password, gender, phone, name };
+    console.log("data", data);
+    return await fetch("http://localhost:5000/register", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: new Headers({
+        "Content-Type": "application/json"
+      })
+    })
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
@@ -124,8 +132,9 @@ export default {
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
-  cancelModifiedOrderDetails: async order_id => {
-    return await fetch(`http://localhost:5000/orderdetails/cancel?order_ID=${order_id}`)
+  deleteOrderDetails: async order_id => {
+    console.log(2, "delete order details service is working!!!");
+    return await fetch(`http://localhost:5000/orderdetails/delete?order_ID=${order_id}`)
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
