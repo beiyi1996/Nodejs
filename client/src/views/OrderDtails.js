@@ -355,7 +355,20 @@ function OrderDetails() {
   let [clickDate, setClickDate] = useState("");
   const inputRef = useRef(null);
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
-  const monthEnName = ["January", "February", "March", "April", "May", "June", "July", "August", "Septemper", "October", "November", "December"];
+  const monthEnName = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "Septemper",
+    "October",
+    "November",
+    "December"
+  ];
   const history = useHistory();
 
   const handleDrawerOpen = () => {
@@ -443,11 +456,28 @@ function OrderDetails() {
     const urlParams = new URLSearchParams(window.location.search);
     const order_ID = urlParams.get("order_ID");
     history.push(`/orderdetails/save?order_ID=${order_ID}`);
-    const saveChangeOrderResult = await productService.saveOrderDetails(order_ID, clickDate, time, adult, children, notes);
+    const saveChangeOrderResult = await productService.saveModifiedOrderDetails(
+      order_ID,
+      clickDate,
+      time,
+      adult,
+      children,
+      notes
+    );
     console.log("saveChangeOrderResult", saveChangeOrderResult);
     const user = sessionStorage.getItem("user");
     if (saveChangeOrderResult.code === 200) {
       history.push(`/order?name=${user.member}`);
+    }
+  };
+
+  const handleCancelChangeOrder = () => {
+    const isCancel = window.confirm("請問您確定要取消修改訂單嗎?");
+    console.log("isCancel", isCancel);
+    if (isCancel) {
+      history.push("/order");
+    } else {
+      return false;
     }
   };
 
@@ -551,8 +581,12 @@ function OrderDetails() {
               const isWeekend = item[1] === 0 || item[1] === 6 ? true : false;
               const notThisMonth = item.length === 0 ? true : false;
               const clicked = `${year}/${month + 1}/${item[0]}` === `${clickDate}` ? true : false;
-              const disabled = year === today.getFullYear() && month === today.getMonth() && item[0] < today.getDate() ? true : false;
-              const disabledToday = year === today.getFullYear() && month === today.getMonth() && item[0] === today.getDate() ? true : false;
+              const disabled =
+                year === today.getFullYear() && month === today.getMonth() && item[0] < today.getDate() ? true : false;
+              const disabledToday =
+                year === today.getFullYear() && month === today.getMonth() && item[0] === today.getDate()
+                  ? true
+                  : false;
               return (
                 <span
                   className={clsx(classes.day, {
@@ -591,7 +625,14 @@ function OrderDetails() {
     return (
       <React.Fragment>
         <p className={classes.label}>日期</p>
-        <input type="text" className={classes.dateInput} onClick={toggleShowCalendar} ref={inputRef} value={clickDate || ""} readOnly />
+        <input
+          type="text"
+          className={classes.dateInput}
+          onClick={toggleShowCalendar}
+          ref={inputRef}
+          value={clickDate || ""}
+          readOnly
+        />
         <FormHelperText>請選擇訂位日期!</FormHelperText>
         <div className={clsx(classes.calendarGrid, { [classes.show]: isShowCalendar })}>
           <Fade in={checked}>
@@ -628,14 +669,26 @@ function OrderDetails() {
           })}
         >
           <Toolbar>
-            <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" className={clsx(classes.menuButton, open && classes.hide)}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, open && classes.hide)}
+            >
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap className={classes.title}>
               Gourmand
             </Typography>
             <div>
-              <IconButton aria-label="account of current user" aria-controls="menu-list-grow" aria-haspopup="true" onClick={handleMenu} color="inherit">
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-list-grow"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
                 <AccountCircle />
               </IconButton>
               <Menu
@@ -669,11 +722,18 @@ function OrderDetails() {
           }}
         >
           <div className={classes.drawerHeader}>
-            <IconButton onClick={handleDrawerClose}>{theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}</IconButton>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
           </div>
           <Divider />
           <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<KeyboardArrowDownRoundedIcon />} aria-controls="panel1a-content" id="panel1a-header" className={classes.summary}>
+            <ExpansionPanelSummary
+              expandIcon={<KeyboardArrowDownRoundedIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+              className={classes.summary}
+            >
               <Typography className={classes.heading}>餐廳分類</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.details}>
@@ -723,7 +783,12 @@ function OrderDetails() {
                 <li>
                   <FormControl className={classes.formControl}>
                     <InputLabel id="demo-simple-select-helper-label">時間</InputLabel>
-                    <Select labelId="demo-simple-select-helper-label" id="demo-simple-select-helper" value={time} onChange={handleChange}>
+                    <Select
+                      labelId="demo-simple-select-helper-label"
+                      id="demo-simple-select-helper"
+                      value={time}
+                      onChange={handleChange}
+                    >
                       <MenuItem value={12}>12:00</MenuItem>
                       <MenuItem value={13}>13:00</MenuItem>
                       <MenuItem value={14}>14:00</MenuItem>
@@ -738,7 +803,7 @@ function OrderDetails() {
                       <span className={classes.counterTitle}>大人</span>
                       <div className={classes.btnGroup}>
                         <button onClick={handleClickMinusAdult}>-</button>
-                        <input name="adult" type="text" value={adult || ""} readOnly />
+                        <input name="adult" type="text" value={adult || 0} readOnly />
                         <button onClick={handleClickPlusAdult}>+</button>
                       </div>
                     </div>
@@ -746,7 +811,7 @@ function OrderDetails() {
                       <span className={classes.counterTitle}>小孩</span>
                       <div className={classes.btnGroup}>
                         <button onClick={handleClickMinusChildren}>-</button>
-                        <input name="children" type="text" value={children || ""} readOnly />
+                        <input name="children" type="text" value={children || 0} readOnly />
                         <button onClick={handleClickPlusChildren}>+</button>
                       </div>
                     </div>
@@ -754,12 +819,19 @@ function OrderDetails() {
                 </li>
                 <li>
                   <p className={classes.notes}>備註</p>
-                  <textarea name="notes" id="" cols="30" rows="5" className={classes.textArea} onChange={handleChangeNote}></textarea>
+                  <textarea
+                    name="notes"
+                    id=""
+                    cols="30"
+                    rows="5"
+                    className={classes.textArea}
+                    onChange={handleChangeNote}
+                  ></textarea>
                 </li>
               </ul>
             </Paper>
             <Grid item xs={12} className={classes.button}>
-              <Button>取消</Button>
+              <Button onClick={handleCancelChangeOrder}>取消</Button>
               <Button color="primary" onClick={handleSaveChangeOrder}>
                 儲存
               </Button>
