@@ -23,7 +23,7 @@ function App() {
         <Route path="/register" component={Register} />
         <Route path="/login" component={LogIn} />
         <Route path="/booking" component={Booking} />
-        <Route path="/order" component={Order} />
+        <Route path="/orders" component={Order} />
         <Route path="/orderdetails" component={OrderDetails} />
         <Route path="/completed" component={Completed} />
         <Route path="/modifiedpassword" component={ModifiedPassword} />
