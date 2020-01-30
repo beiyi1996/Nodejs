@@ -149,7 +149,10 @@ const findOrderDetails = async (req, res, next) => {
   console.log("find Order Details order_Id", order_ID);
   try {
     const memberID = await Order.findOne({ _id: order_ID }, { member_id: 1 });
-    const member = await Member.findOne({ _id: memberID.member_id }, { _id: 1, email: 1, token: 1, create_token_time: 1 });
+    const member = await Member.findOne(
+      { _id: memberID.member_id },
+      { _id: 1, email: 1, token: 1, create_token_time: 1 }
+    );
     const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
     if (member.token && Date.now() < limitTime) {
       const orderDetails = await Order.findOne({
@@ -176,7 +179,10 @@ const modifiedOrderDetails = async (req, res, next) => {
   const { order_ID } = req.query;
   try {
     const memberID = await Order.findOne({ _id: order_ID }, { member_id: 1 });
-    const member = await Member.findOne({ _id: memberID.member_id }, { _id: 1, email: 1, token: 1, create_token_time: 1 });
+    const member = await Member.findOne(
+      { _id: memberID.member_id },
+      { _id: 1, email: 1, token: 1, create_token_time: 1 }
+    );
     const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
     if (member.token && Date.now() < limitTime) {
       const { adult, children, clickDate, timeString, notes } = req.body;
@@ -213,21 +219,25 @@ const modifiedOrderDetails = async (req, res, next) => {
   }
 };
 
-const cancelledOrderDetail = async (req, res, next) => {
+const deleteOrderDetail = async (req, res, next) => {
+  console.log("delete order detail controller is working!!!");
+  const { order_ID } = req.query;
+  console.log("order_ID", order_ID);
   try {
-    if (req.session.isLogIn) {
-      const { order_id } = req.params;
-      const memberID = await Member.findOne(
-        {
-          name: req.session.member
-        },
-        {
-          _id: 1
-        }
-      );
+    const memberID = await Order.findOne({ _id: order_ID }, { member_id: 1 });
+    console.log(567, "memberID", memberID);
+    const member = await Member.findOne(
+      { _id: memberID.member_id },
+      { _id: 1, email: 1, token: 1, create_token_time: 1 }
+    );
+    console.log(567, "member", member);
+    const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
+    console.log("limitTime", limitTime, "now", Date.now());
+    console.log(Date.now() < limitTime);
+    if (member.token && Date.now() < limitTime) {
       const orderDetails = await Order.findOne(
         {
-          _id: order_id
+          _id: order_ID
         },
         {
           _id: 1,
@@ -244,22 +254,21 @@ const cancelledOrderDetail = async (req, res, next) => {
         });
       }
 
-      const newOrders = await Order.updateOne(
-        {
-          _id: order_id
-        },
-        {
-          status: "Cancelled"
-        }
-      ).then(() => {
+      const newOrders = await Order.deleteOne({
+        _id: order_ID
+      }).then(() => {
+        console.log("刪除完畢");
         return Order.find({
-          member_id: memberID._id
+          member_id: member._id
         });
       });
       res.status(200).json(newOrders);
     } else {
       console.log("Not log in");
-      res.redirect("/login");
+      res.status(301).json({
+        code: 301,
+        message: "You are not log in"
+      });
     }
   } catch (err) {
     return next(err);
@@ -278,5 +287,5 @@ module.exports = {
   findOrders,
   findOrderDetails,
   modifiedOrderDetails,
-  cancelledOrderDetail
+  deleteOrderDetail
 };
