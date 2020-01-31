@@ -6,8 +6,6 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import MaskedInput from "react-text-mask";
-import PropTypes from "prop-types";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
@@ -19,6 +17,7 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -73,36 +72,64 @@ const useStyles = makeStyles(theme => ({
   radio: {
     width: "38%",
     marginRight: 0
+  },
+  phoneLabel: {
+    marginTop: "-30px"
+  },
+  phoneInput: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  phone: {
+    "& > div > input": {
+      textAlign: "center"
+    }
+  },
+  error: {
+    borderBottom: "2px solid #f44336 !important"
+  },
+  hide: {
+    display: "none"
+  },
+  errorText: {
+    color: "#E07A5F"
+  },
+  phoneErrorText: {
+    color: "#E07A5F",
+    lineHeight: "20px",
+    textAlign: "center",
+    marginTop: "-5px"
   }
 }));
 
 function Register() {
   const classes = useStyles();
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState({
+    phone1: "",
+    phone2: "",
+    phone3: ""
+  });
   const [newValues, setNewValues] = useState({
-    amount: "",
     password: "",
-    weight: "",
-    weightRange: "",
     showPassword: false
   });
   const [gender, setGender] = useState("female");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [checkPasswordError, setPasswordError] = useState(false);
+  const [nameError, setNameError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
+  const history = useHistory();
 
   const handleRedioChange = event => {
     setGender(event.target.value);
   };
 
-  const handleChange = name => event => {
-    setPhone({
-      ...phone,
-      [name]: event.target.value
-    });
-  };
-
   const handlePasswordChange = prop => event => {
     setNewValues({ ...newValues, [prop]: event.target.value });
+    setPasswordError(false);
   };
 
   const handleClickShowPassword = () => {
@@ -115,16 +142,62 @@ function Register() {
 
   const handleChangeEmail = e => {
     setEmail(e.target.value);
+    setEmailError(false);
   };
 
   const handleChangeName = e => {
     setName(e.target.value);
+    setNameError(false);
+  };
+
+  const handleInputRegex = e => {
+    e.target.value = e.target.value.replace(/[A-Za-z\u4e00-\u9fa5\s\D]/g, "");
+    const name = e.target.name;
+    console.log("name", name);
+    setPhone({
+      ...phone,
+      [name]: e.target.value
+    });
+    setPhoneError(false);
   };
 
   const handleRegister = async (email, password, name, gender, phone) => {
     const genderNumber = gender === "male" ? 0 : 1;
-    const res = await productService.register(email, password, name, genderNumber, phone);
-    console.log("res", res);
+    const allPhone = `${phone.phone1}-${phone.phone2}-${phone.phone3}`;
+    console.log("allPhone", allPhone);
+    if (email === "" || password === "" || name === "" || genderNumber === "" || allPhone === "") {
+      alert("每個欄位都為必填欄位!! 請填寫完成再按下註冊按鈕, 謝謝!");
+    } else {
+      const res = await productService.register(email, password, name, genderNumber, allPhone);
+      console.log("res", res);
+      if (res.code === 200) {
+        alert("您已註冊成功, 開始挑選您的食物吧!");
+        history.push("/");
+      } else if (res.code === 422) {
+        alert("資料填寫有誤!");
+        res.errors.map(item => {
+          console.log("item", item);
+          switch (item.param) {
+            case "email":
+              setEmailError(true);
+              break;
+            case "password":
+              setPasswordError(true);
+              break;
+            case "name":
+              setNameError(true);
+              break;
+            case "phone":
+              setPhoneError(true);
+              break;
+            default:
+              console.log("You do not have any error!!");
+              break;
+          }
+          return console.log("You should done this form!!");
+        });
+      }
+    }
   };
   return (
     <Container maxWidth="sm">
@@ -134,7 +207,14 @@ function Register() {
         </Grid>
         <Grid item xs={12} className={classes.formGrid}>
           <form className={classes.form} noValidate autoComplete="off">
-            <TextField label="email" name="email" className={classes.input} onChange={handleChangeEmail} />
+            <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
+              <TextField label="email" name="email" onChange={handleChangeEmail} error={emailError} />
+              <FormHelperText
+                className={clsx(classes.input, classes.errorText, { [classes.hide]: emailError === false })}
+              >
+                請填寫有效信箱! (simple@example.com)
+              </FormHelperText>
+            </FormControl>
             <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
               <InputLabel htmlFor="standard-adornment-password">password</InputLabel>
               <Input
@@ -154,9 +234,21 @@ function Register() {
                   </InputAdornment>
                 }
                 name="password"
+                error={checkPasswordError}
               />
+              <FormHelperText
+                className={clsx(classes.input, classes.errorText, { [classes.hide]: checkPasswordError === false })}
+              >
+                請輸入至少8碼!
+              </FormHelperText>
             </FormControl>
-            <TextField label="name" name="name" className={classes.input} onChange={handleChangeName} />
+            <TextField
+              label="name"
+              name="name"
+              className={classes.input}
+              onChange={handleChangeName}
+              error={nameError}
+            />
             <RadioGroup
               aria-label="gender"
               name="gender"
@@ -180,11 +272,40 @@ function Register() {
                 className={classes.radio}
               />
             </RadioGroup>
-            <FormControl className={classes.input}>
-              <InputLabel>phone</InputLabel>
-              <TextField label="name" name="name" className={classes.input} onChange={handleChangeName} />
-              <TextField label="name" name="name" className={classes.input} onChange={handleChangeName} />
-              <TextField label="name" name="name" className={classes.input} onChange={handleChangeName} />
+            <FormControl className={clsx(classes.input)}>
+              <InputLabel className={classes.phoneLabel}>phone</InputLabel>
+              <div className={classes.phoneInput}>
+                <TextField
+                  name="phone1"
+                  className={clsx(classes.input, classes.phone)}
+                  inputProps={{ maxLength: 4 }}
+                  defaultValue="09"
+                  onInput={handleInputRegex}
+                  error={phoneError}
+                />
+                -
+                <TextField
+                  name="phone2"
+                  className={clsx(classes.input, classes.phone)}
+                  inputProps={{ maxLength: 3 }}
+                  onInput={handleInputRegex}
+                  error={phoneError}
+                />
+                -
+                <TextField
+                  name="phone3"
+                  className={clsx(classes.input, classes.phone)}
+                  inputProps={{ maxLength: 3 }}
+                  onInput={handleInputRegex}
+                  error={phoneError}
+                />
+              </div>
+              <FormHelperText
+                className={clsx(classes.input, classes.phoneErrorText, { [classes.hide]: phoneError === false })}
+              >
+                請輸入完整電話號碼! <br />
+                (example: 0900-000-000)
+              </FormHelperText>
             </FormControl>
           </form>
         </Grid>
@@ -192,7 +313,7 @@ function Register() {
           <Button
             variant="outlined"
             className={classes.button}
-            onClick={() => handleRegister(email, newValues.password, name, gender, phone.textmask)}
+            onClick={() => handleRegister(email, newValues.password, name, gender, phone)}
           >
             註冊
           </Button>
