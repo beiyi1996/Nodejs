@@ -72,7 +72,7 @@ function Completed() {
               回首頁
             </Button>
           </Link>
-          <Link to={`/order?name=${userName}`}>
+          <Link to={`/orders?name=${userName}`}>
             <Button variant="outlined" className={classes.button}>
               查看訂單
             </Button>
