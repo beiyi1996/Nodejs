@@ -172,6 +172,19 @@ const useStyles = makeStyles(theme => ({
         color: "#E07A5F"
       }
     }
+  },
+  noOrder: {
+    backgroundColor: "#F9F7ED",
+    color: "#E07A5F",
+    fontFamily: "Microsoft JhengHei",
+    fontSize: 18,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 60,
+    width: "100%",
+    padding: 10,
+    wordBreak: "normal"
   }
 }));
 
@@ -199,13 +212,6 @@ function Orders() {
     setOpen(false);
   };
 
-  useEffect(() => {
-    if (!restaurant) {
-      getRestaurant();
-    }
-    getAllOrders();
-  }, []);
-
   const getRestaurant = async () => {
     let res = await productService.getAll();
     setrestaurant(res);
@@ -224,6 +230,13 @@ function Orders() {
       history.push("/login");
     }
   };
+
+  useEffect(() => {
+    if (!restaurant) {
+      getRestaurant();
+    }
+    getAllOrders();
+  }, []);
 
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);
@@ -269,8 +282,8 @@ function Orders() {
     if (res.code === 200) {
       sessionStorage.clear();
       alert("已將您的帳號登出!");
-      history.push("/");
       handleClose();
+      history.push("/");
     }
   };
 
@@ -386,19 +399,19 @@ function Orders() {
           })}
         >
           <div className={classes.drawerHeader} />
-          {orders ? (
+          {orders.length !== 0 ? (
             orders.map(item => {
               const formatDateTime = new Date(item.dateTime);
               const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() +
                 1} / ${formatDateTime.getDate()}`;
               const minutes =
-                formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `${formatDateTime.getMinutes()}0`;
+                formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `0${formatDateTime.getMinutes()}`;
               const time = `${formatDateTime.getHours()} : ${minutes}`;
               const createDateTime = new Date(item.create_time);
               const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() +
                 1} / ${createDateTime.getDate()}`;
               const createMinutes =
-                createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `${createDateTime.getMinutes()}0`;
+                createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `0${createDateTime.getMinutes()}`;
               const createTime = `${createDateTime.getHours()} : ${createMinutes}`;
               return (
                 <Grid item xs={12} className={classes.orderContent} key={item.create_time}>
@@ -445,7 +458,10 @@ function Orders() {
               );
             })
           ) : (
-            <div>還沒找到喜歡的餐廳嗎?? 快回首頁在搜尋一下吧!!</div>
+            <div className={classes.noOrder}>
+              還沒找到喜歡的餐廳嗎?? <br />
+              快回首頁在搜尋一下吧!!
+            </div>
           )}
         </main>
       </div>
