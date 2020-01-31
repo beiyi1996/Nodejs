@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
@@ -60,19 +61,15 @@ function ModifiedPassword() {
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
   const [newValues, setNewValues] = useState({
-    amount: "",
     password: "",
-    weight: "",
-    weightRange: "",
     showPassword: false
   });
   const [checkValues, setCheckValues] = useState({
-    amount: "",
     password: "",
-    weight: "",
-    weightRange: "",
     showPassword: false
   });
+  const [passwordError, setPasswordError] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     console.log(123456, "modified password useEffect");
@@ -82,12 +79,20 @@ function ModifiedPassword() {
       setToken(token);
       const res = await productService.modifiedPasswordGET(token);
       console.log("get modified password!!!", res);
-      setEmail(res.email);
+      if (res) {
+        setEmail(res.email);
+      } else {
+        alert(
+          "您的修改密碼時間已超過10分鐘, 為確保您的帳戶安全, 系統已將您自動登出, 麻煩您再次進行忘記密碼的操作流程! 謝謝您!"
+        );
+        history.push("/login");
+      }
     }
     getModifiedPasswordPage();
   }, []);
 
   const handleChange = prop => event => {
+    setPasswordError(false);
     setNewValues({ ...newValues, [prop]: event.target.value });
   };
 
@@ -96,6 +101,7 @@ function ModifiedPassword() {
   };
 
   const handleChangeCheckPassword = prop => event => {
+    setPasswordError(false);
     setCheckValues({ ...checkValues, [prop]: event.target.value });
   };
 
@@ -111,9 +117,14 @@ function ModifiedPassword() {
     console.log("handle modified password");
     if (newValues.password !== checkValues.password) {
       alert("密碼與確認密碼不同, 請再次確認");
+      setPasswordError(true);
     } else {
       let res = await productService.modifiedPasswordPOST(token, email, checkValues.password);
       console.log("res", res);
+      if (res.code === 200) {
+        alert("您已完成修改密碼!");
+        history.push("/");
+      }
     }
   };
   return (
@@ -145,6 +156,7 @@ function ModifiedPassword() {
                   </InputAdornment>
                 }
                 name="password"
+                error={passwordError}
               />
             </FormControl>
             <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
@@ -166,6 +178,7 @@ function ModifiedPassword() {
                   </InputAdornment>
                 }
                 name="password"
+                error={passwordError}
               />
             </FormControl>
           </form>
