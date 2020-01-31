@@ -207,11 +207,11 @@ function Search() {
   };
 
   const handleSubmit = async () => {
-    history.push(`/search?searchKeyWord=${searchKeyWord}`);
     let res = await productService.searchByKeyWord(searchKeyWord);
     setURLParams(searchKeyWord);
     setRestaurant(res.restaurants);
     setBlur(true);
+    history.push(`/search?searchKeyWord=${searchKeyWord}`);
   };
 
   const handleChange = e => {
@@ -238,7 +238,9 @@ function Search() {
         ));
         return <div className={classes.saerchListItem}>{list}</div>;
       } else {
-        return <h4 className={classNames(classes.searchNone, classes.saerchListItem)}>抱歉, 沒有您想要搜尋的餐廳資訊!!</h4>;
+        return (
+          <h4 className={classNames(classes.searchNone, classes.saerchListItem)}>抱歉, 沒有您想要搜尋的餐廳資訊!!</h4>
+        );
       }
     }
   };
@@ -247,7 +249,13 @@ function Search() {
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
         <Grid item xs={12} className={classes.grid}>
-          <input type="text" name="searchbar" className={classes.searchBar} value={searchKeyWord} onChange={handleChange} />
+          <input
+            type="text"
+            name="searchbar"
+            className={classes.searchBar}
+            value={searchKeyWord}
+            onChange={handleChange}
+          />
           <div className={classes.searchIcon}>
             <Button className={classes.searchBtn} onClick={handleSubmit}>
               <SearchIcon className={classes.icon} />
@@ -277,7 +285,10 @@ function Search() {
                       <Chip label={item.category.kind} className={classes.chip} />
                     </Typography>
                     <Link to={`/detail?name=${item.name}&_id=${item._id}`}>
-                      <Button className={classes.restaurantMore} onClick={() => productService.getRestaurantDetail(item.name, item._id)}>
+                      <Button
+                        className={classes.restaurantMore}
+                        onClick={() => productService.getRestaurantDetail(item.name, item._id)}
+                      >
                         more
                       </Button>
                     </Link>

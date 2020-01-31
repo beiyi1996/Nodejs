@@ -362,9 +362,9 @@ function Detail() {
   };
 
   const handleSubmit = async () => {
-    history.push(`/search?searchKeyWord=${searchKeyWord}`);
     setQueryName(searchKeyWord);
     setBlur(true);
+    history.push(`/search?searchKeyWord=${searchKeyWord}`);
   };
 
   const handleClickItem = item => {
