@@ -26,7 +26,7 @@ const register = async (req, res, next) => {
       phone,
       name
     });
-    res.json(member);
+    res.status(200).json({ code: 200, message: "register success", member });
   } catch (err) {
     console.log("error!!!");
     return next(err);
