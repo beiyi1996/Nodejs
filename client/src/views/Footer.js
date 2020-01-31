@@ -46,7 +46,7 @@ export default function SimpleBottomNavigation() {
       <BottomNavigationAction component={Link} to="/" label="Home" icon={<HomeRoundedIcon />} />
       <BottomNavigationAction
         component={Link}
-        to="/order"
+        to="/orders"
         label="Order"
         icon={<RestaurantRoundedIcon />}
         className={classes.order}
