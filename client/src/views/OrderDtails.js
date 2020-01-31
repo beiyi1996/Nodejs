@@ -351,7 +351,9 @@ function OrderDetails() {
   const [disabledNext, setDisabledNext] = useState(false);
   const [isShowCalendar, setShowCalendar] = useState(false);
   const [notes, setNotes] = useState("");
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(false);
+  const [orderID, setOrderID] = useState("");
+  const [createTime, setCreateTime] = useState("");
   let [clickDate, setClickDate] = useState("");
   const inputRef = useRef(null);
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
@@ -423,16 +425,26 @@ function OrderDetails() {
     const res = await productService.getOrderDetails(order_ID);
     console.log(111, "get order details res", res);
     if (res.code === 200) {
+      const createOrderTime = new Date(res.orderDetails.create_time);
+      const create_Date = `${createOrderTime.getFullYear()} / ${createOrderTime.getMonth() +
+        1} / ${createOrderTime.getDate()}`;
+      console.log("create_Date", create_Date);
+      const create_Minutes =
+        createOrderTime.getMinutes() > 9 ? `${createOrderTime.getMinutes()}` : `0${createOrderTime.getMinutes()}`;
+      const create_Time = `${createOrderTime.getHours()}:${create_Minutes}`;
       console.log("res.orderDetails", res.orderDetails.dateTime);
       const bookingTime = new Date(res.orderDetails.dateTime);
       const date = `${bookingTime.getFullYear()} / ${bookingTime.getMonth() + 1} / ${bookingTime.getDate()}`;
       console.log("date", date);
       const time = `${bookingTime.getHours()}`;
       console.log("time", time);
+      setOrderID(res.orderDetails._id);
+      setCreateTime(`${create_Date} - ${create_Time}`);
       setClickDate(date);
       setTime(time);
       setAdult(res.orderDetails.adult);
       setChildren(res.orderDetails.children);
+      setNotes(res.orderDetails.notes);
     } else {
       alert("您已登入超過10分鐘, 系統為確保您的資料安全, 已將您登出!! 請您再次登入進行修改, 謝謝!");
       sessionStorage.clear();
@@ -465,9 +477,10 @@ function OrderDetails() {
       notes
     );
     console.log("saveChangeOrderResult", saveChangeOrderResult);
-    const user = sessionStorage.getItem("user");
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    console.log("user", user);
     if (saveChangeOrderResult.code === 200) {
-      history.push(`/order?name=${user.member}`);
+      history.push(`/orders?name=${user.member}`);
     }
   };
 
@@ -475,42 +488,49 @@ function OrderDetails() {
     const isCancel = window.confirm("請問您確定要取消修改訂單嗎?");
     console.log("isCancel", isCancel);
     if (isCancel) {
-      history.push("/order");
+      history.push("/orders");
     } else {
       return false;
     }
   };
 
   const Calendar = () => {
-    const handlePrevMonth = () => {
-      setChecked(true);
-      const thisMonth = `${today.getFullYear()}${today.getMonth()}`;
-      const changeMonth = `${year}${month}`;
+    let changeMonth = "";
+    const thisMonth = `${today.getFullYear()}${today.getMonth()}`;
+
+    useEffect(() => {
+      changeMonth = `${year}${month}`;
+      setMonth(month);
       if (changeMonth === thisMonth) {
         setDisabledPrev(true);
+      }
+    }, [month, changeMonth]);
+
+    const handlePrevMonth = () => {
+      setDisabledPrev(false);
+      setDisabledNext(false);
+      if (month === 0 && month + 11 === 11) {
+        setMonth(month + 11);
+        setYear(year - 1);
+        setDisabledPrev(true);
       } else {
-        setDisabledPrev(false);
-        setDisabledNext(false);
-        if (month === 0 && month + 11 === 11) {
-          setMonth(month + 11);
-          setYear(year - 1);
-          setDisabledPrev(true);
-        } else {
-          setMonth(month - 1);
-        }
+        setMonth(month - 1);
       }
     };
 
     const handleNextMonth = () => {
-      setChecked(true);
       const todayMonth = today.getMonth() === 11 ? 0 : today.getMonth();
       if (month === 11) {
         setYear(year + 1);
         setMonth(0);
         setDisabledPrev(false);
+        if (year === today.getFullYear() + 1 && month + 1 === todayMonth + 1) {
+          setDisabledNext(true);
+        }
       } else {
         setMonth(month + 1);
-        if (year === today.getFullYear() + 1 && month + 1 === todayMonth + 1) {
+        setDisabledPrev(false);
+        if (year === today.getFullYear() && month + 1 === todayMonth + 1) {
           setDisabledNext(true);
         }
       }
@@ -626,14 +646,16 @@ function OrderDetails() {
       <React.Fragment>
         <p className={classes.label}>日期</p>
         <input
-          type="text"
-          className={classes.dateInput}
+          type="input"
+          className={clsx(classes.dateInput)}
           onClick={toggleShowCalendar}
           ref={inputRef}
-          value={clickDate || ""}
+          value={clickDate}
           readOnly
         />
-        <FormHelperText>請選擇訂位日期!</FormHelperText>
+        <FormHelperText className={clsx({ [classes.hide]: clickDate !== "" ? true : false })}>
+          請選擇訂位日期!
+        </FormHelperText>
         <div className={clsx(classes.calendarGrid, { [classes.show]: isShowCalendar })}>
           <Fade in={checked}>
             <div>
@@ -769,11 +791,11 @@ function OrderDetails() {
           <Grid item xs={12} className={classes.orderContent}>
             <Typography className={classes.orderTitle}>
               <span>訂單編號 : </span>
-              <span>_idxxxxxxxxxxxxxxxxx</span>
+              <span>{orderID}</span>
             </Typography>
             <Typography className={classes.orderTitle}>
               <span>成立訂單 : </span>
-              <span>2019/12/31 - 12:00</span>
+              <span>{createTime}</span>
             </Typography>
             <Paper className={classes.paperRoot}>
               <ul className={classes.detailList}>
@@ -826,6 +848,7 @@ function OrderDetails() {
                     rows="5"
                     className={classes.textArea}
                     onChange={handleChangeNote}
+                    value={notes || ""}
                   ></textarea>
                 </li>
               </ul>
