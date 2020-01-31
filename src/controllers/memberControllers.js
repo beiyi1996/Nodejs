@@ -200,6 +200,8 @@ const modifiedPasswordPOST = (req, res, next) => {
     (err, data) => {
       if (err) next(err);
       data.password = Bcrypt.hashSync(password, 10);
+      data.create_time = Date.now();
+      data.modified_time = Date.now();
       Member(data).save((err, member) => {
         if (err) next(err);
         console.log("modified member data", member);
