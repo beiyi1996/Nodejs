@@ -240,8 +240,8 @@ const checkLogInStatus = (req, res, next) => {
   console.log("member", member);
   const limitTime = mwmber.create_token_time !== null ? member.create_token_time + 600000 : 0;
   if (!member.token || Date.now() > limitTime) {
-    res.status(301).json({
-      code: 301,
+    res.status(403).json({
+      code: 403,
       message: "You are not log in"
     });
   } else {
