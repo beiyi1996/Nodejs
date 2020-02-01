@@ -31,6 +31,7 @@ import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
+import Header from "./Header";
 
 const drawerWidth = 180;
 
@@ -209,8 +210,7 @@ function Home() {
 
   useEffect(() => {
     console.log("sessionStorage", JSON.parse(sessionStorage.getItem("user")));
-    const sessionStorageData =
-      sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
+    const sessionStorageData = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
     if (!restaurant) {
       getRestaurant();
     }
@@ -267,114 +267,7 @@ function Home() {
     <Container maxWidth="sm">
       <div className={classes.root}>
         <CssBaseline />
-        <AppBar
-          position="fixed"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: open
-          })}
-        >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, open && classes.hide)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap className={classes.title}>
-              Gourmand
-            </Typography>
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-list-grow"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-list-grow"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                open={openU}
-                onClose={handleClose}
-              >
-                {showLogInButton ? (
-                  <MenuItem onClick={handleLogIn}>登入</MenuItem>
-                ) : (
-                  <div>
-                    <MenuItem onClick={handleCheckOrderDetails}>查詢訂單</MenuItem>
-                    <MenuItem onClick={handleLogOut}>登出</MenuItem>
-                  </div>
-                )}
-              </Menu>
-            </div>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          className={classes.drawer}
-          variant="persistent"
-          anchor="left"
-          open={open}
-          classes={{
-            paper: classes.drawerPaper
-          }}
-        >
-          <div className={classes.drawerHeader}>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-            </IconButton>
-          </div>
-          <Divider />
-          <ExpansionPanel>
-            <ExpansionPanelSummary
-              expandIcon={<KeyboardArrowDownRoundedIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-              className={classes.summary}
-            >
-              <Typography className={classes.heading}>餐廳分類</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.details}>
-              <List className={classes.list}>
-                {restaurant ? (
-                  restaurant.distinctByKind.map((kind, idx) => {
-                    return (
-                      <Link to={`/search?searchKeyWord=${kind}`} key={idx}>
-                        <ListItem button>
-                          <ListItemText primary={kind} />
-                        </ListItem>
-                      </Link>
-                    );
-                  })
-                ) : (
-                  <p>NONONO</p>
-                )}
-              </List>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
-          <List>
-            {listItem.map((item, index) => (
-              <Link to={item.href} key={index}>
-                <ListItem button>
-                  <ListItemText primary={item.title} />
-                </ListItem>
-              </Link>
-            ))}
-          </List>
-        </Drawer>
+        <Header />
         <main
           className={clsx(classes.content, {
             [classes.contentShift]: open
@@ -421,12 +314,7 @@ function Home() {
                       </Card>
                       <Grid item xs={12} className={classes.guessItem}>
                         <span className={classes.restaurantName}>{result.name}</span>
-                        <Badge
-                          color="secondary"
-                          overlap="circle"
-                          className={categoryClasses.badge}
-                          badgeContent={<span>{result.category.kind}</span>}
-                        ></Badge>
+                        <Badge color="secondary" overlap="circle" className={categoryClasses.badge} badgeContent={<span>{result.category.kind}</span>}></Badge>
                       </Grid>
                     </div>
                   );
