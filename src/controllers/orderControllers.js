@@ -28,7 +28,7 @@ async function sendCompletedMail(email, orderId) {
     to: email, // list of receivers
     subject: `Completed Mail`, // Subject line
     text: "This is your completed email", // plain text body
-    html: `This is your completed email. <br> you can checked your order here <a href='/orderdetails/${orderId}'>check your order</a>` // html body
+    html: `This is your completed email. <br> you can checked your order here <a href='http://localhost:3000/orderdetails?order_ID=${orderId}'>check your order</a>` // html body
   });
 }
 
@@ -118,7 +118,7 @@ const findOrders = async (req, res, next) => {
   const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
   console.log("limitTime", limitTime);
   try {
-    if (member.token || Date.now() < limitTime) {
+    if (member.token && Date.now() < limitTime) {
       const memberID = await Member.findOne(
         {
           name: name
@@ -131,12 +131,15 @@ const findOrders = async (req, res, next) => {
       const orders = await Order.find({
         member_id: memberID._id
       }).sort({
-        dateTime: 1
+        create_time: 1
       });
       res.json(orders);
     } else {
       console.log("Not log in...");
-      res.redirect("/login");
+      res.status(403).json({
+        code: 403,
+        message: "You are not log in"
+      });
     }
   } catch (err) {
     return next(err);
@@ -148,11 +151,9 @@ const findOrderDetails = async (req, res, next) => {
   const { order_ID } = req.query;
   console.log("find Order Details order_Id", order_ID);
   try {
+    console.log("findOrderDetails try!");
     const memberID = await Order.findOne({ _id: order_ID }, { member_id: 1 });
-    const member = await Member.findOne(
-      { _id: memberID.member_id },
-      { _id: 1, email: 1, token: 1, create_token_time: 1 }
-    );
+    const member = await Member.findOne({ _id: memberID.member_id }, { _id: 1, email: 1, token: 1, create_token_time: 1 });
     const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
     if (member.token && Date.now() < limitTime) {
       const orderDetails = await Order.findOne({
@@ -164,12 +165,13 @@ const findOrderDetails = async (req, res, next) => {
     } else {
       console.log("else????", member.token && Date.now() < limitTime);
       console.log("Not log in...");
-      res.status(301).json({
-        code: 301,
-        message: "12345???You are not log in"
+      res.status(403).json({
+        code: 403,
+        message: "You are not log in"
       });
     }
   } catch (err) {
+    console.log("catch ?????");
     return next(err);
   }
 };
@@ -179,10 +181,7 @@ const modifiedOrderDetails = async (req, res, next) => {
   const { order_ID } = req.query;
   try {
     const memberID = await Order.findOne({ _id: order_ID }, { member_id: 1 });
-    const member = await Member.findOne(
-      { _id: memberID.member_id },
-      { _id: 1, email: 1, token: 1, create_token_time: 1 }
-    );
+    const member = await Member.findOne({ _id: memberID.member_id }, { _id: 1, email: 1, token: 1, create_token_time: 1 });
     const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
     if (member.token && Date.now() < limitTime) {
       const { adult, children, clickDate, timeString, notes } = req.body;
@@ -212,7 +211,10 @@ const modifiedOrderDetails = async (req, res, next) => {
       res.status(200).json({ code: 200, message: "saved order detail change", order: order });
     } else {
       console.log("Not log in...");
-      res.redirect("/login");
+      res.status(403).json({
+        code: 403,
+        message: "You are not log in"
+      });
     }
   } catch (err) {
     return next(err);
@@ -226,10 +228,7 @@ const deleteOrderDetail = async (req, res, next) => {
   try {
     const memberID = await Order.findOne({ _id: order_ID }, { member_id: 1 });
     console.log(567, "memberID", memberID);
-    const member = await Member.findOne(
-      { _id: memberID.member_id },
-      { _id: 1, email: 1, token: 1, create_token_time: 1 }
-    );
+    const member = await Member.findOne({ _id: memberID.member_id }, { _id: 1, email: 1, token: 1, create_token_time: 1 });
     console.log(567, "member", member);
     const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
     console.log("limitTime", limitTime, "now", Date.now());
@@ -265,8 +264,8 @@ const deleteOrderDetail = async (req, res, next) => {
       res.status(200).json(newOrders);
     } else {
       console.log("Not log in");
-      res.status(301).json({
-        code: 301,
+      res.status(403).json({
+        code: 403,
         message: "You are not log in"
       });
     }
