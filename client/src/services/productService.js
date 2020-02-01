@@ -1,7 +1,7 @@
 export default {
   getAll: async () => {
     console.log("service getAll is working!!!");
-    return await fetch("http://localhost:5000/")
+    return await fetch("http://localhost:5000/", { cache: "no-cache" })
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
@@ -11,6 +11,7 @@ export default {
     return await fetch("http://localhost:5000/register", {
       method: "POST",
       body: JSON.stringify(data),
+      cache: "no-cache",
       headers: new Headers({
         "Content-Type": "application/json"
       })
@@ -27,6 +28,7 @@ export default {
     return await fetch("http://localhost:5000/login", {
       method: "POST",
       body: JSON.stringify(data),
+      cache: "no-cache",
       headers: new Headers({
         "Content-Type": "application/json"
       })
@@ -39,6 +41,7 @@ export default {
     return await fetch("http://localhost:5000/logout", {
       method: "POST",
       body: JSON.stringify(data),
+      cache: "no-cache",
       headers: new Headers({
         "Content-Type": "application/json"
       })
@@ -52,6 +55,7 @@ export default {
     console.log("data", data, JSON.stringify(data));
     return await fetch(`http://localhost:5000/forgotpassword?email=${email}`, {
       method: "POST",
+      cache: "no-cache",
       headers: new Headers({
         "Content-Type": "application/json"
       }),
@@ -61,7 +65,9 @@ export default {
       .catch(error => console.log("Error:", error));
   },
   modifiedPasswordGET: async token => {
-    return await fetch(`http://localhost:5000/modifiedpassword?token=${token}`)
+    return await fetch(`http://localhost:5000/modifiedpassword?token=${token}`, {
+      cache: "no-cache"
+    })
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
@@ -70,6 +76,7 @@ export default {
     return await fetch(`http://localhost:5000/modifiedpassword?token=${token}`, {
       method: "POST",
       body: JSON.stringify(data),
+      cache: "no-cache",
       headers: new Headers({
         "Content-Type": "application/json"
       })
@@ -78,17 +85,19 @@ export default {
       .catch(error => console.log("Error:", error));
   },
   searchByKeyWord: async searchKeyWord => {
-    return await fetch(`http://localhost:5000/search?searchKeyWord=${searchKeyWord}`, { method: "POST" })
+    return await fetch(`http://localhost:5000/search?searchKeyWord=${searchKeyWord}`, { method: "POST", cache: "no-cache" })
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
   getAllCatrgory: async () => {
-    return await fetch("http://localhost:5000/getCategory")
+    return await fetch("http://localhost:5000/getCategory", {
+      cache: "no-cache"
+    })
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
   getRestaurantDetail: async (name, id) => {
-    return await fetch(`http://localhost:5000/detail?name=${name}&_id=${id}`)
+    return await fetch(`http://localhost:5000/detail?name=${name}&_id=${id}`, { cache: "no-cache" })
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
@@ -100,6 +109,7 @@ export default {
     return await fetch("http://localhost:5000/booking", {
       method: "POST",
       body: JSON.stringify(data),
+      cache: "no-cache",
       headers: new Headers({
         "Content-Type": "application/json"
       })
@@ -108,13 +118,17 @@ export default {
       .catch(error => console.log("Error:", error));
   },
   getAllOrders: async userName => {
-    return await fetch(`http://localhost:5000/orders?name=${userName}`)
+    return await fetch(`http://localhost:5000/orders?name=${userName}`, {
+      cache: "no-cache"
+    })
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
   getOrderDetails: async order_id => {
     console.log("service order_id", order_id);
-    return await fetch(`http://localhost:5000/orderdetails?order_ID=${order_id}`)
+    return await fetch(`http://localhost:5000/orderdetails?order_ID=${order_id}`, {
+      cache: "no-cache"
+    })
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
@@ -125,6 +139,7 @@ export default {
     return await fetch(`http://localhost:5000/orderdetails/save?order_ID=${order_id}`, {
       method: "POST",
       body: JSON.stringify(data),
+      cache: "no-cache",
       headers: new Headers({
         "Content-Type": "application/json"
       })
@@ -134,12 +149,16 @@ export default {
   },
   deleteOrderDetails: async order_id => {
     console.log(2, "delete order details service is working!!!");
-    return await fetch(`http://localhost:5000/orderdetails/delete?order_ID=${order_id}`)
+    return await fetch(`http://localhost:5000/orderdetails/delete?order_ID=${order_id}`, {
+      cache: "no-cache"
+    })
       .then(res => res.json())
       .catch(error => console.log("Error:", error));
   },
   checkLogInStatus: async name => {
-    return await fetch(`http://localhost:5000/checkLogInStatus?name=${name}`)
+    return await fetch(`http://localhost:5000/checkLogInStatus?name=${name}`, {
+      cache: "no-cache"
+    })
       .then(res => console.log("check log in status", res))
       .catch(error => console.log("check log in status Error", error));
   }
