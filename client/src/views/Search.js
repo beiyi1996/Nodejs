@@ -170,6 +170,7 @@ function Search() {
   const [urlParams, setURLParams] = useState("");
   const [blur, setBlur] = useState(true);
   const history = useHistory();
+  let fetching = function() {};
   useEffect(() => {
     if (!restaurant) {
       getRestaurant();
@@ -180,14 +181,14 @@ function Search() {
   useEffect(() => {
     if (searchKeyWord) {
       console.log("in if");
-      async function fetching() {
+      fetching = async () => {
         let res = await productService.searchByKeyWord(searchKeyWord);
         console.log(123, res, res.restaurants.length);
         if (res.restaurants.length > 0) {
           console.log("res 有資料");
-          await setSearchResult(res.restaurants);
+          setSearchResult(res.restaurants);
         }
-      }
+      };
       fetching();
     }
   }, [searchKeyWord]);
