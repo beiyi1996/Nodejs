@@ -3,32 +3,14 @@ import productService from "../services/productService";
 import { Link, useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import clsx from "clsx";
-import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import CreateRoundedIcon from "@material-ui/icons/CreateRounded";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
-import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
+import Header from "./Header";
 
 const drawerWidth = 180;
 
@@ -99,6 +81,7 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
+    marginTop: 48,
     padding: theme.spacing(1),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
@@ -184,33 +167,17 @@ const useStyles = makeStyles(theme => ({
     height: 60,
     width: "100%",
     padding: 10,
-    wordBreak: "normal"
+    wordBreak: "normal",
+    marginTop: 20
   }
 }));
 
 function Orders() {
   const [restaurant, setrestaurant] = useState(null);
   const classes = useStyles();
-  const theme = useTheme();
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [orders, setOrders] = useState([]);
-  const openU = Boolean(anchorEl);
   const [sessionStroage, setSessionStorage] = useState({});
   const history = useHistory();
-  const listItem = [
-    { title: "查看訂單", href: `/orders?name=${sessionStroage.member}` },
-    { title: "首頁", href: "/" },
-    { title: "聯絡我們", href: "#" }
-  ];
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
 
   const getRestaurant = async () => {
     let res = await productService.getAll();
@@ -220,10 +187,10 @@ function Orders() {
   const getAllOrders = async () => {
     const user = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
     setSessionStorage(user);
-    if (user.member) {
-      const res = await productService.getAllOrders(user.member);
-      console.log("get all orders res", res);
-      setOrders(res);
+    const res = await productService.getAllOrders(sessionStroage.member);
+    console.log("get all orders res", res);
+    if (res.code === 200) {
+      setOrders(res.orders);
     } else {
       alert("請先登入, 即可查看訂單! 謝謝!");
       sessionStorage.clear();
@@ -237,14 +204,6 @@ function Orders() {
     }
     getAllOrders();
   }, []);
-
-  const handleMenu = event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleDeleteOrder = async order_ID => {
     console.log("handle delete order order_ID", order_ID);
@@ -265,153 +224,21 @@ function Orders() {
     }
   };
 
-  const handleCheckOrderDetails = async () => {
-    const sessionStorageData = JSON.parse(sessionStorage.getItem("user"));
-    console.log(8390, "sessionStorageData", sessionStorageData);
-    const res = await productService.getAllOrders(sessionStorageData.member);
-    console.log("handle check order details res", res);
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    console.log("user", user);
-    handleClose();
-    history.push(`/orders?name=${user.member}`);
-  };
-
-  const handleLogOut = async () => {
-    const res = await productService.logOut(sessionStroage.login);
-    console.log("log out res", res);
-    if (res.code === 200) {
-      sessionStorage.clear();
-      alert("已將您的帳號登出!");
-      handleClose();
-      history.push("/");
-    }
-  };
-
   return (
     <Container maxWidth="md">
       <div className={classes.root}>
         <CssBaseline />
-        <AppBar
-          position="fixed"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: open
-          })}
-        >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, open && classes.hide)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap className={classes.title}>
-              Gourmand
-            </Typography>
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-list-grow"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-list-grow"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                open={openU}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleCheckOrderDetails}>查詢訂單</MenuItem>
-                <MenuItem onClick={handleLogOut}>登出</MenuItem>
-              </Menu>
-            </div>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          className={classes.drawer}
-          variant="persistent"
-          anchor="left"
-          open={open}
-          classes={{
-            paper: classes.drawerPaper
-          }}
-        >
-          <div className={classes.drawerHeader}>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-            </IconButton>
-          </div>
-          <Divider />
-          <ExpansionPanel>
-            <ExpansionPanelSummary
-              expandIcon={<KeyboardArrowDownRoundedIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-              className={classes.summary}
-            >
-              <Typography className={classes.heading}>餐廳分類</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.details}>
-              <List className={classes.list}>
-                {restaurant ? (
-                  restaurant.distinctByKind.map((kind, idx) => {
-                    return (
-                      <Link to={`/search?searchKeyWord=${kind}`} key={idx}>
-                        <ListItem button>
-                          <ListItemText primary={kind} />
-                        </ListItem>
-                      </Link>
-                    );
-                  })
-                ) : (
-                  <p>NONONO</p>
-                )}
-              </List>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
-          <List>
-            {listItem.map((item, index) => (
-              <Link to={item.href} key={index}>
-                <ListItem button>
-                  <ListItemText primary={item.title} />
-                </ListItem>
-              </Link>
-            ))}
-          </List>
-        </Drawer>
-        <main
-          className={clsx(classes.content, {
-            [classes.contentShift]: open
-          })}
-        >
-          <div className={classes.drawerHeader} />
+        <Header />
+        <main className={classes.content}>
           {orders.length !== 0 ? (
             orders.map(item => {
               const formatDateTime = new Date(item.dateTime);
-              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() +
-                1} / ${formatDateTime.getDate()}`;
-              const minutes =
-                formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `0${formatDateTime.getMinutes()}`;
+              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() + 1} / ${formatDateTime.getDate()}`;
+              const minutes = formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `0${formatDateTime.getMinutes()}`;
               const time = `${formatDateTime.getHours()} : ${minutes}`;
               const createDateTime = new Date(item.create_time);
-              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() +
-                1} / ${createDateTime.getDate()}`;
-              const createMinutes =
-                createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `0${createDateTime.getMinutes()}`;
+              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() + 1} / ${createDateTime.getDate()}`;
+              const createMinutes = createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `0${createDateTime.getMinutes()}`;
               const createTime = `${createDateTime.getHours()} : ${createMinutes}`;
               return (
                 <Grid item xs={12} className={classes.orderContent} key={item.create_time}>

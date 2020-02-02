@@ -3,29 +3,12 @@ import productService from "../services/productService";
 import { useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import clsx from "clsx";
-import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import Paper from "@material-ui/core/Paper";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -34,6 +17,7 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import ArrowLeftRoundedIcon from "@material-ui/icons/ArrowLeftRounded";
 import ArrowRightRoundedIcon from "@material-ui/icons/ArrowRightRounded";
 import Fade from "@material-ui/core/Fade";
+import Header from "./Header";
 
 const drawerWidth = 180;
 
@@ -336,14 +320,9 @@ const useStyles = makeStyles(theme => ({
 
 function OrderDetails() {
   const classes = useStyles();
-  const theme = useTheme();
-  const [restaurant, setrestaurant] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [time, setTime] = useState("");
   const [adult, setAdult] = useState(0);
   const [children, setChildren] = useState(0);
-  const openU = Boolean(anchorEl);
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
@@ -357,29 +336,8 @@ function OrderDetails() {
   let [clickDate, setClickDate] = useState("");
   const inputRef = useRef(null);
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
-  const monthEnName = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "Septemper",
-    "October",
-    "November",
-    "December"
-  ];
+  const monthEnName = ["January", "February", "March", "April", "May", "June", "July", "August", "Septemper", "October", "November", "December"];
   const history = useHistory();
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
 
   const handleChangeNote = event => {
     setNotes(event.target.value);
@@ -426,11 +384,9 @@ function OrderDetails() {
     console.log(111, "get order details res", res);
     if (res.code === 200) {
       const createOrderTime = new Date(res.orderDetails.create_time);
-      const create_Date = `${createOrderTime.getFullYear()} / ${createOrderTime.getMonth() +
-        1} / ${createOrderTime.getDate()}`;
+      const create_Date = `${createOrderTime.getFullYear()} / ${createOrderTime.getMonth() + 1} / ${createOrderTime.getDate()}`;
       console.log("create_Date", create_Date);
-      const create_Minutes =
-        createOrderTime.getMinutes() > 9 ? `${createOrderTime.getMinutes()}` : `0${createOrderTime.getMinutes()}`;
+      const create_Minutes = createOrderTime.getMinutes() > 9 ? `${createOrderTime.getMinutes()}` : `0${createOrderTime.getMinutes()}`;
       const create_Time = `${createOrderTime.getHours()}:${create_Minutes}`;
       console.log("res.orderDetails", res.orderDetails.dateTime);
       const bookingTime = new Date(res.orderDetails.dateTime);
@@ -452,14 +408,6 @@ function OrderDetails() {
     }
   };
 
-  const handleMenu = event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleChange = event => {
     setTime(event.target.value);
   };
@@ -468,19 +416,15 @@ function OrderDetails() {
     const urlParams = new URLSearchParams(window.location.search);
     const order_ID = urlParams.get("order_ID");
     history.push(`/orderdetails/save?order_ID=${order_ID}`);
-    const saveChangeOrderResult = await productService.saveModifiedOrderDetails(
-      order_ID,
-      clickDate,
-      time,
-      adult,
-      children,
-      notes
-    );
+    const saveChangeOrderResult = await productService.saveModifiedOrderDetails(order_ID, clickDate, time, adult, children, notes);
     console.log("saveChangeOrderResult", saveChangeOrderResult);
     const user = JSON.parse(sessionStorage.getItem("user"));
     console.log("user", user);
     if (saveChangeOrderResult.code === 200) {
       history.push(`/orders?name=${user.member}`);
+    } else {
+      alert("編輯時間已超過10分鐘, 系統已自動將您登出, 麻煩您再次進行登入!! 謝謝!");
+      history.push("/login");
     }
   };
 
@@ -601,12 +545,8 @@ function OrderDetails() {
               const isWeekend = item[1] === 0 || item[1] === 6 ? true : false;
               const notThisMonth = item.length === 0 ? true : false;
               const clicked = `${year}/${month + 1}/${item[0]}` === `${clickDate}` ? true : false;
-              const disabled =
-                year === today.getFullYear() && month === today.getMonth() && item[0] < today.getDate() ? true : false;
-              const disabledToday =
-                year === today.getFullYear() && month === today.getMonth() && item[0] === today.getDate()
-                  ? true
-                  : false;
+              const disabled = year === today.getFullYear() && month === today.getMonth() && item[0] < today.getDate() ? true : false;
+              const disabledToday = year === today.getFullYear() && month === today.getMonth() && item[0] === today.getDate() ? true : false;
               return (
                 <span
                   className={clsx(classes.day, {
@@ -645,17 +585,8 @@ function OrderDetails() {
     return (
       <React.Fragment>
         <p className={classes.label}>日期</p>
-        <input
-          type="input"
-          className={clsx(classes.dateInput)}
-          onClick={toggleShowCalendar}
-          ref={inputRef}
-          value={clickDate}
-          readOnly
-        />
-        <FormHelperText className={clsx({ [classes.hide]: clickDate !== "" ? true : false })}>
-          請選擇訂位日期!
-        </FormHelperText>
+        <input type="input" className={clsx(classes.dateInput)} onClick={toggleShowCalendar} ref={inputRef} value={clickDate} readOnly />
+        <FormHelperText className={clsx({ [classes.hide]: clickDate !== "" ? true : false })}>請選擇訂位日期!</FormHelperText>
         <div className={clsx(classes.calendarGrid, { [classes.show]: isShowCalendar })}>
           <Fade in={checked}>
             <div>
@@ -684,109 +615,8 @@ function OrderDetails() {
     <Container maxWidth="md">
       <div className={classes.root}>
         <CssBaseline />
-        <AppBar
-          position="fixed"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: open
-          })}
-        >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, open && classes.hide)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap className={classes.title}>
-              Gourmand
-            </Typography>
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-list-grow"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-list-grow"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                open={openU}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>查詢訂單</MenuItem>
-                <MenuItem onClick={handleClose}>登出</MenuItem>
-              </Menu>
-            </div>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          className={classes.drawer}
-          variant="persistent"
-          anchor="left"
-          open={open}
-          classes={{
-            paper: classes.drawerPaper
-          }}
-        >
-          <div className={classes.drawerHeader}>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-            </IconButton>
-          </div>
-          <Divider />
-          <ExpansionPanel>
-            <ExpansionPanelSummary
-              expandIcon={<KeyboardArrowDownRoundedIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-              className={classes.summary}
-            >
-              <Typography className={classes.heading}>餐廳分類</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.details}>
-              <List className={classes.list}>
-                {restaurant ? (
-                  restaurant.distinctByKind.map((kind, idx) => {
-                    return (
-                      <ListItem button key={idx}>
-                        <ListItemText primary={kind} />
-                      </ListItem>
-                    );
-                  })
-                ) : (
-                  <p>NONONO</p>
-                )}
-              </List>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
-          <List>
-            {["查看訂單", "首頁", "聯絡我們"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
-        <main
-          className={clsx(classes.content, {
-            [classes.contentShift]: open
-          })}
-        >
+        <Header />
+        <main className={classes.content}>
           <div className={classes.drawerHeader} />
           <Grid item xs={12} className={classes.orderContent}>
             <Typography className={classes.orderTitle}>
@@ -805,17 +635,11 @@ function OrderDetails() {
                 <li>
                   <FormControl className={classes.formControl}>
                     <InputLabel id="demo-simple-select-helper-label">時間</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-helper-label"
-                      id="demo-simple-select-helper"
-                      value={time}
-                      onChange={handleChange}
-                    >
+                    <Select labelId="demo-simple-select-helper-label" id="demo-simple-select-helper" value={time} onChange={handleChange}>
                       <MenuItem value={12}>12:00</MenuItem>
                       <MenuItem value={13}>13:00</MenuItem>
                       <MenuItem value={14}>14:00</MenuItem>
                     </Select>
-                    <FormHelperText>請選擇訂位時間!</FormHelperText>
                   </FormControl>
                 </li>
                 <li>
@@ -841,15 +665,7 @@ function OrderDetails() {
                 </li>
                 <li>
                   <p className={classes.notes}>備註</p>
-                  <textarea
-                    name="notes"
-                    id=""
-                    cols="30"
-                    rows="5"
-                    className={classes.textArea}
-                    onChange={handleChangeNote}
-                    value={notes || ""}
-                  ></textarea>
+                  <textarea name="notes" id="" cols="30" rows="5" className={classes.textArea} onChange={handleChangeNote} value={notes || ""}></textarea>
                 </li>
               </ul>
             </Paper>
