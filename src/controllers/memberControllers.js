@@ -66,7 +66,6 @@ const logIn = async (req, res, next) => {
             isLogIn = true;
             req.session.member = member.name;
             req.session.isLogIn = isLogIn;
-            // res.redirect(301, "/");
             createTokenAndSaveDB(email, "login", next);
             res.status(200).json({
               code: 200,
