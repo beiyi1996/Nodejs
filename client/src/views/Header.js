@@ -191,7 +191,8 @@ function Header() {
 
   useEffect(() => {
     console.log("sessionStorage", JSON.parse(sessionStorage.getItem("user")));
-    const sessionStorageData = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
+    const sessionStorageData =
+      sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
     if (!restaurant) {
       getRestaurant();
     }
@@ -237,6 +238,7 @@ function Header() {
     console.log("handle check order details res", res);
     const user = JSON.parse(sessionStorage.getItem("user"));
     console.log("user", user);
+    handleClose();
     history.push(`/orders?name=${user.member}`);
   };
 
@@ -260,14 +262,26 @@ function Header() {
         })}
       >
         <Toolbar>
-          <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" className={clsx(classes.menuButton, open && classes.hide)}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            className={clsx(classes.menuButton, open && classes.hide)}
+          >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap className={classes.title}>
             Gourmand
           </Typography>
           <div>
-            <IconButton aria-label="account of current user" aria-controls="menu-list-grow" aria-haspopup="true" onClick={handleMenu} color="inherit">
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="menu-list-grow"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
               <AccountCircle />
             </IconButton>
             <Menu
@@ -307,11 +321,18 @@ function Header() {
         }}
       >
         <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>{theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}</IconButton>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
         </div>
         <Divider />
         <ExpansionPanel>
-          <ExpansionPanelSummary expandIcon={<KeyboardArrowDownRoundedIcon />} aria-controls="panel1a-content" id="panel1a-header" className={classes.summary}>
+          <ExpansionPanelSummary
+            expandIcon={<KeyboardArrowDownRoundedIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+            className={classes.summary}
+          >
             <Typography className={classes.heading}>餐廳分類</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails className={classes.details}>
