@@ -212,7 +212,7 @@ function Home() {
                 );
               })
             ) : (
-              <p>NONONO KIND</p>
+              <p>Loading...</p>
             )}
           </Grid>
           <Grid item xs={12} className={classes.item}>
@@ -228,13 +228,18 @@ function Home() {
                       </Card>
                       <Grid item xs={12} className={classes.guessItem}>
                         <span className={classes.restaurantName}>{result.name}</span>
-                        <Badge color="secondary" overlap="circle" className={categoryClasses.badge} badgeContent={<span>{result.category.kind}</span>}></Badge>
+                        <Badge
+                          color="secondary"
+                          overlap="circle"
+                          className={categoryClasses.badge}
+                          badgeContent={<span>{result.category.kind}</span>}
+                        ></Badge>
                       </Grid>
                     </div>
                   );
                 })
               ) : (
-                <p>NONONO</p>
+                <p>Loading...</p>
               )}
             </Grid>
           </Grid>
