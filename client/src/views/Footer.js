@@ -33,6 +33,7 @@ const useStyles = makeStyles({
 export default function SimpleBottomNavigation() {
   const classes = useStyles();
   const [value, setValue] = useState(0);
+  const user = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
 
   return (
     <BottomNavigation
@@ -46,7 +47,7 @@ export default function SimpleBottomNavigation() {
       <BottomNavigationAction component={Link} to="/" label="Home" icon={<HomeRoundedIcon />} />
       <BottomNavigationAction
         component={Link}
-        to="/orders"
+        to={`/orders?name=${user.member}`}
         label="Order"
         icon={<RestaurantRoundedIcon />}
         className={classes.order}
