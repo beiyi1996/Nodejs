@@ -87,9 +87,15 @@ function LogIn() {
     const res = await productService.logIn(email, password);
     const currentTime = new Date().getTime();
     const user = Object.assign({}, res, { time: currentTime });
+    const form = sessionStorage.getItem("form") !== null ? JSON.parse(sessionStorage.getItem("form")) : {};
     if (res.login) {
       sessionStorage.setItem("user", JSON.stringify(user));
-      history.push("/");
+      if (Object.keys(form).length > 0) {
+        console.log("使用者之前有填寫過訂單, 但未登入, 被導到登入頁, 登入後要再幫他們導去訂購頁, 並且載入上次的內容!!");
+        history.push("/booking");
+      } else {
+        history.push("/");
+      }
     } else {
       setError(true);
     }
