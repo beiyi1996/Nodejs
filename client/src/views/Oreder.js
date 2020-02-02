@@ -176,7 +176,6 @@ function Orders() {
   const [restaurant, setrestaurant] = useState(null);
   const classes = useStyles();
   const [orders, setOrders] = useState([]);
-  const [sessionStroage, setSessionStorage] = useState({});
   const history = useHistory();
 
   const getRestaurant = async () => {
@@ -186,8 +185,7 @@ function Orders() {
 
   const getAllOrders = async () => {
     const user = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
-    setSessionStorage(user);
-    const res = await productService.getAllOrders(sessionStroage.member);
+    const res = await productService.getAllOrders(user.member);
     console.log("get all orders res", res);
     if (res.code === 200) {
       setOrders(res.orders);
@@ -199,6 +197,7 @@ function Orders() {
   };
 
   useEffect(() => {
+    console.log("Orders page useEffect is working!!");
     if (!restaurant) {
       getRestaurant();
     }
@@ -213,7 +212,7 @@ function Orders() {
       console.log("deleteOrder", deleteOrder);
       if (deleteOrder.code === 400) {
         alert("您已超過最晚取消預約時間, 無法將您的訂單移除!");
-      } else if (deleteOrder.code === 301) {
+      } else if (deleteOrder.code === 403) {
         alert("您已登入超過10分鐘, 系統為確保您的資料安全, 已將您登出!! 請您再次登入進行修改, 謝謝!");
         sessionStorage.clear();
         history.push("/login");
@@ -233,12 +232,16 @@ function Orders() {
           {orders.length !== 0 ? (
             orders.map(item => {
               const formatDateTime = new Date(item.dateTime);
-              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() + 1} / ${formatDateTime.getDate()}`;
-              const minutes = formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `0${formatDateTime.getMinutes()}`;
+              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() +
+                1} / ${formatDateTime.getDate()}`;
+              const minutes =
+                formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `0${formatDateTime.getMinutes()}`;
               const time = `${formatDateTime.getHours()} : ${minutes}`;
               const createDateTime = new Date(item.create_time);
-              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() + 1} / ${createDateTime.getDate()}`;
-              const createMinutes = createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `0${createDateTime.getMinutes()}`;
+              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() +
+                1} / ${createDateTime.getDate()}`;
+              const createMinutes =
+                createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `0${createDateTime.getMinutes()}`;
               const createTime = `${createDateTime.getHours()} : ${createMinutes}`;
               return (
                 <Grid item xs={12} className={classes.orderContent} key={item.create_time}>
