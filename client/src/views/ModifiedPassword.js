@@ -82,14 +82,12 @@ function ModifiedPassword() {
       if (res) {
         setEmail(res.email);
       } else {
-        alert(
-          "您的修改密碼時間已超過10分鐘, 為確保您的帳戶安全, 系統已將您自動登出, 麻煩您再次進行忘記密碼的操作流程! 謝謝您!"
-        );
+        alert("您的修改密碼時間已超過10分鐘, 為確保您的帳戶安全, 系統已將您自動登出, 麻煩您再次進行忘記密碼的操作流程! 謝謝您!");
         history.push("/login");
       }
     }
     getModifiedPasswordPage();
-  }, []);
+  }, [history]);
 
   const handleChange = prop => event => {
     setPasswordError(false);
@@ -146,11 +144,7 @@ function ModifiedPassword() {
                 onChange={handleChange("password")}
                 endAdornment={
                   <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
+                    <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword}>
                       {newValues.showPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
@@ -168,11 +162,7 @@ function ModifiedPassword() {
                 onChange={handleChangeCheckPassword("password")}
                 endAdornment={
                   <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickCheckShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
+                    <IconButton aria-label="toggle password visibility" onClick={handleClickCheckShowPassword} onMouseDown={handleMouseDownPassword}>
                       {checkValues.showPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
