@@ -218,7 +218,6 @@ const SimpleSlider = () => {
   );
 };
 
-var times = 0;
 function Detail() {
   const classes = useStyles();
   const [form, setForm] = useState(null);
@@ -226,14 +225,13 @@ function Detail() {
   const [searchKeyWord, setSearchKeyWord] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [blur, setBlur] = useState(true);
-  const [searching, setIsSearching] = useState(false);
   const [restaurantName, setRestaurantName] = useState("");
+  const [googleScript, setGoogleScript] = useState(true);
   const history = useHistory();
 
   useEffect(() => {
     if (searchKeyWord) {
       console.log("search key word change...");
-      setIsSearching(true);
       async function fetching() {
         let res = await productService.searchByKeyWord(searchKeyWord);
         console.log(123, res, res.restaurants.length);
@@ -275,38 +273,46 @@ function Detail() {
       };
 
       const script = document.createElement(`script`);
-      if (!window.google) {
-        const scriptPromise = new Promise((resolve, reject) => {
+      const scriptPromise = new Promise((resolve, reject) => {
+        if (!window.google) {
           document.body.append(script);
           script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
-          script.async = true;
+          script.async = false;
           script.defer = true;
           script.addEventListener(`load`, onLoad);
           resolve(true);
-        });
-
-        scriptPromise.then(() => {
-          console.log("google map script is appended!");
-        });
-      } else {
-        console.log("google map script is exist!");
-      }
-
-      const googleMapPromise = new Promise((resolve, reject) => {
-        async function oo() {
-          if (!form) {
-            return await getRestaurantDetail();
-          }
+        } else {
+          console.log("google map script is exist!");
+          resolve(true);
         }
-        resolve(oo());
-      });
-      googleMapPromise.then(value => {
-        onLoad(value.address);
-        script.removeEventListener(`load`, onLoad);
       });
 
-      console.log("googleMapPromise", googleMapPromise);
-    }, []);
+      scriptPromise
+        .then(value => {
+          console.log("google map script is appended!", value);
+          if (value) {
+            console.log("in if?????");
+            async function oo() {
+              if (!form) {
+                return await getRestaurantDetail();
+              }
+            }
+            return oo();
+          }
+        })
+        .then(value => {
+          console.log("oo is finished!", value);
+          if (window.google) {
+            setGoogleScript(false);
+            console.log("已經載入google map script!!");
+            onLoad(value.address);
+          } else {
+            console.log("window.google 未載入完成");
+            setGoogleScript(true);
+          }
+          script.removeEventListener(`load`, onLoad);
+        });
+    }, [options, onMount, googleScript]);
     return <div {...{ ref, className }} />;
   }
 
