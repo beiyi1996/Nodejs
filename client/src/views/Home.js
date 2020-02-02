@@ -1,36 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useHistory } from "react-router-dom";
 import productService from "../services/productService";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Badge from "@material-ui/core/Badge";
-import clsx from "clsx";
-import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import Header from "./Header";
 
 const drawerWidth = 180;
@@ -187,39 +167,10 @@ function Home() {
   const [restaurant, setrestaurant] = useState(null);
   const classes = useStyles();
   const categoryClasses = categoryStyles();
-  const theme = useTheme();
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [showLogInButton, setShowLogInButton] = useState(true);
-  const [sessionStroage, setSessionStorage] = useState({});
-  const openU = Boolean(anchorEl);
-  const history = useHistory();
-  const listItem = [
-    { title: "查看訂單", href: `/orders?name=${sessionStroage.member}` },
-    { title: "首頁", href: "/" },
-    { title: "聯絡我們", href: "#" }
-  ];
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
 
   useEffect(() => {
-    console.log("sessionStorage", JSON.parse(sessionStorage.getItem("user")));
-    const sessionStorageData = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
     if (!restaurant) {
       getRestaurant();
-    }
-    if (Object.keys(sessionStorageData).length > 0) {
-      console.log("有sessionStorage , 表示已登入");
-      setSessionStorage(sessionStorageData);
-      setShowLogInButton(false);
-    } else {
-      setShowLogInButton(true);
     }
   }, []);
 
@@ -230,49 +181,12 @@ function Home() {
   };
   console.log("restaurant", restaurant);
 
-  const handleMenu = event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogIn = () => {
-    history.push("/login");
-  };
-
-  const handleLogOut = async () => {
-    const res = await productService.logOut(sessionStroage.login);
-    console.log("log out res", res);
-    if (res.code === 200) {
-      sessionStorage.clear();
-      setShowLogInButton(true);
-      alert("已將您的帳號登出!");
-      handleClose();
-    }
-  };
-
-  const handleCheckOrderDetails = async () => {
-    const sessionStorageData = JSON.parse(sessionStorage.getItem("user"));
-    console.log(8390, "sessionStorageData", sessionStorageData);
-    const res = await productService.getAllOrders(sessionStorageData.member);
-    console.log("handle check order details res", res);
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    console.log("user", user);
-    history.push(`/orders?name=${user.member}`);
-  };
-
   return (
     <Container maxWidth="sm">
       <div className={classes.root}>
         <CssBaseline />
         <Header />
-        <main
-          className={clsx(classes.content, {
-            [classes.contentShift]: open
-          })}
-        >
+        <main className={classes.content}>
           <div className={classes.drawerHeader} />
           <Grid item xs={12} className={classes.restaurants}>
             {restaurant ? (
