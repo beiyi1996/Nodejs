@@ -336,7 +336,20 @@ function OrderDetails() {
   let [clickDate, setClickDate] = useState("");
   const inputRef = useRef(null);
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
-  const monthEnName = ["January", "February", "March", "April", "May", "June", "July", "August", "Septemper", "October", "November", "December"];
+  const monthEnName = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "Septemper",
+    "October",
+    "November",
+    "December"
+  ];
   const history = useHistory();
 
   const handleChangeNote = event => {
@@ -383,10 +396,20 @@ function OrderDetails() {
     const res = await productService.getOrderDetails(order_ID);
     console.log(111, "get order details res", res);
     if (res.code === 200) {
+      if (sessionStorage.getItem("user") === null) {
+        console.log("你是從email的查詢此筆訂單來的!!");
+        let currentTime = new Date().getTime();
+        const user = Object.assign({}, { code: 200, member: res.member, login: true, time: currentTime });
+        sessionStorage.setItem("user", JSON.stringify(user));
+      } else {
+        console.log("正常登入後下訂單, 直接點選查詢訂單鈕!!");
+      }
       const createOrderTime = new Date(res.orderDetails.create_time);
-      const create_Date = `${createOrderTime.getFullYear()} / ${createOrderTime.getMonth() + 1} / ${createOrderTime.getDate()}`;
+      const create_Date = `${createOrderTime.getFullYear()} / ${createOrderTime.getMonth() +
+        1} / ${createOrderTime.getDate()}`;
       console.log("create_Date", create_Date);
-      const create_Minutes = createOrderTime.getMinutes() > 9 ? `${createOrderTime.getMinutes()}` : `0${createOrderTime.getMinutes()}`;
+      const create_Minutes =
+        createOrderTime.getMinutes() > 9 ? `${createOrderTime.getMinutes()}` : `0${createOrderTime.getMinutes()}`;
       const create_Time = `${createOrderTime.getHours()}:${create_Minutes}`;
       console.log("res.orderDetails", res.orderDetails.dateTime);
       const bookingTime = new Date(res.orderDetails.dateTime);
@@ -416,7 +439,14 @@ function OrderDetails() {
     const urlParams = new URLSearchParams(window.location.search);
     const order_ID = urlParams.get("order_ID");
     history.push(`/orderdetails/save?order_ID=${order_ID}`);
-    const saveChangeOrderResult = await productService.saveModifiedOrderDetails(order_ID, clickDate, time, adult, children, notes);
+    const saveChangeOrderResult = await productService.saveModifiedOrderDetails(
+      order_ID,
+      clickDate,
+      time,
+      adult,
+      children,
+      notes
+    );
     console.log("saveChangeOrderResult", saveChangeOrderResult);
     const user = JSON.parse(sessionStorage.getItem("user"));
     console.log("user", user);
@@ -430,11 +460,13 @@ function OrderDetails() {
 
   const handleCancelChangeOrder = () => {
     const isCancel = window.confirm("請問您確定要取消修改訂單嗎?");
+    const user = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
     console.log("isCancel", isCancel);
-    if (isCancel) {
-      history.push("/orders");
+    if (isCancel && user.login) {
+      history.push(`/orders?name=${user.member}`);
     } else {
-      return false;
+      alert("您尚未登入, 麻煩您登入, 即可查閱所有訂單! 謝謝!");
+      history.push("/login");
     }
   };
 
@@ -545,8 +577,12 @@ function OrderDetails() {
               const isWeekend = item[1] === 0 || item[1] === 6 ? true : false;
               const notThisMonth = item.length === 0 ? true : false;
               const clicked = `${year}/${month + 1}/${item[0]}` === `${clickDate}` ? true : false;
-              const disabled = year === today.getFullYear() && month === today.getMonth() && item[0] < today.getDate() ? true : false;
-              const disabledToday = year === today.getFullYear() && month === today.getMonth() && item[0] === today.getDate() ? true : false;
+              const disabled =
+                year === today.getFullYear() && month === today.getMonth() && item[0] < today.getDate() ? true : false;
+              const disabledToday =
+                year === today.getFullYear() && month === today.getMonth() && item[0] === today.getDate()
+                  ? true
+                  : false;
               return (
                 <span
                   className={clsx(classes.day, {
@@ -585,8 +621,17 @@ function OrderDetails() {
     return (
       <React.Fragment>
         <p className={classes.label}>日期</p>
-        <input type="input" className={clsx(classes.dateInput)} onClick={toggleShowCalendar} ref={inputRef} value={clickDate} readOnly />
-        <FormHelperText className={clsx({ [classes.hide]: clickDate !== "" ? true : false })}>請選擇訂位日期!</FormHelperText>
+        <input
+          type="input"
+          className={clsx(classes.dateInput)}
+          onClick={toggleShowCalendar}
+          ref={inputRef}
+          value={clickDate}
+          readOnly
+        />
+        <FormHelperText className={clsx({ [classes.hide]: clickDate !== "" ? true : false })}>
+          請選擇訂位日期!
+        </FormHelperText>
         <div className={clsx(classes.calendarGrid, { [classes.show]: isShowCalendar })}>
           <Fade in={checked}>
             <div>
@@ -635,7 +680,12 @@ function OrderDetails() {
                 <li>
                   <FormControl className={classes.formControl}>
                     <InputLabel id="demo-simple-select-helper-label">時間</InputLabel>
-                    <Select labelId="demo-simple-select-helper-label" id="demo-simple-select-helper" value={time} onChange={handleChange}>
+                    <Select
+                      labelId="demo-simple-select-helper-label"
+                      id="demo-simple-select-helper"
+                      value={time}
+                      onChange={handleChange}
+                    >
                       <MenuItem value={12}>12:00</MenuItem>
                       <MenuItem value={13}>13:00</MenuItem>
                       <MenuItem value={14}>14:00</MenuItem>
@@ -665,7 +715,15 @@ function OrderDetails() {
                 </li>
                 <li>
                   <p className={classes.notes}>備註</p>
-                  <textarea name="notes" id="" cols="30" rows="5" className={classes.textArea} onChange={handleChangeNote} value={notes || ""}></textarea>
+                  <textarea
+                    name="notes"
+                    id=""
+                    cols="30"
+                    rows="5"
+                    className={classes.textArea}
+                    onChange={handleChangeNote}
+                    value={notes || ""}
+                  ></textarea>
                 </li>
               </ul>
             </Paper>
