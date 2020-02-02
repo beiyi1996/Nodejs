@@ -330,7 +330,18 @@ function Booking() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const restaurantName = urlParams.get("restaurantName");
-    setRestaurantName(restaurantName);
+    const sessionStorageForm =
+      sessionStorage.getItem("form") !== null ? JSON.parse(sessionStorage.getItem("form")) : {};
+    if (Object.keys(sessionStorageForm).length > 0) {
+      setRestaurantName(sessionStorageForm.restaurantName);
+      setClickDate(sessionStorageForm.clickDate);
+      setTime(sessionStorageForm.time);
+      setAdult(sessionStorageForm.adult);
+      setChildren(sessionStorageForm.children);
+      setNotes(sessionStorageForm.notes);
+    } else {
+      setRestaurantName(restaurantName);
+    }
   }, []);
 
   const handleChange = event => {
@@ -372,11 +383,15 @@ function Booking() {
   };
 
   const Calendar = () => {
-    let changeMonth = "";
+    // let changeMonth = "";
+    const [changeMonth, setChangeMonth] = useState("");
+    // const [thisMonth, setThisMonth] = useState("");
     const thisMonth = `${today.getFullYear()}${today.getMonth()}`;
+    // setThisMonth(this_Month);
 
     useEffect(() => {
-      changeMonth = `${year}${month}`;
+      setChangeMonth(`${year}${month}`);
+      // changeMonth = `${year}${month}`;
       setMonth(month);
       if (changeMonth === thisMonth) {
         setDisabledPrev(true);
@@ -585,10 +600,13 @@ function Booking() {
       const order = await productService.booking(clickDate, time, adult, children, notes, restaurantName, sessionUser);
       console.log("order", order);
       if (order.code === 200) {
+        sessionStorage.removeItem("form");
         history.push("/completed");
-      } else if (order.code === 301) {
+      } else if (order.code === 403) {
         alert("You're not log in!");
-        sessionStorage.clear();
+        const form = Object.assign({}, { restaurantName, clickDate, time, adult, children, notes });
+        sessionStorage.setItem("form", JSON.stringify(form));
+        sessionStorage.removeItem("user");
         history.push("/login");
       }
     }
@@ -664,6 +682,7 @@ function Booking() {
                     rows="5"
                     className={classes.textArea}
                     onChange={handleChangeNote}
+                    value={notes || ""}
                   ></textarea>
                 </li>
               </ul>
