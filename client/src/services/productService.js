@@ -85,7 +85,10 @@ export default {
       .catch(error => console.log("Error:", error));
   },
   searchByKeyWord: async searchKeyWord => {
-    return await fetch(`http://localhost:5000/search?searchKeyWord=${searchKeyWord}`, { method: "POST", cache: "no-cache" })
+    return await fetch(`http://localhost:5000/search?searchKeyWord=${searchKeyWord}`, {
+      method: "POST",
+      cache: "no-cache"
+    })
       .then(res => res.json())
       .catch(error => console.error("Error:", error));
   },
