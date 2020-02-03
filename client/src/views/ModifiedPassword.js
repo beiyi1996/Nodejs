@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -14,13 +14,14 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { useEffect } from "react";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: { main: "#719898" }
+  }
+});
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    fontFamily: "Microsoft JhengHei"
-  },
   container: {
     textAlign: "center"
   },
@@ -41,7 +42,10 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 10
   },
   input: {
-    margin: "10px auto"
+    margin: "10px auto",
+    "& > div > input": {
+      color: "#3D405B"
+    }
   },
   buttonGrid: {
     display: "flex",
@@ -82,7 +86,9 @@ function ModifiedPassword() {
       if (res) {
         setEmail(res.email);
       } else {
-        alert("您的修改密碼時間已超過10分鐘, 為確保您的帳戶安全, 系統已將您自動登出, 麻煩您再次進行忘記密碼的操作流程! 謝謝您!");
+        alert(
+          "您的修改密碼時間已超過10分鐘, 為確保您的帳戶安全, 系統已將您自動登出, 麻煩您再次進行忘記密碼的操作流程! 謝謝您!"
+        );
         history.push("/login");
       }
     }
@@ -136,40 +142,52 @@ function ModifiedPassword() {
             {console.log("email", email)}
             <TextField label="email" name="email" disabled={true} value={email} className={classes.input} />
             <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
-              <InputLabel htmlFor="standard-adornment-password">new password</InputLabel>
-              <Input
-                id="standard-adornment-password"
-                type={newValues.showPassword ? "text" : "password"}
-                value={newValues.password}
-                onChange={handleChange("password")}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword}>
-                      {newValues.showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                name="password"
-                error={passwordError}
-              />
+              <MuiThemeProvider theme={theme}>
+                <InputLabel htmlFor="standard-adornment-password">new password</InputLabel>
+                <Input
+                  id="standard-adornment-password"
+                  type={newValues.showPassword ? "text" : "password"}
+                  value={newValues.password}
+                  onChange={handleChange("password")}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {newValues.showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  name="password"
+                  error={passwordError}
+                />
+              </MuiThemeProvider>
             </FormControl>
             <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
-              <InputLabel htmlFor="standard-adornment-password">check new password</InputLabel>
-              <Input
-                id="standard-adornment-password"
-                type={checkValues.showPassword ? "text" : "password"}
-                value={checkValues.password}
-                onChange={handleChangeCheckPassword("password")}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton aria-label="toggle password visibility" onClick={handleClickCheckShowPassword} onMouseDown={handleMouseDownPassword}>
-                      {checkValues.showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                name="password"
-                error={passwordError}
-              />
+              <MuiThemeProvider theme={theme}>
+                <InputLabel htmlFor="standard-adornment-password">check new password</InputLabel>
+                <Input
+                  id="standard-adornment-password"
+                  type={checkValues.showPassword ? "text" : "password"}
+                  value={checkValues.password}
+                  onChange={handleChangeCheckPassword("password")}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickCheckShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {checkValues.showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  name="password"
+                  error={passwordError}
+                />
+              </MuiThemeProvider>
             </FormControl>
           </form>
         </Grid>

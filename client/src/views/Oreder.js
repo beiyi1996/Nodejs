@@ -30,54 +30,10 @@ const useStyles = makeStyles(theme => ({
       borderRadius: "15px"
     }
   },
-  Container: {
-    flexGrow: 1,
-    display: "flex",
-    flexWrap: "wrap",
-    fontFamily: "Microsoft JhengHei"
-  },
   card: {
     width: "100%",
     marginTop: 10,
     position: "relative"
-  },
-  title: {
-    fontSize: 18,
-    flexGrow: 1
-  },
-  appBar: {
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
-  },
-  appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
-  },
-  menuButton: {
-    marginRight: theme.spacing(2)
-  },
-  hide: {
-    display: "none"
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0
-  },
-  drawerPaper: {
-    width: drawerWidth
-  },
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
   },
   content: {
     flexGrow: 1,
@@ -88,22 +44,6 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.leavingScreen
     })
     // marginLeft: -drawerWidth
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
-    // marginLeft: "105px"
-  },
-  summary: {
-    padding: "0 24px 0 16px"
-  },
-  details: {
-    padding: "0"
-  },
-  list: {
-    width: "100%"
   },
   orderDetail: {
     listStyleType: "circle",
@@ -125,14 +65,6 @@ const useStyles = makeStyles(theme => ({
   },
   orderTitle: {
     fontFamily: "Microsoft JhengHei"
-  },
-  button: {
-    marginTop: 10,
-    textAlign: "right",
-
-    "& > button": {
-      fontFamily: "Microsoft JhengHei"
-    }
   },
   featureBtn: {
     position: "absolute",

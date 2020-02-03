@@ -7,9 +7,6 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  },
   container: {
     fontFamily: "Microsoft JhengHei"
   },

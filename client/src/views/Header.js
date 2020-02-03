@@ -41,18 +41,6 @@ const useStyles = makeStyles(theme => ({
       borderRadius: "15px"
     }
   },
-  Container: {
-    flexGrow: 1,
-    display: "flex",
-    flexWrap: "wrap",
-    fontFamily: "Microsoft JhengHei"
-  },
-  card: {
-    position: "relative"
-  },
-  cardContent: {
-    padding: 0
-  },
   item: {
     padding: "10px",
     overflow: "hidden"
@@ -61,35 +49,10 @@ const useStyles = makeStyles(theme => ({
     fontSize: 18,
     flexGrow: 1
   },
-  pos: {
-    marginBottom: 12,
-    textAlign: "right",
-    position: "absolute",
-    right: "10px",
-    top: "5px",
-    color: "snow",
-    fontWeight: "bold",
-    fontFamily: "Microsoft JhengHei"
-  },
-  guessItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    position: "relative",
-    marginTop: "5px"
-  },
-  img: {
-    width: "100%",
-    height: "100%"
-  },
-  restaurantName: {
-    width: "65%",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "-webkit-box",
-    "-webkit-line-clamp": "2",
-    "-webkit-box-orient": "vertical"
-  },
   appBar: {
+    backgroundColor: "#9BD0D0",
+    color: "#3D405B",
+    position: "static",
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -106,12 +69,19 @@ const useStyles = makeStyles(theme => ({
   menuButton: {
     marginRight: theme.spacing(2)
   },
+  menuItem: {
+    fontFamily: "Microsoft JhengHei",
+    color: "#3D405B"
+  },
   hide: {
     display: "none"
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0
+    flexShrink: 0,
+    "& > div": {
+      left: "auto"
+    }
   },
   drawerPaper: {
     width: drawerWidth
@@ -123,28 +93,26 @@ const useStyles = makeStyles(theme => ({
     ...theme.mixins.toolbar,
     justifyContent: "flex-end"
   },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(1),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
-    // marginLeft: -drawerWidth
+  linkBtn: {
+    textDecoration: "none"
   },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
-    // marginLeft: "105px"
-  },
-  restaurants: {
-    display: "flex",
-    flexWrap: "wrap"
+  listItems: {
+    "& > span": {
+      fontFamily: "Microsoft JhengHei",
+      color: "#3D405B"
+    }
   },
   summary: {
     padding: "0 24px 0 16px"
+  },
+  menuHeader: {
+    textDecoration: "none",
+    fontFamily: "Microsoft JhengHei",
+    color: "#3D405B",
+    "& > div > div > span": {
+      fontFamily: "Microsoft JhengHei",
+      color: "#3D405B"
+    }
   },
   details: {
     padding: "0"
@@ -153,25 +121,6 @@ const useStyles = makeStyles(theme => ({
     width: "100%"
   }
 }));
-
-const categoryStyles = makeStyles({
-  randomBlock: {
-    display: "flex",
-    overflowX: "auto"
-  },
-  div: {
-    padding: "10px 5px 10px"
-  },
-  badge: {
-    position: "absolute",
-    top: "12px",
-    right: "0",
-    width: "100%"
-  },
-  card: {
-    textAlign: "center"
-  }
-});
 
 function Header() {
   const classes = useStyles();
@@ -250,6 +199,7 @@ function Header() {
       setShowLogInButton(true);
       alert("已將您的帳號登出!");
       handleClose();
+      history.push("/");
     }
   };
 
@@ -300,11 +250,17 @@ function Header() {
               onClose={handleClose}
             >
               {showLogInButton ? (
-                <MenuItem onClick={handleLogIn}>登入</MenuItem>
+                <MenuItem onClick={handleLogIn} className={classes.menuItem}>
+                  登入
+                </MenuItem>
               ) : (
                 <div>
-                  <MenuItem onClick={handleCheckOrderDetails}>查詢訂單</MenuItem>
-                  <MenuItem onClick={handleLogOut}>登出</MenuItem>
+                  <MenuItem onClick={handleCheckOrderDetails} className={classes.menuItem}>
+                    查詢訂單
+                  </MenuItem>
+                  <MenuItem onClick={handleLogOut} className={classes.menuItem}>
+                    登出
+                  </MenuItem>
                 </div>
               )}
             </Menu>
@@ -333,16 +289,16 @@ function Header() {
             id="panel1a-header"
             className={classes.summary}
           >
-            <Typography className={classes.heading}>餐廳分類</Typography>
+            <Typography className={classes.menuHeader}>餐廳分類</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails className={classes.details}>
             <List className={classes.list}>
               {restaurant ? (
                 restaurant.distinctByKind.map((kind, idx) => {
                   return (
-                    <Link to={`/search?searchKeyWord=${kind}`} key={idx}>
+                    <Link to={`/search?searchKeyWord=${kind}`} key={idx} className={classes.linkBtn}>
                       <ListItem button>
-                        <ListItemText primary={kind} />
+                        <ListItemText primary={kind} className={classes.listItems} />
                       </ListItem>
                     </Link>
                   );
@@ -355,7 +311,7 @@ function Header() {
         </ExpansionPanel>
         <List>
           {listItem.map((item, index) => (
-            <Link to={item.href} key={index}>
+            <Link to={item.href} key={index} className={classes.menuHeader}>
               <ListItem button>
                 <ListItemText primary={item.title} />
               </ListItem>

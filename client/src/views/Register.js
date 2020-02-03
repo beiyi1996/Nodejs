@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
@@ -19,11 +19,13 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormHelperText from "@material-ui/core/FormHelperText";
 
+const theme = createMuiTheme({
+  palette: {
+    primary: { main: "#719898" }
+  }
+});
+
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    fontFamily: "Microsoft JhengHei"
-  },
   container: {
     textAlign: "center"
   },
@@ -44,7 +46,13 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 10
   },
   input: {
-    margin: "10px auto"
+    margin: "10px auto",
+    "& > div > input": {
+      color: "#3D405B"
+    },
+    "& > div > div > input": {
+      color: "#3D405B"
+    }
   },
   buttonGrid: {
     display: "flex",
@@ -60,7 +68,8 @@ const useStyles = makeStyles(theme => ({
   title: {
     textAlign: "left",
     display: "inline-block",
-    width: "25%"
+    width: "25%",
+    color: "#719898"
   },
   radioInput: {
     flexDirection: "row",
@@ -71,10 +80,12 @@ const useStyles = makeStyles(theme => ({
   },
   radio: {
     width: "38%",
-    marginRight: 0
+    marginRight: 0,
+    color: "#719898"
   },
   phoneLabel: {
-    marginTop: "-30px"
+    marginTop: "-30px",
+    color: "#719898"
   },
   phoneInput: {
     display: "flex",
@@ -86,22 +97,32 @@ const useStyles = makeStyles(theme => ({
       textAlign: "center"
     }
   },
-  error: {
-    borderBottom: "2px solid #f44336 !important"
-  },
   hide: {
     display: "none"
   },
   errorText: {
-    color: "#E07A5F"
+    color: "#E07A5F",
+    fontFamily: "Microsoft JhengHei"
   },
   phoneErrorText: {
     color: "#E07A5F",
     lineHeight: "20px",
     textAlign: "center",
-    marginTop: "-5px"
+    marginTop: "-5px",
+    fontFamily: "Microsoft JhengHei"
   }
 }));
+
+const CssTextField = withStyles({
+  root: {
+    "& label.Mui-focused": {
+      color: "#719898"
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "#719898"
+    }
+  }
+})(TextField);
 
 function Register() {
   const classes = useStyles();
@@ -208,7 +229,7 @@ function Register() {
         <Grid item xs={12} className={classes.formGrid}>
           <form className={classes.form} noValidate autoComplete="off">
             <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
-              <TextField label="email" name="email" onChange={handleChangeEmail} error={emailError} />
+              <CssTextField label="email" name="email" onChange={handleChangeEmail} error={emailError} />
               <FormHelperText
                 className={clsx(classes.input, classes.errorText, { [classes.hide]: emailError === false })}
               >
@@ -216,33 +237,35 @@ function Register() {
               </FormHelperText>
             </FormControl>
             <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
-              <InputLabel htmlFor="standard-adornment-password">password</InputLabel>
-              <Input
-                id="standard-adornment-password"
-                type={newValues.showPassword ? "text" : "password"}
-                value={newValues.password}
-                onChange={handlePasswordChange("password")}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {newValues.showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                name="password"
-                error={checkPasswordError}
-              />
+              <MuiThemeProvider theme={theme}>
+                <InputLabel htmlFor="standard-adornment-password">password</InputLabel>
+                <Input
+                  id="standard-adornment-password"
+                  type={newValues.showPassword ? "text" : "password"}
+                  value={newValues.password}
+                  onChange={handlePasswordChange("password")}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {newValues.showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  name="password"
+                  error={checkPasswordError}
+                />
+              </MuiThemeProvider>
               <FormHelperText
                 className={clsx(classes.input, classes.errorText, { [classes.hide]: checkPasswordError === false })}
               >
                 請輸入至少8碼!
               </FormHelperText>
             </FormControl>
-            <TextField
+            <CssTextField
               label="name"
               name="name"
               className={classes.input}
@@ -256,26 +279,28 @@ function Register() {
               value={gender}
               onChange={handleRedioChange}
             >
-              <span className={classes.title}>gender</span>
-              <FormControlLabel
-                value="male"
-                control={<Radio color="primary" />}
-                label="男"
-                labelPlacement="end"
-                className={classes.radio}
-              />
-              <FormControlLabel
-                value="female"
-                control={<Radio color="primary" />}
-                label="女"
-                labelPlacement="end"
-                className={classes.radio}
-              />
+              <MuiThemeProvider theme={theme}>
+                <span className={classes.title}>gender</span>
+                <FormControlLabel
+                  value="male"
+                  control={<Radio color="primary" />}
+                  label="男"
+                  labelPlacement="end"
+                  className={classes.radio}
+                />
+                <FormControlLabel
+                  value="female"
+                  control={<Radio color="primary" />}
+                  label="女"
+                  labelPlacement="end"
+                  className={classes.radio}
+                />
+              </MuiThemeProvider>
             </RadioGroup>
             <FormControl className={clsx(classes.input)}>
               <InputLabel className={classes.phoneLabel}>phone</InputLabel>
               <div className={classes.phoneInput}>
-                <TextField
+                <CssTextField
                   name="phone1"
                   className={clsx(classes.input, classes.phone)}
                   inputProps={{ maxLength: 4 }}
@@ -284,7 +309,7 @@ function Register() {
                   error={phoneError}
                 />
                 -
-                <TextField
+                <CssTextField
                   name="phone2"
                   className={clsx(classes.input, classes.phone)}
                   inputProps={{ maxLength: 3 }}
@@ -292,7 +317,7 @@ function Register() {
                   error={phoneError}
                 />
                 -
-                <TextField
+                <CssTextField
                   name="phone3"
                   className={clsx(classes.input, classes.phone)}
                   inputProps={{ maxLength: 3 }}
