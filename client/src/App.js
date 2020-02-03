@@ -12,10 +12,20 @@ import OrderDetails from "./views/OrderDtails";
 import Order from "./views/Oreder";
 // import Member from "./views/Member";
 import { Route, Switch } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles(() => ({
+  App: {
+    "& > div": {
+      padding: 0
+    }
+  }
+}));
 
 function App() {
+  const classes = useStyles();
   return (
-    <div className="App">
+    <div className={classes.App}>
       <Switch>
         <Route path="/" exact component={Home} />
         <Route path="/search" component={Search} />
