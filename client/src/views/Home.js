@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import productService from "../services/productService";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
@@ -12,8 +12,6 @@ import Grid from "@material-ui/core/Grid";
 import Badge from "@material-ui/core/Badge";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Header from "./Header";
-
-const drawerWidth = 180;
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -31,12 +29,6 @@ const useStyles = makeStyles(theme => ({
       borderRadius: "15px"
     }
   },
-  Container: {
-    flexGrow: 1,
-    display: "flex",
-    flexWrap: "wrap",
-    fontFamily: "Microsoft JhengHei"
-  },
   card: {
     position: "relative"
   },
@@ -47,9 +39,9 @@ const useStyles = makeStyles(theme => ({
     padding: "10px",
     overflow: "hidden"
   },
-  title: {
-    fontSize: 18,
-    flexGrow: 1
+  blockTitle: {
+    fontFamily: "Microsoft JhengHei",
+    color: "#3D405B"
   },
   pos: {
     marginBottom: 12,
@@ -73,45 +65,13 @@ const useStyles = makeStyles(theme => ({
   },
   restaurantName: {
     width: "65%",
+    fontFamily: "Microsoft JhengHei",
+    color: "#3D405B",
     overflow: "hidden",
     textOverflow: "ellipsis",
     display: "-webkit-box",
     "-webkit-line-clamp": "2",
     "-webkit-box-orient": "vertical"
-  },
-  appBar: {
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
-  },
-  appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
-  },
-  menuButton: {
-    marginRight: theme.spacing(2)
-  },
-  hide: {
-    display: "none"
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0
-  },
-  drawerPaper: {
-    width: drawerWidth
-  },
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
   },
   content: {
     flexGrow: 1,
@@ -119,28 +79,13 @@ const useStyles = makeStyles(theme => ({
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
+    }),
+    boxShadow: "1px 5px 15px 0px #DBDCE1"
     // marginLeft: -drawerWidth
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
-    // marginLeft: "105px"
   },
   restaurants: {
     display: "flex",
     flexWrap: "wrap"
-  },
-  summary: {
-    padding: "0 24px 0 16px"
-  },
-  details: {
-    padding: "0"
-  },
-  list: {
-    width: "100%"
   }
 }));
 
@@ -150,13 +95,23 @@ const categoryStyles = makeStyles({
     overflowX: "auto"
   },
   div: {
-    padding: "10px 5px 10px"
+    padding: "10px 5px 10px",
+    "&:hover": {
+      cursor: "pointer",
+      "& > div > img": {
+        opacity: 0.5,
+        transition: ".3s ease-in-out"
+      }
+    }
   },
   badge: {
     position: "absolute",
     top: "12px",
     right: "0",
-    width: "100%"
+    width: "100%",
+    "& > span > span": {
+      fontFamily: "Microsoft JhengHei"
+    }
   },
   card: {
     textAlign: "center"
@@ -167,6 +122,7 @@ function Home() {
   const [restaurant, setrestaurant] = useState(null);
   const classes = useStyles();
   const categoryClasses = categoryStyles();
+  const history = useHistory();
 
   useEffect(() => {
     if (!restaurant) {
@@ -181,13 +137,18 @@ function Home() {
   };
   console.log("restaurant", restaurant);
 
+  const handleClickRestaurant = (_id, name) => {
+    console.log("handleClickRestaurant is working!!!");
+    // /detail?name=test2&_id=5dc3d5eb4e48673b44ec995b
+    history.push(`/detail?name=${name}&_id=${_id}`);
+  };
+
   return (
     <Container maxWidth="sm">
       <div className={classes.root}>
         <CssBaseline />
         <Header />
         <main className={classes.content}>
-          <div className={classes.drawerHeader} />
           <Grid item xs={12} className={classes.restaurants}>
             {restaurant ? (
               restaurant.distinctByKind.map((kind, idx) => {
@@ -216,13 +177,17 @@ function Home() {
             )}
           </Grid>
           <Grid item xs={12} className={classes.item}>
-            <h4>猜你喜歡...</h4>
+            <h4 className={classes.blockTitle}>猜你喜歡...</h4>
             <Grid item xs={12} className={categoryClasses.randomBlock}>
               {restaurant ? (
                 restaurant.randomRestaurants.map(result => {
                   // console.log(12345, result);
                   return (
-                    <div key={result._id} className={categoryClasses.div}>
+                    <div
+                      key={result._id}
+                      className={categoryClasses.div}
+                      onClick={() => handleClickRestaurant(result._id, result.name)}
+                    >
                       <Card className={categoryClasses.card}>
                         <img src="http://fakeimg.pl/100x100?text=image" alt="" />
                       </Card>
