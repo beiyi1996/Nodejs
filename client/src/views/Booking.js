@@ -30,12 +30,6 @@ const useStyles = makeStyles(theme => ({
       fontFamily: "Microsoft JhengHei"
     }
   },
-  grid: {
-    width: "100%",
-    margin: "0 auto",
-    paddingTop: 10,
-    display: "flex"
-  },
   restaurantName: {
     paddingLeft: 10,
     overflow: "hidden",
@@ -333,12 +327,29 @@ function Booking() {
     const sessionStorageForm =
       sessionStorage.getItem("form") !== null ? JSON.parse(sessionStorage.getItem("form")) : {};
     if (Object.keys(sessionStorageForm).length > 0) {
-      setRestaurantName(sessionStorageForm.restaurantName);
-      setClickDate(sessionStorageForm.clickDate);
-      setTime(sessionStorageForm.time);
-      setAdult(sessionStorageForm.adult);
-      setChildren(sessionStorageForm.children);
-      setNotes(sessionStorageForm.notes);
+      if (sessionStorageForm.restaurantName !== restaurantName) {
+        const confirm = window.confirm(
+          `您有一筆訂單尚未訂購, 餐廳名稱: ${sessionStorageForm.restaurantName}, 請問您是否要訂購?`
+        );
+        if (confirm) {
+          setRestaurantName(sessionStorageForm.restaurantName);
+          setClickDate(sessionStorageForm.clickDate);
+          setTime(sessionStorageForm.time);
+          setAdult(sessionStorageForm.adult);
+          setChildren(sessionStorageForm.children);
+          setNotes(sessionStorageForm.notes);
+        } else {
+          sessionStorage.removeItem("form");
+          setRestaurantName(restaurantName);
+        }
+      } else {
+        setRestaurantName(sessionStorageForm.restaurantName);
+        setClickDate(sessionStorageForm.clickDate);
+        setTime(sessionStorageForm.time);
+        setAdult(sessionStorageForm.adult);
+        setChildren(sessionStorageForm.children);
+        setNotes(sessionStorageForm.notes);
+      }
     } else {
       setRestaurantName(restaurantName);
     }
