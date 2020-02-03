@@ -88,7 +88,7 @@ const logIn = async (req, res, next) => {
 };
 
 async function createMail(email, token) {
-  console.log(1, MyEmail);
+  console.log(18901394, MyEmail, token);
   let transporter = NodeMailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -135,6 +135,7 @@ function createTokenAndSaveDB(email, type, next) {
       if (type === "login") {
         return console.log("token is saved in db");
       } else {
+        console.log(1233094, "else data.token", data.token);
         createMail(data.email, data.token).catch(console.error);
       }
     }
