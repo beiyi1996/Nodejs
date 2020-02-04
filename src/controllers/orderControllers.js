@@ -105,44 +105,52 @@ const createOrder = async (req, res, next) => {
 const findOrders = async (req, res, next) => {
   const { name } = req.query;
   console.log("name", name);
-  const member = await Member.findOne(
-    { name: name },
-    {
-      _id: 1,
-      email: 1,
-      token: 1,
-      create_token_time: 1
+  if (name === "undefined") {
+    console.log("in undefined if!!!");
+    res.status(403).json({
+      code: 403,
+      message: "You are not log in"
+    });
+  } else {
+    const member = await Member.findOne(
+      { name: name },
+      {
+        _id: 1,
+        email: 1,
+        token: 1,
+        create_token_time: 1
+      }
+    );
+    console.log("member", member);
+    const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
+    console.log("limitTime", limitTime);
+    try {
+      if (member.token && Date.now() < limitTime) {
+        const memberID = await Member.findOne(
+          {
+            name: name
+          },
+          {
+            _id: 1
+          }
+        );
+        console.log("memberID", memberID);
+        const orders = await Order.find({
+          member_id: memberID._id
+        }).sort({
+          create_time: 1
+        });
+        res.status(200).json({ code: 200, orders });
+      } else {
+        console.log("Not log in...");
+        res.status(403).json({
+          code: 403,
+          message: "You are not log in"
+        });
+      }
+    } catch (err) {
+      return next(err);
     }
-  );
-  console.log("member", member);
-  const limitTime = member.create_token_time !== null ? member.create_token_time.getTime() + 600000 : 0;
-  console.log("limitTime", limitTime);
-  try {
-    if (member.token && Date.now() < limitTime) {
-      const memberID = await Member.findOne(
-        {
-          name: name
-        },
-        {
-          _id: 1
-        }
-      );
-      console.log("memberID", memberID);
-      const orders = await Order.find({
-        member_id: memberID._id
-      }).sort({
-        create_time: 1
-      });
-      res.status(200).json({ code: 200, orders });
-    } else {
-      console.log("Not log in...");
-      res.status(403).json({
-        code: 403,
-        message: "You are not log in"
-      });
-    }
-  } catch (err) {
-    return next(err);
   }
 };
 
