@@ -11,8 +11,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import CreateRoundedIcon from "@material-ui/icons/CreateRounded";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import Header from "./Header";
-
-const drawerWidth = 180;
+import Footer from "./Footer";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -30,6 +29,17 @@ const useStyles = makeStyles(theme => ({
       borderRadius: "15px"
     }
   },
+  root: {
+    position: "relative",
+    height: "100vh",
+    maxWidth: 600,
+    boxShadow: "1px 5px 15px 0px #DBDCE1"
+  },
+  grid: {
+    position: "relative",
+    height: "100vh",
+    maxWidth: 600
+  },
   card: {
     width: "100%",
     marginTop: 10,
@@ -37,12 +47,13 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-    marginTop: 48,
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
+    }),
+    height: "100vh",
+    overflow: "scroll"
     // marginLeft: -drawerWidth
   },
   orderDetail: {
@@ -101,6 +112,14 @@ const useStyles = makeStyles(theme => ({
     padding: 10,
     wordBreak: "normal",
     marginTop: 20
+  },
+  footerDiv: {
+    position: "absolute",
+    bottom: 0,
+    width: "inherit",
+    "& > div": {
+      position: "static"
+    }
   }
 }));
 
@@ -108,6 +127,7 @@ function Orders() {
   const [restaurant, setrestaurant] = useState(null);
   const classes = useStyles();
   const [orders, setOrders] = useState([]);
+  const [isLogIn, setIsLogIn] = useState(true);
   const history = useHistory();
 
   const getRestaurant = async () => {
@@ -117,11 +137,17 @@ function Orders() {
 
   const getAllOrders = async () => {
     const user = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
+    console.log("user", user);
     const res = await productService.getAllOrders(user.member);
     console.log("get all orders res", res);
     if (res.code === 200) {
+      setIsLogIn(true);
+      if (!restaurant) {
+        getRestaurant();
+      }
       setOrders(res.orders);
     } else {
+      setIsLogIn(false);
       alert("請先登入, 即可查看訂單! 謝謝!");
       sessionStorage.clear();
       history.push("/login");
@@ -130,9 +156,6 @@ function Orders() {
 
   useEffect(() => {
     console.log("Orders page useEffect is working!!");
-    if (!restaurant) {
-      getRestaurant();
-    }
     getAllOrders();
   }, []);
 
@@ -156,77 +179,82 @@ function Orders() {
   };
 
   return (
-    <Container maxWidth="md">
-      <div className={classes.root}>
-        <CssBaseline />
-        <Header />
-        <main className={classes.content}>
-          {orders.length !== 0 ? (
-            orders.map(item => {
-              const formatDateTime = new Date(item.dateTime);
-              const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() +
-                1} / ${formatDateTime.getDate()}`;
-              const minutes =
-                formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `0${formatDateTime.getMinutes()}`;
-              const time = `${formatDateTime.getHours()} : ${minutes}`;
-              const createDateTime = new Date(item.create_time);
-              const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() +
-                1} / ${createDateTime.getDate()}`;
-              const createMinutes =
-                createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `0${createDateTime.getMinutes()}`;
-              const createTime = `${createDateTime.getHours()} : ${createMinutes}`;
-              return (
-                <Grid item xs={12} className={classes.orderContent} key={item.create_time}>
-                  <Typography className={classes.orderTitle}>
-                    <span>訂單編號 : </span>
-                    <span>{item._id}</span>
-                  </Typography>
-                  <Typography className={classes.orderTitle}>
-                    <span>成立訂單 : </span>
-                    <span>
-                      {createDate} - {createTime}
-                    </span>
-                  </Typography>
-                  <Card className={classes.card}>
-                    <ul className={classes.orderDetail}>
-                      <li>
-                        日期 : <span>{date}</span>
-                      </li>
-                      <li>
-                        時間 : <span>{time}</span>
-                      </li>
-                      <li>
-                        人數 :{" "}
-                        <span>
-                          {item.adult} 大人 {item.children}小孩
-                        </span>
-                      </li>
-                      <li>
-                        備註 : <span>{item.notes}</span>
-                      </li>
-                    </ul>
-                    <div className={classes.featureBtn}>
-                      <Link to={`/orderdetails?order_ID=${item._id}`}>
-                        <Button>
-                          <CreateRoundedIcon />
+    <Container maxWidth="sm" className={classes.root}>
+      <Grid item xs={12} className={classes.grid}>
+        <div>
+          <CssBaseline />
+          {isLogIn ? <Header /> : <></>}
+          <main className={classes.content}>
+            {orders.length !== 0 ? (
+              orders.map(item => {
+                const formatDateTime = new Date(item.dateTime);
+                const date = `${formatDateTime.getFullYear()} / ${formatDateTime.getMonth() +
+                  1} / ${formatDateTime.getDate()}`;
+                const minutes =
+                  formatDateTime.getMinutes() > 9 ? formatDateTime.getMinutes() : `0${formatDateTime.getMinutes()}`;
+                const time = `${formatDateTime.getHours()} : ${minutes}`;
+                const createDateTime = new Date(item.create_time);
+                const createDate = `${createDateTime.getFullYear()} / ${createDateTime.getMonth() +
+                  1} / ${createDateTime.getDate()}`;
+                const createMinutes =
+                  createDateTime.getMinutes() > 9 ? createDateTime.getMinutes() : `0${createDateTime.getMinutes()}`;
+                const createTime = `${createDateTime.getHours()} : ${createMinutes}`;
+                return (
+                  <Grid item xs={12} className={classes.orderContent} key={item.create_time}>
+                    <Typography className={classes.orderTitle}>
+                      <span>訂單編號 : </span>
+                      <span>{item._id}</span>
+                    </Typography>
+                    <Typography className={classes.orderTitle}>
+                      <span>成立訂單 : </span>
+                      <span>
+                        {createDate} - {createTime}
+                      </span>
+                    </Typography>
+                    <Card className={classes.card}>
+                      <ul className={classes.orderDetail}>
+                        <li>
+                          日期 : <span>{date}</span>
+                        </li>
+                        <li>
+                          時間 : <span>{time}</span>
+                        </li>
+                        <li>
+                          人數 :{" "}
+                          <span>
+                            {item.adult} 大人 {item.children}小孩
+                          </span>
+                        </li>
+                        <li>
+                          備註 : <span>{item.notes}</span>
+                        </li>
+                      </ul>
+                      <div className={classes.featureBtn}>
+                        <Link to={`/orderdetails?order_ID=${item._id}`}>
+                          <Button>
+                            <CreateRoundedIcon />
+                          </Button>
+                        </Link>
+                        <Button onClick={() => handleDeleteOrder(item._id)}>
+                          <DeleteRoundedIcon />
                         </Button>
-                      </Link>
-                      <Button onClick={() => handleDeleteOrder(item._id)}>
-                        <DeleteRoundedIcon />
-                      </Button>
-                    </div>
-                  </Card>
-                </Grid>
-              );
-            })
-          ) : (
-            <div className={classes.noOrder}>
-              還沒找到喜歡的餐廳嗎?? <br />
-              快回首頁在搜尋一下吧!!
-            </div>
-          )}
-        </main>
-      </div>
+                      </div>
+                    </Card>
+                  </Grid>
+                );
+              })
+            ) : (
+              <div className={classes.noOrder}>
+                還沒找到喜歡的餐廳嗎?? <br />
+                快回首頁在搜尋一下吧!!
+              </div>
+            )}
+          </main>
+        </div>
+        <div className={classes.footerDiv}>
+          <Footer />
+        </div>
+      </Grid>
     </Container>
   );
 }

@@ -14,6 +14,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import Header from "./Header";
 
 const theme = createMuiTheme({
   palette: {
@@ -23,7 +24,12 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles(theme => ({
   container: {
-    textAlign: "center"
+    textAlign: "center",
+    height: "100vh",
+    boxShadow: "1px 5px 15px 0px #DBDCE1"
+  },
+  logoGrid: {
+    marginTop: 50
   },
   logo: {
     borderRadius: "50%"
@@ -141,7 +147,8 @@ function LogIn() {
   return (
     <Container maxWidth="sm">
       <Grid item xs={12} className={classes.container}>
-        <Grid item xs={12} className={classes.paper}>
+        <Header />
+        <Grid item xs={12} className={classes.logoGrid}>
           <img src="http://fakeimg.pl/100x100?text=logo&font=lobster" alt="" className={classes.logo} />
         </Grid>
         <Grid item xs={12} className={classes.formGrid}>

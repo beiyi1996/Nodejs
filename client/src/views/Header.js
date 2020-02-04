@@ -47,12 +47,13 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     fontSize: 18,
-    flexGrow: 1
+    flexGrow: 1,
+    textAlign: "center"
   },
   appBar: {
     backgroundColor: "#9BD0D0",
     color: "#3D405B",
-    position: "static",
+    position: "sticky",
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen

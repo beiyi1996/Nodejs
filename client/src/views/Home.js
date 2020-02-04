@@ -5,7 +5,6 @@ import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -29,11 +28,46 @@ const useStyles = makeStyles(theme => ({
       borderRadius: "15px"
     }
   },
+  root: {
+    height: "100vh",
+    boxShadow: "1px 5px 15px 0px #DBDCE1"
+  },
   card: {
     position: "relative"
   },
   cardContent: {
-    padding: 0
+    padding: 0,
+    position: "relative",
+    paddingBottom: "0 !important"
+  },
+  cardActions: {
+    position: "absolute",
+    top: 0,
+    left: "50%",
+    transform: "translateX(-50%)",
+    textDecoration: "none",
+    width: "100%",
+    height: "100%",
+
+    "& > button": {
+      width: "100%",
+      height: "100%",
+      "& > span": {
+        fontFamily: "Microsoft JhengHei",
+        color: "#F4F1DE",
+        fontSize: 18,
+        color: "#F4F1DE"
+      },
+      "&:hover": {
+        backgroundColor: "#DBDCE1",
+        opacity: 0.6,
+        transition: ".3s ease-in-out",
+        "& > span": {
+          color: "#3D405B",
+          fontWeight: "bold"
+        }
+      }
+    }
   },
   item: {
     padding: "10px",
@@ -42,16 +76,6 @@ const useStyles = makeStyles(theme => ({
   blockTitle: {
     fontFamily: "Microsoft JhengHei",
     color: "#3D405B"
-  },
-  pos: {
-    marginBottom: 12,
-    textAlign: "right",
-    position: "absolute",
-    right: "10px",
-    top: "5px",
-    color: "snow",
-    fontWeight: "bold",
-    fontFamily: "Microsoft JhengHei"
   },
   guessItem: {
     display: "flex",
@@ -79,8 +103,7 @@ const useStyles = makeStyles(theme => ({
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    }),
-    boxShadow: "1px 5px 15px 0px #DBDCE1"
+    })
     // marginLeft: -drawerWidth
   },
   restaurants: {
@@ -99,7 +122,8 @@ const categoryStyles = makeStyles({
     "&:hover": {
       cursor: "pointer",
       "& > div > img": {
-        opacity: 0.5,
+        backgroundColor: "#DBDCE1",
+        opacity: 0.6,
         transition: ".3s ease-in-out"
       }
     }
@@ -109,6 +133,9 @@ const categoryStyles = makeStyles({
     top: "12px",
     right: "0",
     width: "100%",
+    "& > span": {
+      backgroundColor: "#E07A5F"
+    },
     "& > span > span": {
       fontFamily: "Microsoft JhengHei"
     }
@@ -156,18 +183,13 @@ function Home() {
                   <Grid item xs={6} className={classes.item} key={idx}>
                     <Card className={classes.card}>
                       <CardContent className={classes.cardContent}>
-                        <Typography className={classes.pos} color="textSecondary">
-                          {kind}
-                        </Typography>
                         <Typography variant="body2" component="p">
                           <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
                         </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <Link to={`/search?searchKeyWord=${kind}`}>
-                          <Button size="small">Learn More</Button>
+                        <Link to={`/search?searchKeyWord=${kind}`} className={classes.cardActions}>
+                          <Button size="small">{kind}</Button>
                         </Link>
-                      </CardActions>
+                      </CardContent>
                     </Card>
                   </Grid>
                 );

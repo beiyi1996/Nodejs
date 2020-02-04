@@ -15,20 +15,29 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { googleMapKey } from "../password";
 import classNames from "classnames";
+import Header from "./Header";
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     paddingBottom: 30,
-
+    boxShadow: "1px 5px 15px 0px #DBDCE1",
+    position: "relative",
+    height: "100vh",
     "& > *": {
       fontFamily: "Microsoft JhengHei"
     }
   },
+  container: {
+    position: "relative",
+    height: "100vh",
+    overflow: "scroll",
+    width: 600
+  },
   grid: {
     width: "100%",
     margin: "0 auto",
-    paddingTop: 10,
+    padding: "10px 10px 0",
     display: "flex"
   },
   searchBar: {
@@ -50,11 +59,13 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 50,
     height: 40,
     minWidth: 40,
-    padding: 5
-  },
-  icon: {
-    verticalAlign: "text-bottom",
-    marginTop: 3
+    padding: 5,
+    "& > span > svg": {
+      color: "#32354B"
+    },
+    "&:hover": {
+      backgroundColor: "#FCF1DB"
+    }
   },
   restaurantImage: {
     width: "100%",
@@ -66,7 +77,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   restaurantName: {
-    paddingLeft: 10,
+    paddingLeft: 20,
     overflow: "hidden",
     textOverflow: "ellipsis",
     display: "-webkit-box",
@@ -74,11 +85,13 @@ const useStyles = makeStyles(theme => ({
     "-webkit-box-orient": "vertical",
     fontFamily: "Microsoft JhengHei",
     fontSize: 20,
-    margin: "0 0 5px"
+    margin: "0 0 5px",
+    color: "#3D405B"
   },
   paperGrid: {
     position: "relative",
-    marginBottom: 50
+    marginBottom: 50,
+    padding: "0 20px"
   },
   paperRoot: {
     minHeight: 70,
@@ -120,16 +133,23 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     justifyContent: "center",
     padding: "0 5px",
-    margin: "10px 0 5px"
+    margin: "10px 0 5px",
+    "& > a": {
+      textDecoration: "none",
+      width: "100%"
+    }
   },
   booking: {
     width: "100%",
     borderRadius: 10,
-    fontFamily: "Microsoft JhengHei"
+    fontFamily: "Microsoft JhengHei",
+    "&:hover": {
+      backgroundColor: "#FCF1DB"
+    }
   },
   slider: {
     "& > button::before": {
-      color: "#838596",
+      color: "#FCF1DB",
 
       "&:hover": {
         color: "#3D405B"
@@ -148,15 +168,16 @@ const useStyles = makeStyles(theme => ({
   },
   searchResultGrid: {
     position: "absolute",
-    zIndex: 1,
-    width: "87%"
+    zIndex: 2,
+    width: "90%",
+    left: 10
   },
   saerchListItem: {
     padding: 10,
     backgroundColor: "#FEFDFC",
     border: "1px solid #B8B9C3",
     borderTop: "none",
-    width: "100%",
+    width: "95%",
     margin: "0 auto",
 
     "& > p": {
@@ -181,6 +202,14 @@ const useStyles = makeStyles(theme => ({
       fontWeight: "inherit",
       backgroundColor: "#FEFDFC",
       cursor: "default"
+    }
+  },
+  footerDiv: {
+    position: "absolute",
+    bottom: 0,
+    width: "inherit",
+    "& > div": {
+      position: "static"
     }
   }
 }));
@@ -388,6 +417,7 @@ function Detail() {
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
+        <Header />
         <Grid item xs={12} className={classes.grid}>
           <input
             type="text"
@@ -395,6 +425,7 @@ function Detail() {
             className={classes.searchBar}
             value={searchKeyWord}
             onChange={handleChange}
+            placeholder="search for restaurant"
           />
           <div className={classes.searchIcon}>
             <Button className={classes.searchBtn}>
@@ -454,7 +485,9 @@ function Detail() {
           </Grid>
         </Grid>
       </Grid>
-      <Footer />
+      <div className={classes.footerDiv}>
+        <Footer />
+      </div>
     </Container>
   );
 }

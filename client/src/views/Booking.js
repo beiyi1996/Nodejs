@@ -20,18 +20,23 @@ import clsx from "clsx";
 import ArrowLeftRoundedIcon from "@material-ui/icons/ArrowLeftRounded";
 import ArrowRightRoundedIcon from "@material-ui/icons/ArrowRightRounded";
 import Fade from "@material-ui/core/Fade";
+import Header from "./Header";
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     paddingBottom: 30,
+    maxWidth: 600,
+    height: "100vh",
+    position: "relative",
+    boxShadow: "1px 5px 15px 0px #DBDCE1",
 
     "& > *": {
       fontFamily: "Microsoft JhengHei"
     }
   },
   restaurantName: {
-    paddingLeft: 10,
+    padding: "10px 10px 0",
     overflow: "hidden",
     textOverflow: "ellipsis",
     display: "-webkit-box",
@@ -43,7 +48,8 @@ const useStyles = makeStyles(theme => ({
   },
   paperGrid: {
     position: "relative",
-    marginBottom: 50
+    marginBottom: 50,
+    padding: "0 20px"
   },
   paperRoot: {
     minHeight: 70,
@@ -71,7 +77,10 @@ const useStyles = makeStyles(theme => ({
   booking: {
     width: "100%",
     borderRadius: 10,
-    fontFamily: "Microsoft JhengHei"
+    fontFamily: "Microsoft JhengHei",
+    "&:hover": {
+      backgroundColor: "#FCF1DB"
+    }
   },
   card: {
     minWidth: 275,
@@ -153,7 +162,7 @@ const useStyles = makeStyles(theme => ({
   },
   calendarIcon: {
     position: "absolute",
-    left: 13,
+    left: 30,
     color: "#7FABAB"
   },
   orderDetail: {
@@ -282,6 +291,14 @@ const useStyles = makeStyles(theme => ({
   },
   error: {
     borderBottom: "2px solid #f44336 !important"
+  },
+  footerDiv: {
+    position: "absolute",
+    bottom: 0,
+    width: "inherit",
+    "& > div": {
+      position: "static"
+    }
   }
 }));
 
@@ -614,7 +631,7 @@ function Booking() {
         sessionStorage.removeItem("form");
         history.push("/completed");
       } else if (order.code === 403) {
-        alert("You're not log in!");
+        alert("您尚未登入, 系統將為您保留此筆訂單細節, 麻煩您先登入喲!!");
         const form = Object.assign({}, { restaurantName, clickDate, time, adult, children, notes });
         sessionStorage.setItem("form", JSON.stringify(form));
         sessionStorage.removeItem("user");
@@ -626,6 +643,7 @@ function Booking() {
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
+        <Header />
         <Grid item xs={12}>
           <Typography variant="h5" gutterBottom className={classes.restaurantName}>
             {restaurantName}
@@ -735,7 +753,9 @@ function Booking() {
           </Grid>
         </Grid>
       </Grid>
-      <Footer />
+      <div className={classes.footerDiv}>
+        <Footer />
+      </div>
     </Container>
   );
 }

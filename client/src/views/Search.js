@@ -12,16 +12,26 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
 import Footer from "./Footer";
+import Header from "./Header";
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    paddingBottom: 30
+    paddingBottom: 30,
+    position: "relative",
+    height: "100vh",
+    boxShadow: "1px 5px 15px 0px #DBDCE1"
+  },
+  container: {
+    position: "relative",
+    height: "100vh",
+    overflow: "scroll",
+    width: 600
   },
   grid: {
     width: "100%",
     margin: "0 auto",
-    paddingTop: 10,
+    padding: "10px 10px 0",
     display: "flex"
   },
   searchBar: {
@@ -44,15 +54,18 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 50,
     height: 40,
     minWidth: 40,
-    padding: 5
-  },
-  icon: {
-    verticalAlign: "text-bottom",
-    marginTop: 3
+    padding: 5,
+    "& > span > svg": {
+      color: "#32354B"
+    },
+    "&:hover": {
+      backgroundColor: "#FCF1DB"
+    }
   },
   restaurantImage: {
-    width: "100%",
+    width: "75%",
     height: "100%",
+    margin: "0 auto",
     "& > img": {
       width: "100%",
       borderRadius: 10
@@ -67,27 +80,31 @@ const useStyles = makeStyles(theme => ({
     "-webkit-box-orient": "vertical",
     fontFamily: "Microsoft JhengHei",
     fontSize: 17,
-    margin: "0 0 5px"
+    margin: "0 0 5px",
+    color: "#3D405B"
   },
   paperGrid: {
     position: "relative",
     marginBottom: 50,
     "&::after": {
       content: "''",
-      width: "100%",
+      width: "90%",
       position: "absolute",
       bottom: "-35px",
-      border: "0.5px dashed #B8B9C3"
+      border: "0.5px dashed #B8B9C3",
+      left: "50%",
+      transform: "translate(-50%)"
     }
   },
   paperRoot: {
     position: "absolute",
     width: "80%",
-    left: 30,
+    left: "50%",
     bottom: -15,
     minHeight: 70,
     padding: 5,
-    borderRadius: 4
+    borderRadius: 4,
+    transform: "translate(-50%)"
   },
   paperFooter: {
     display: "flex",
@@ -108,9 +125,21 @@ const useStyles = makeStyles(theme => ({
     fontFamily: "Microsoft JhengHei",
     marginRight: 3
   },
+  restaurantGrid: {
+    paddingBottom: 70
+  },
   restaurantMore: {
-    width: "35%",
-    borderRadius: 10
+    textDecoration: "none",
+    "& > button": {
+      width: "35%",
+      borderRadius: 10,
+      "& > span": {
+        color: "#3D405B"
+      },
+      "&:hover": {
+        backgroundColor: "#FCF1DB"
+      }
+    }
   },
   keyWord: {
     fontFamily: "Microsoft JhengHei",
@@ -121,14 +150,15 @@ const useStyles = makeStyles(theme => ({
   searchResultGrid: {
     position: "absolute",
     zIndex: 1,
-    width: "87%"
+    width: "90%",
+    left: 10
   },
   saerchListItem: {
     padding: 10,
     backgroundColor: "#FEFDFC",
     border: "1px solid #B8B9C3",
     borderTop: "none",
-    width: "90%",
+    width: "95%",
     margin: "0 auto",
 
     "& > p": {
@@ -158,6 +188,18 @@ const useStyles = makeStyles(theme => ({
   urlParams: {
     color: "#E07A5F",
     fontWeight: "bold"
+  },
+  searchNoResult: {
+    padding: 10,
+    fontFamily: "Microsoft JhengHei"
+  },
+  footerDiv: {
+    position: "absolute",
+    bottom: 0,
+    width: "inherit",
+    "& > div": {
+      position: "static"
+    }
   }
 }));
 
@@ -249,6 +291,7 @@ function Search() {
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
+        <Header />
         <Grid item xs={12} className={classes.grid}>
           <input
             type="text"
@@ -256,10 +299,11 @@ function Search() {
             className={classes.searchBar}
             value={searchKeyWord}
             onChange={handleChange}
+            placeholder="search for restaurant"
           />
           <div className={classes.searchIcon}>
             <Button className={classes.searchBtn} onClick={handleSubmit}>
-              <SearchIcon className={classes.icon} />
+              <SearchIcon />
             </Button>
           </div>
         </Grid>
@@ -271,7 +315,7 @@ function Search() {
             為您推薦 <span className={classes.urlParams}>{urlParams}</span> 相關的餐廳 ..
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} className={classes.restaurantGrid}>
           {restaurant && restaurant.length !== 0 ? (
             restaurant.map(item => (
               <Grid item xs={12} className={classes.paperGrid} key={item._id}>
@@ -285,24 +329,21 @@ function Search() {
                       <Chip label={item.category.area} className={classes.chip} />
                       <Chip label={item.category.kind} className={classes.chip} />
                     </Typography>
-                    <Link to={`/detail?name=${item.name}&_id=${item._id}`}>
-                      <Button
-                        className={classes.restaurantMore}
-                        onClick={() => productService.getRestaurantDetail(item.name, item._id)}
-                      >
-                        more
-                      </Button>
+                    <Link to={`/detail?name=${item.name}&_id=${item._id}`} className={classes.restaurantMore}>
+                      <Button onClick={() => productService.getRestaurantDetail(item.name, item._id)}>more</Button>
                     </Link>
                   </div>
                 </Paper>
               </Grid>
             ))
           ) : (
-            <p>今天吃點別的吧!!!</p>
+            <p className={classes.searchNoResult}>今天吃點別的吧!!!</p>
           )}
         </Grid>
       </Grid>
-      <Footer />
+      <div className={classes.footerDiv}>
+        <Footer />
+      </div>
     </Container>
   );
 }

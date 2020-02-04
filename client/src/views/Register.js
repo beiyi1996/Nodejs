@@ -18,6 +18,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import Header from "./Header";
 
 const theme = createMuiTheme({
   palette: {
@@ -27,10 +28,13 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles(theme => ({
   container: {
-    textAlign: "center"
+    textAlign: "center",
+    height: "100vh",
+    boxShadow: "1px 5px 15px 0px #DBDCE1"
   },
   logo: {
-    borderRadius: "50%"
+    borderRadius: "50%",
+    marginTop: 50
   },
   form: {
     "& > *": {
@@ -120,6 +124,9 @@ const CssTextField = withStyles({
     },
     "& .MuiInput-underline:after": {
       borderBottomColor: "#719898"
+    },
+    "& .MuiInput-underline.Mui-error:after": {
+      borderBottomColor: "#f44336"
     }
   }
 })(TextField);
@@ -188,6 +195,10 @@ function Register() {
     console.log("allPhone", allPhone);
     if (email === "" || password === "" || name === "" || genderNumber === "" || allPhone === "") {
       alert("每個欄位都為必填欄位!! 請填寫完成再按下註冊按鈕, 謝謝!");
+      setEmailError(true);
+      setPasswordError(true);
+      setNameError(true);
+      setPhoneError(true);
     } else {
       const res = await productService.register(email, password, name, genderNumber, allPhone);
       console.log("res", res);
@@ -223,6 +234,7 @@ function Register() {
   return (
     <Container maxWidth="sm">
       <Grid item xs={12} className={classes.container}>
+        <Header />
         <Grid item xs={12} className={classes.paper}>
           <img src="http://fakeimg.pl/100x100?text=logo&font=lobster" alt="" className={classes.logo} />
         </Grid>

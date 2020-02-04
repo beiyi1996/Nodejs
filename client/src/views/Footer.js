@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+import clsx from "clsx";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import HomeRoundedIcon from "@material-ui/icons/HomeRounded";
@@ -12,7 +13,13 @@ const useStyles = makeStyles({
     width: "100%",
     position: "fixed",
     bottom: 0,
-    left: 0
+    left: 0,
+    "& > a > span": {
+      color: "#9BD0D0"
+    },
+    "& > a.selected": {
+      color: "red"
+    }
   },
   order: {
     "& > span > span:last-child": {
@@ -26,6 +33,11 @@ const useStyles = makeStyles({
       backgroundColor: "#E07A5F",
       color: "#fff",
       padding: 3
+    }
+  },
+  selected: {
+    "& > span": {
+      color: "#638585 !important"
     }
   }
 });
@@ -44,7 +56,13 @@ export default function SimpleBottomNavigation() {
       showLabels
       className={classes.root}
     >
-      <BottomNavigationAction component={Link} to="/" label="Home" icon={<HomeRoundedIcon />} />
+      <BottomNavigationAction
+        component={Link}
+        to="/"
+        label="Home"
+        icon={<HomeRoundedIcon />}
+        className={clsx({ [classes.selected]: value === 0 })}
+      />
       <BottomNavigationAction
         component={Link}
         to={`/orders?name=${user.member}`}
