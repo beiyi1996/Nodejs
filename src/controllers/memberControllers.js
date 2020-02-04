@@ -107,7 +107,7 @@ async function createMail(email, token) {
     from: MyEmail.email, // sender address
     to: email, // list of receivers
     subject: "forget password", // Subject line
-    text: "forget password email", // plain text body
+    text: "美食家 - 修改密碼通知信", // plain text body
     html: `<h3>請至連結更改密碼 : <a href="http://localhost:3000/modifiedpassword?token=${token}">修改密碼</a></h3>` // html body
   });
 }
@@ -156,7 +156,10 @@ const forgotPassword = (req, res, next) => {
     const { email } = req.body;
     console.log("email", email);
     createTokenAndSaveDB(email, "forgotPassword", next);
-    res.send("<h1>forgot password, we are sent a validation code with your email. please check your email.</h1>");
+    res.status(200).json({
+      code: 200,
+      message: "send forgot password email"
+    });
   } catch (err) {
     console.log("error!");
     return next(err);
@@ -183,8 +186,9 @@ const modifiedPasswordGET = (req, res, next) => {
           email: data.email
         });
       } else {
+        console.log("modified password get token is expired!!!");
         createTokenAndSaveDB(data.email);
-        res.send("<h1>您的驗證已過期, 麻煩您點選底下的連結重新獲得驗證碼。</h1>");
+        res.status(400).json({ code: 400, message: "token is expired" });
       }
     }
   );
