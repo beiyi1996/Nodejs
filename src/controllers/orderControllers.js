@@ -27,8 +27,8 @@ async function sendCompletedMail(email, orderId) {
     from: MyEmail.email, // sender address
     to: email, // list of receivers
     subject: `Completed Mail`, // Subject line
-    text: "This is your completed email", // plain text body
-    html: `This is your completed email. <br> you can checked your order here <a href='http://localhost:3000/orderdetails?order_ID=${orderId}'>check your order</a>` // html body
+    text: "美食家-訂購完成通知信", // plain text body
+    html: `這是您的訂購完成通知信, <br> 您可以從這個連結查詢此筆訂單。 <a href='http://localhost:3000/orderdetails?order_ID=${orderId}'>查詢此筆訂單</a>` // html body
   });
 }
 
