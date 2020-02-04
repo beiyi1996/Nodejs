@@ -5,16 +5,20 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import ErrorIcon from "@material-ui/icons/Error";
+import Header from "./Header";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    boxShadow: "1px 5px 15px 0px #DBDCE1",
+    height: "100vh"
   },
   container: {
     textAlign: "center"
   },
   logo: {
-    borderRadius: "50%"
+    borderRadius: "50%",
+    marginTop: 50
   },
   grid: {
     width: "100%",
@@ -53,6 +57,7 @@ function ForgotPassword() {
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
+        <Header />
         <Grid item xs={12} className={classes.paper}>
           <img src="http://fakeimg.pl/100x100?text=logo&font=lobster" alt="" className={classes.logo} />
         </Grid>
