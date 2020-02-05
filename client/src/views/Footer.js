@@ -17,22 +17,15 @@ const useStyles = makeStyles({
     "& > a > span": {
       color: "#9BD0D0"
     },
-    "& > a.selected": {
-      color: "red"
+    "& > a:hover": {
+      "& > span": {
+        color: "#F4D28B"
+      }
     }
   },
   order: {
     "& > span > span:last-child": {
       position: "relative"
-    },
-    "& > span > span:last-child::after": {
-      content: "'99'",
-      position: "absolute",
-      top: "-30px",
-      borderRadius: 30,
-      backgroundColor: "#E07A5F",
-      color: "#fff",
-      padding: 3
     }
   },
   selected: {
@@ -42,9 +35,9 @@ const useStyles = makeStyles({
   }
 });
 
-export default function SimpleBottomNavigation() {
+export default function SimpleBottomNavigation({ selectedValue }) {
   const classes = useStyles();
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(selectedValue);
   const user = sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
 
   return (
@@ -66,11 +59,17 @@ export default function SimpleBottomNavigation() {
       <BottomNavigationAction
         component={Link}
         to={`/orders?name=${user.member}`}
-        label="Order"
+        label="Orders"
         icon={<RestaurantRoundedIcon />}
-        className={classes.order}
+        className={clsx(classes.order, { [classes.selected]: value === 1 })}
       />
-      <BottomNavigationAction component={Link} to="/member" label="Account" icon={<AccountCircleRoundedIcon />} />
+      <BottomNavigationAction
+        component={Link}
+        to="/member"
+        label="Account"
+        icon={<AccountCircleRoundedIcon />}
+        className={clsx({ [classes.selected]: value === 2 })}
+      />
     </BottomNavigation>
   );
 }
