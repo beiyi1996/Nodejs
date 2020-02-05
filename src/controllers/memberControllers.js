@@ -70,6 +70,7 @@ const logIn = async (req, res, next) => {
             res.status(200).json({
               code: 200,
               member: member.name,
+              email: member.email,
               login: isLogIn
             });
             console.log("req.session", req.session);
