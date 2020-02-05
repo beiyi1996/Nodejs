@@ -57,8 +57,7 @@ const useStyles = makeStyles(theme => ({
       "& > span": {
         fontFamily: "Microsoft JhengHei",
         color: "#F4F1DE",
-        fontSize: 18,
-        color: "#F4F1DE"
+        fontSize: 18
       },
       "&:hover": {
         backgroundColor: "#DBDCE1",
