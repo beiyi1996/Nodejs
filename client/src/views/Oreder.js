@@ -33,7 +33,8 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     height: "100vh",
     maxWidth: 600,
-    boxShadow: "1px 5px 15px 0px #DBDCE1"
+    boxShadow: "1px 5px 15px 0px #DBDCE1",
+    overflow: "hidden"
   },
   grid: {
     position: "relative",
@@ -53,7 +54,8 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.leavingScreen
     }),
     height: "100vh",
-    overflow: "scroll"
+    overflow: "scroll",
+    paddingBottom: 130
     // marginLeft: -drawerWidth
   },
   orderDetail: {
@@ -116,7 +118,7 @@ const useStyles = makeStyles(theme => ({
   footerDiv: {
     position: "absolute",
     bottom: 0,
-    width: "inherit",
+    width: "100%",
     "& > div": {
       position: "static"
     }
@@ -252,7 +254,7 @@ function Orders() {
           </main>
         </div>
         <div className={classes.footerDiv}>
-          <Footer />
+          <Footer selectedValue={1} />
         </div>
       </Grid>
     </Container>
