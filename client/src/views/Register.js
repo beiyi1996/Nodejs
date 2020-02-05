@@ -67,7 +67,8 @@ const useStyles = makeStyles(theme => ({
   button: {
     width: "40%",
     margin: "50px 0",
-    fontFamily: "Microsoft JhengHei"
+    fontFamily: "Microsoft JhengHei",
+    border: "none"
   },
   title: {
     textAlign: "left",
