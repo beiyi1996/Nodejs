@@ -10,7 +10,7 @@ import Detail from "./views/Detail";
 import Booking from "./views/Booking";
 import OrderDetails from "./views/OrderDtails";
 import Order from "./views/Oreder";
-// import Member from "./views/Member";
+import Member from "./views/Member";
 import { Route, Switch } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -38,6 +38,7 @@ function App() {
         <Route path="/completed" component={Completed} />
         <Route path="/modifiedpassword" component={ModifiedPassword} />
         <Route path="/forgotpassword" component={ForgotPassword} />
+        <Route path="/member" component={Member} />
       </Switch>
     </div>
   );
