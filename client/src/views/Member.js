@@ -1,157 +1,145 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState } from "react";
+import { makeStyles, createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import SearchIcon from "@material-ui/icons/Search";
 import Button from "@material-ui/core/button";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
 import Footer from "./Footer";
+import Header from "./Header";
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    paddingBottom: 30
-  },
-  grid: {
-    width: "100%",
-    margin: "0 auto",
-    paddingTop: 10,
-    display: "flex"
-  },
-  searchBar: {
-    fontSize: 16,
-    color: "#3D405B",
-    border: "1px solid #B8B9C3",
-    borderRadius: 20,
-    width: "100%",
-    padding: "5px 15px 5px",
-
-    "&:focus": {
-      outline: "none"
-    }
-  },
-  searchIcon: {
-    marginLeft: "-40px"
-  },
-  searchBtn: {
-    borderRadius: 50,
-    height: 40,
-    minWidth: 40,
-    padding: 5
-  },
-  icon: {
-    verticalAlign: "text-bottom",
-    marginTop: 3
-  },
-  restaurantImage: {
-    width: "100%",
-    height: "100%",
-    "& > img": {
-      width: "100%",
-      borderRadius: 10
-    }
-  },
-  restaurantName: {
-    paddingLeft: 10,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "-webkit-box",
-    "-webkit-line-clamp": "2",
-    "-webkit-box-orient": "vertical",
-    fontFamily: "Microsoft JhengHei",
-    fontSize: 17,
-    margin: "0 0 5px"
-  },
-  paperGrid: {
+    paddingBottom: 30,
     position: "relative",
-    marginBottom: 50,
-    "&::after": {
-      content: "''",
-      width: "100%",
-      position: "absolute",
-      bottom: "-35px",
-      border: "0.5px dashed #B8B9C3"
+    height: "100vh",
+    boxShadow: "1px 5px 15px 0px #DBDCE1",
+    textAlign: "center"
+  },
+  userPicGrid: {
+    marginTop: 50
+  },
+  userPic: {
+    borderRadius: "50%"
+  },
+  userGrid: {
+    display: "flex",
+    justifyContent: "space-around",
+    padding: "10px 20px"
+  },
+  userPaper: {
+    width: "50%",
+    "&:first-child": {
+      borderBottomRightRadius: 0
+    },
+    "&:last-child": {
+      borderBottomLeftRadius: 0
+    },
+    "& > h6": {
+      fontFamily: "Microsoft JhengHei",
+      color: "#3D405B"
     }
   },
-  paperRoot: {
+  userDetails: {
+    textAlign: "left",
+    padding: "0 20px",
+    "& > *": {
+      fontFamily: "Microsoft JhengHei"
+    }
+  },
+  orders: {
+    marginTop: 20,
+    "& > *": {
+      fontFamily: "Microsoft JhengHei"
+    }
+  },
+  orderCards: {
+    "& > *": {
+      fontFamily: "Microsoft JhengHei"
+    },
+    "& > a": {
+      textDecoration: "none"
+    }
+  },
+  cardButton: {
+    width: "100%",
+    textAlign: "left",
+    "&:hover": {
+      backgroundColor: "#FEFAF4"
+    }
+  },
+  cardContent: {
+    "& > *": {
+      fontFamily: "Microsoft JhengHei"
+    }
+  },
+  cardTitle: {
+    color: "#E07A5F"
+  },
+  cardContents: {
+    color: "#717487"
+  },
+  footerDiv: {
     position: "absolute",
-    width: "80%",
-    left: 30,
-    bottom: -15,
-    minHeight: 70,
-    padding: 5,
-    borderRadius: 4
-  },
-  paperFooter: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "0 5px"
-  },
-  chipDiv: {
-    display: "flex",
-    fontFamily: "Microsoft JhengHei",
-    justifyContent: "space-between",
-    padding: 3
-  },
-  chip: {
-    display: "inline-block",
-    backgroundColor: "#E07A5F",
-    color: "#fff",
-    padding: "5px 0px",
-    fontFamily: "Microsoft JhengHei",
-    marginRight: 3
-  },
-  restaurantMore: {
-    width: "35%",
-    borderRadius: 10
-  },
-  divider: {
-    position: "absolute"
+    bottom: 0,
+    width: "inherit",
+    "& > div": {
+      position: "static"
+    }
   }
 }));
 
 function Member() {
   const classes = useStyles();
+  const [orders, setOrders] = useState({});
 
+  const getOrderDetails = async () => {
+    const res = await productService.getOrderDetails();
+  };
   return (
     <Container maxWidth="sm" className={classes.root}>
-      <Grid item xs={12} className={classes.container}>
-        <Grid item xs={12} className={classes.grid}>
-          <input type="text" name="searchbar" className={classes.searchBar} />
-          <div className={classes.searchIcon}>
-            <Button className={classes.searchBtn}>
-              <SearchIcon className={classes.icon} />
-            </Button>
-          </div>
+      <Grid item xs={12}>
+        <Header />
+        <Grid item xs={12} className={classes.userPicGrid}>
+          <img src="http://fakeimg.pl/100x100?text=userPic&font=lobster" alt="" className={classes.userPic} />
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h5" gutterBottom>
-            會員頁暫緩
-          </Typography>
+        <Grid item xs={12} className={classes.userGrid}>
+          <Paper className={classes.userPaper}>
+            <Typography variant="h6">Name</Typography>
+            <Typography variant="subtitle1">Winni</Typography>
+          </Paper>
+          <Paper className={classes.userPaper}>
+            <Typography variant="h6">訂單總數</Typography>
+            <Typography variant="subtitle1">15筆</Typography>
+          </Paper>
         </Grid>
-        <Grid item xs={12}>
-          <Grid item xs={12} className={classes.paperGrid}>
-            <div className={classes.restaurantImage}>
-              <img src="http://fakeimg.pl/100x100?font=lobster" alt="" />
-            </div>
-            <Paper className={classes.paperRoot}>
-              <p className={classes.restaurantName}>Restaurant Name.....</p>
-              <div className={classes.paperFooter}>
-                <Typography component="div" className={classes.chipDiv}>
-                  <Chip label="北部" className={classes.chip} />
-                  <Chip label="甜點" className={classes.chip} />
-                  {/* <span className={classes.badge}>北區</span>
-                <span className={classes.badge}>甜點</span> */}
-                </Typography>
-                <Button className={classes.restaurantMore}>more</Button>
-              </div>
-            </Paper>
+        <Grid item xs={12} className={classes.userDetails}>
+          <Typography variant="h6">電子郵件地址 : example123@gmail.com</Typography>
+          <Typography variant="h6">最近訂單:</Typography>
+          <Grid item xs={12} className={classes.orders}>
+            <Card className={classes.orderCards}>
+              <Button className={classes.cardButton}>
+                <CardContent className={classes.cardContent}>
+                  <Typography gutterBottom className={classes.cardTitle} variant="h6">
+                    訂位時間: 2020/02/14 - 17:30
+                  </Typography>
+                  <Typography variant="body2" className={classes.cardContents} component="p">
+                    餐廳名稱 : 銅板燒肉 | 人數 : 2 位大人, 0位小孩
+                  </Typography>
+                </CardContent>
+              </Button>
+            </Card>
           </Grid>
         </Grid>
       </Grid>
-      <Footer />
+      <div className={classes.footerDiv}>
+        <Footer selectedValue={2} />
+      </div>
     </Container>
   );
 }
