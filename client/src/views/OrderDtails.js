@@ -37,15 +37,12 @@ const useStyles = makeStyles(theme => ({
       borderRadius: "15px"
     }
   },
+  root: {
+    height: "100vh",
+    boxShadow: "1px 5px 15px 0px #DBDCE1"
+  },
   hide: {
     display: "none"
-  },
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
   },
   content: {
     flexGrow: 1,
@@ -53,7 +50,9 @@ const useStyles = makeStyles(theme => ({
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
+    }),
+    paddingLeft: 20,
+    paddingRight: 20
     // marginLeft: -drawerWidth
   },
   orderContent: {
@@ -67,7 +66,14 @@ const useStyles = makeStyles(theme => ({
     textAlign: "right",
 
     "& > button": {
-      fontFamily: "Microsoft JhengHei"
+      fontFamily: "Microsoft JhengHei",
+      color: "#3D405B",
+
+      "&:last-child": {
+        "&:hover": {
+          backgroundColor: "#FCF1DB"
+        }
+      }
     }
   },
   paperRoot: {
@@ -607,12 +613,11 @@ function OrderDetails() {
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="sm">
       <div className={classes.root}>
         <CssBaseline />
         <Header />
         <main className={classes.content}>
-          <div className={classes.drawerHeader} />
           <Grid item xs={12} className={classes.orderContent}>
             <Typography className={classes.orderTitle}>
               <span>訂單編號 : </span>
@@ -679,9 +684,7 @@ function OrderDetails() {
             </Paper>
             <Grid item xs={12} className={classes.button}>
               <Button onClick={handleCancelChangeOrder}>取消</Button>
-              <Button color="primary" onClick={handleSaveChangeOrder}>
-                儲存
-              </Button>
+              <Button onClick={handleSaveChangeOrder}>儲存</Button>
             </Grid>
           </Grid>
         </main>
