@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles, createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { useHistory } from "react-router-dom";
 import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -96,11 +97,42 @@ const useStyles = makeStyles(theme => ({
 
 function Member() {
   const classes = useStyles();
-  const [orders, setOrders] = useState({});
+  const [orders, setOrders] = useState([]);
+  const [userName, setUserName] = useState("");
+  const [orderCount, setOrderCount] = useState(0);
+  const [userEmail, setUserEmail] = useState("");
+  const history = useHistory();
 
-  const getOrderDetails = async () => {
-    const res = await productService.getOrderDetails();
+  useEffect(() => {
+    async function didMountWork() {
+      await getMemberDetails();
+    }
+    didMountWork();
+  }, []);
+
+  const getMemberDetails = async () => {
+    const sessionStorageData =
+      sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
+    if (Object.keys(sessionStorageData).length === 0) {
+      const routeLogIn = window.confirm("您上未登入, 需要將您導至登入頁嗎?");
+      if (routeLogIn) {
+        history.push("/login");
+      } else {
+        setUserName("");
+        setOrders([]);
+        setOrderCount(0);
+        setUserEmail("");
+      }
+    } else {
+      const orders = await productService.getAllOrders(sessionStorageData.member);
+      console.log("member orders", orders);
+      setUserName(sessionStorageData.member);
+      setUserEmail(sessionStorageData.email);
+      setOrders(orders.orders);
+      setOrderCount(orders.orders.length);
+    }
   };
+
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12}>
@@ -111,29 +143,37 @@ function Member() {
         <Grid item xs={12} className={classes.userGrid}>
           <Paper className={classes.userPaper}>
             <Typography variant="h6">Name</Typography>
-            <Typography variant="subtitle1">Winni</Typography>
+            <Typography variant="subtitle1">{userName}</Typography>
           </Paper>
           <Paper className={classes.userPaper}>
             <Typography variant="h6">訂單總數</Typography>
-            <Typography variant="subtitle1">15筆</Typography>
+            <Typography variant="subtitle1">{orderCount}筆</Typography>
           </Paper>
         </Grid>
         <Grid item xs={12} className={classes.userDetails}>
-          <Typography variant="h6">電子郵件地址 : example123@gmail.com</Typography>
+          <Typography variant="h6">電子郵件地址 : {userEmail}</Typography>
           <Typography variant="h6">最近訂單:</Typography>
           <Grid item xs={12} className={classes.orders}>
-            <Card className={classes.orderCards}>
-              <Button className={classes.cardButton}>
-                <CardContent className={classes.cardContent}>
-                  <Typography gutterBottom className={classes.cardTitle} variant="h6">
-                    訂位時間: 2020/02/14 - 17:30
-                  </Typography>
-                  <Typography variant="body2" className={classes.cardContents} component="p">
-                    餐廳名稱 : 銅板燒肉 | 人數 : 2 位大人, 0位小孩
-                  </Typography>
-                </CardContent>
-              </Button>
-            </Card>
+            {/* {orders.length > 0 ? (
+              orders.map(item => {
+                return (
+                  <Card className={classes.orderCards}>
+                    <Button className={classes.cardButton}>
+                      <CardContent className={classes.cardContent}>
+                        <Typography gutterBottom className={classes.cardTitle} variant="h6">
+                          訂位時間: {item.dateTime}
+                        </Typography>
+                        <Typography variant="body2" className={classes.cardContents} component="p">
+                          餐廳名稱 : {item.restaurant_id} | 人數 : 2 位大人, 0位小孩
+                        </Typography>
+                      </CardContent>
+                    </Button>
+                  </Card>
+                );
+              })
+            ) : (
+              <Paper>目前還沒有任何訂單喲!!</Paper>
+            )} */}
           </Grid>
         </Grid>
       </Grid>
