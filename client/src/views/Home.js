@@ -11,6 +11,7 @@ import Grid from "@material-ui/core/Grid";
 import Badge from "@material-ui/core/Badge";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Header from "./Header";
+import Footer from "./Footer";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -30,7 +31,8 @@ const useStyles = makeStyles(theme => ({
   },
   root: {
     height: "100vh",
-    boxShadow: "1px 5px 15px 0px #DBDCE1"
+    boxShadow: "1px 5px 15px 0px #DBDCE1",
+    position: "relative"
   },
   card: {
     position: "relative"
@@ -109,6 +111,14 @@ const useStyles = makeStyles(theme => ({
   restaurants: {
     display: "flex",
     flexWrap: "wrap"
+  },
+  footerDiv: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    "& > div": {
+      position: "static"
+    }
   }
 }));
 
@@ -231,6 +241,9 @@ function Home() {
             </Grid>
           </Grid>
         </main>
+        <div className={classes.footerDiv}>
+          <Footer selectedValue={0} />
+        </div>
       </div>
     </Container>
   );
