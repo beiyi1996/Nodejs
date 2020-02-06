@@ -175,10 +175,29 @@ const getRestaurantDetail = (req, res, next) => {
   );
 };
 
+const getRestaurantName = (req, res, next) => {
+  const { _id } = req.query;
+  Restaurant.findOne(
+    {
+      _id: _id
+    },
+    (err, data) => {
+      if (err) next(err);
+      console.log("data", data);
+      res.status(200).json({
+        code: 200,
+        message: "OK",
+        restaurantName: data.name
+      });
+    }
+  );
+};
+
 module.exports = {
   createRestaurantData,
   updateRestaurantData,
   deleteRestaurantData,
   searchRestaurant,
-  getRestaurantDetail
+  getRestaurantDetail,
+  getRestaurantName
 };
