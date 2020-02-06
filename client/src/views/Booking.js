@@ -30,10 +30,14 @@ const useStyles = makeStyles(theme => ({
     height: "100vh",
     position: "relative",
     boxShadow: "1px 5px 15px 0px #DBDCE1",
-
+    overflow: "hidden",
     "& > *": {
       fontFamily: "Microsoft JhengHei"
     }
+  },
+  container: {
+    height: "calc(100% - 56px)",
+    overflow: "scroll"
   },
   restaurantName: {
     padding: "10px 10px 0",
@@ -48,7 +52,7 @@ const useStyles = makeStyles(theme => ({
   },
   paperGrid: {
     position: "relative",
-    marginBottom: 50,
+    marginBottom: 20,
     padding: "0 20px"
   },
   paperRoot: {
@@ -106,7 +110,8 @@ const useStyles = makeStyles(theme => ({
   },
   label: {
     margin: "10px 0 3px",
-    fontSize: 12
+    fontSize: 12,
+    color: "#9BD0D0"
   },
   countContainer: {
     display: "flex",
@@ -281,7 +286,10 @@ const useStyles = makeStyles(theme => ({
     color: "#3D405B",
     fontSize: 16,
     fontFamily: "Microsoft JhengHei",
-    letterSpacing: 2
+    letterSpacing: 2,
+    "&:focus": {
+      borderBottom: "1px solid #9BD0D0"
+    }
   },
   show: {
     display: "block"

@@ -32,7 +32,8 @@ const useStyles = makeStyles(theme => ({
   root: {
     height: "100vh",
     boxShadow: "1px 5px 15px 0px #DBDCE1",
-    position: "relative"
+    position: "relative",
+    overflow: "hidden"
   },
   card: {
     position: "relative"
@@ -104,7 +105,9 @@ const useStyles = makeStyles(theme => ({
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
+    }),
+    height: "calc(100% - 100px)",
+    overflow: "scroll"
     // marginLeft: -drawerWidth
   },
   restaurants: {

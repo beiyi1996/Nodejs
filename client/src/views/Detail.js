@@ -38,7 +38,11 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     margin: "0 auto",
     padding: "10px 10px 0",
-    display: "flex"
+    display: "flex",
+    position: "sticky",
+    zIndex: 1,
+    top: 56,
+    backgroundColor: "#fff"
   },
   searchBar: {
     fontSize: 16,
