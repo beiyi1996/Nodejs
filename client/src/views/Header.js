@@ -136,7 +136,7 @@ function Header() {
   const listItem = [
     { title: "查看訂單", href: `/orders?name=${sessionStroage.member}` },
     { title: "首頁", href: "/" },
-    { title: "聯絡我們", href: "#" }
+    { title: "聯絡我們", href: "/contactme" }
   ];
 
   useEffect(() => {
