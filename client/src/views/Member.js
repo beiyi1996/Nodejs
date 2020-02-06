@@ -55,11 +55,15 @@ const useStyles = makeStyles(theme => ({
   },
   orders: {
     marginTop: 20,
+    maxHeight: "500px",
+    overflow: "scroll",
+    paddingBottom: 30,
     "& > *": {
       fontFamily: "Microsoft JhengHei"
     }
   },
   orderCards: {
+    margin: "10px 0",
     "& > *": {
       fontFamily: "Microsoft JhengHei"
     },
@@ -85,6 +89,9 @@ const useStyles = makeStyles(theme => ({
   cardContents: {
     color: "#717487"
   },
+  nonOrders: {
+    padding: 20
+  },
   footerDiv: {
     position: "absolute",
     bottom: 0,
@@ -101,6 +108,7 @@ function Member() {
   const [userName, setUserName] = useState("");
   const [orderCount, setOrderCount] = useState(0);
   const [userEmail, setUserEmail] = useState("");
+  const [isLogIn, setIsLogIn] = useState(true);
   const history = useHistory();
 
   useEffect(() => {
@@ -113,30 +121,72 @@ function Member() {
   const getMemberDetails = async () => {
     const sessionStorageData =
       sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
-    if (Object.keys(sessionStorageData).length === 0) {
+    const orders = await productService.getAllOrders(sessionStorageData.member);
+    console.log("member orders", orders);
+    const today = new Date();
+    console.log("today", today);
+
+    if (orders.code === 200) {
+      const promises = orders.orders.map(item => {
+        console.log("order Array is maping!!");
+        return new Promise((resolve, reject) => {
+          const restaurantNamePromise = new Promise((resolve, reject) => {
+            const restaurantNameResult = productService.getRestaurantName(item.restaurant_id);
+            resolve(restaurantNameResult);
+          });
+          restaurantNamePromise.then(value => {
+            console.log("value", value);
+            item.restaurantName = value.restaurantName;
+            const dateTime = new Date(item.dateTime);
+            const forTemporaryMonth =
+              dateTime.getMonth() + 1 > 9 ? dateTime.getMonth() + 1 : `0${dateTime.getMonth() + 1}`;
+            const forTemporaryDate = dateTime.getDate() > 9 ? dateTime.getDate() : `0${dateTime.getDate()}`;
+            const date = `${dateTime.getFullYear()} / ${forTemporaryMonth} / ${forTemporaryDate}`;
+            const minutes = dateTime.getMinutes() > 9 ? dateTime.getMinutes() : `0${dateTime.getMinutes()}`;
+            const time = `${dateTime.getHours()} : ${minutes}`;
+            item.date = date;
+            item.time = time;
+            console.log("last item", item);
+            resolve(item);
+          });
+        });
+      });
+
+      console.log("promises", promises);
+      Promise.all(promises).then(function(results) {
+        console.log(results);
+        setOrders(results);
+      });
+
+      setIsLogIn(true);
+      setUserName(sessionStorageData.member);
+      setUserEmail(sessionStorageData.email);
+      setOrderCount(orders.orders.length);
+    } else {
+      sessionStorage.removeItem("user");
       const routeLogIn = window.confirm("您上未登入, 需要將您導至登入頁嗎?");
       if (routeLogIn) {
+        setIsLogIn(false);
         history.push("/login");
       } else {
+        setIsLogIn(true);
         setUserName("");
         setOrders([]);
         setOrderCount(0);
         setUserEmail("");
       }
-    } else {
-      const orders = await productService.getAllOrders(sessionStorageData.member);
-      console.log("member orders", orders);
-      setUserName(sessionStorageData.member);
-      setUserEmail(sessionStorageData.email);
-      setOrders(orders.orders);
-      setOrderCount(orders.orders.length);
     }
+  };
+
+  const handleClickOrderDetails = _id => {
+    console.log("handleClickOrderDetails _id", _id);
+    history.push(`/orderdetails?order_ID=${_id}`);
   };
 
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12}>
-        <Header />
+        {isLogIn ? <Header /> : <></>}
         <Grid item xs={12} className={classes.userPicGrid}>
           <img src="http://fakeimg.pl/100x100?text=userPic&font=lobster" alt="" className={classes.userPic} />
         </Grid>
@@ -154,17 +204,18 @@ function Member() {
           <Typography variant="h6">電子郵件地址 : {userEmail}</Typography>
           <Typography variant="h6">最近訂單:</Typography>
           <Grid item xs={12} className={classes.orders}>
-            {/* {orders.length > 0 ? (
+            {orders.length > 0 ? (
               orders.map(item => {
+                console.log("item", item);
                 return (
-                  <Card className={classes.orderCards}>
+                  <Card className={classes.orderCards} key={item._id} onClick={() => handleClickOrderDetails(item._id)}>
                     <Button className={classes.cardButton}>
                       <CardContent className={classes.cardContent}>
                         <Typography gutterBottom className={classes.cardTitle} variant="h6">
-                          訂位時間: {item.dateTime}
+                          訂位時間: {item.date} - {item.time}
                         </Typography>
                         <Typography variant="body2" className={classes.cardContents} component="p">
-                          餐廳名稱 : {item.restaurant_id} | 人數 : 2 位大人, 0位小孩
+                          餐廳名稱 : {item.restaurantName} | 人數 : {item.adult} 位大人, {item.children}位小孩
                         </Typography>
                       </CardContent>
                     </Button>
@@ -172,8 +223,8 @@ function Member() {
                 );
               })
             ) : (
-              <Paper>目前還沒有任何訂單喲!!</Paper>
-            )} */}
+              <Paper className={classes.nonOrders}>目前還沒有任何訂單喲!!</Paper>
+            )}
           </Grid>
         </Grid>
       </Grid>
