@@ -164,5 +164,12 @@ export default {
     })
       .then(res => console.log("check log in status", res))
       .catch(error => console.log("check log in status Error", error));
+  },
+  getRestaurantName: async _id => {
+    return await fetch(`http://localhost:5000/restaurantName?_id=${_id}`, {
+      cache: "no-cache"
+    })
+      .then(res => res.json())
+      .catch(error => console.log("Error", error));
   }
 };
