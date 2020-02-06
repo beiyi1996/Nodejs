@@ -105,6 +105,7 @@ const createOrder = async (req, res, next) => {
 const findOrders = async (req, res, next) => {
   const { name } = req.query;
   console.log("name", name);
+  const today = new Date();
   if (name === "undefined") {
     console.log("in undefined if!!!");
     res.status(403).json({
@@ -135,11 +136,27 @@ const findOrders = async (req, res, next) => {
           }
         );
         console.log("memberID", memberID);
+
+        await Order.remove(
+          {
+            member_id: memberID._id,
+            dateTime: { $lt: today }
+          },
+          (err, res) => {
+            if (err) next(err);
+            else {
+              console.log("res", res);
+            }
+          }
+        );
+
         const orders = await Order.find({
-          member_id: memberID._id
+          member_id: memberID._id,
+          dateTime: { $gt: today }
         }).sort({
           create_time: 1
         });
+        // console.log("orders controller", orders);
         res.status(200).json({ code: 200, orders });
       } else {
         console.log("Not log in...");
