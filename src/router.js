@@ -84,4 +84,7 @@ router.post("/checkLogInStatus", MemberController.checkLogInStatus);
 
 // 取得所有類別
 router.get("/getCategory", IndexController.getAllCategory);
+
+// 取得餐廳名稱
+router.get("/restaurantName", RestaurantController.getRestaurantName);
 module.exports = router;
