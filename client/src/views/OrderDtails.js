@@ -19,8 +19,6 @@ import ArrowRightRoundedIcon from "@material-ui/icons/ArrowRightRounded";
 import Fade from "@material-ui/core/Fade";
 import Header from "./Header";
 
-const drawerWidth = 180;
-
 const useStyles = makeStyles(theme => ({
   "@global": {
     body: {
