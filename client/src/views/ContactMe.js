@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import PhoneRoundedIcon from "@material-ui/icons/PhoneRounded";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
@@ -14,10 +13,13 @@ import Header from "./Header";
 import Footer from "./Footer";
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    overflow: "hidden",
+    boxShadow: "1px 5px 15px 0px #DBDCE1"
+  },
   container: {
     textAlign: "center",
     height: "100vh",
-    boxShadow: "1px 5px 15px 0px #DBDCE1",
     position: "relative",
     "& > *": {
       color: "#3D405B"
@@ -38,31 +40,38 @@ const useStyles = makeStyles(theme => ({
     margin: "0 auto",
     padding: 10
   },
+  aTagIcon: {
+    color: "#6C6C6C",
+    display: "inline-block",
+    height: 24
+  },
   iconImg: {
     width: 22
   },
   introduction: {
     padding: 20,
+    overflow: "scroll",
+    "& > div": {
+      padding: 20
+    },
     "& > div > *": {
       fontFamily: "Microsoft JhengHei"
+    },
+    "@media screen and (max-width:320px)": {
+      height: "calc(50% - 180px)"
+    },
+    "@media screen and (min-width:375px)": {
+      height: "calc(50% - 140px)"
+    },
+    "@media screen and (min-width:768px)": {
+      height: "auto"
     }
-  },
-  buttonGrid: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center"
   },
   logInOrRegister: {
     display: "flex",
     width: 150,
     justifyContent: "space-evenly",
     alignItems: "center"
-  },
-  button: {
-    margin: "10px 0",
-    fontFamily: "Microsoft JhengHei",
-    border: "none"
   },
   footerDiv: {
     position: "absolute",
@@ -90,7 +99,7 @@ function ContactMe() {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" className={classes.root}>
       <Grid item xs={12} className={classes.container}>
         <Header />
         <Grid item xs={12} className={classes.logoGrid}>
@@ -99,16 +108,24 @@ function ContactMe() {
             <Typography variant="h4">Winni Huang</Typography>
             <Grid item xs={12}>
               <IconButton aria-label="phone">
-                <PhoneRoundedIcon />
+                <a href="tel:0955822647" className={classes.aTagIcon}>
+                  <PhoneRoundedIcon />
+                </a>
               </IconButton>
-              <IconButton aria-label="email" onClick={handleClickEmailButton}>
-                <EmailRoundedIcon />
+              <IconButton aria-label="email">
+                <a href="mailto:usj0326@gmail.com" className={classes.aTagIcon}>
+                  <EmailRoundedIcon />
+                </a>
               </IconButton>
               <IconButton aria-label="email" onClick={handleClickGitHubButton}>
-                <img src={GithubIcon} className={classes.iconImg} />
+                <a href="https://github.com/beiyi1996" className={classes.aTagIcon}>
+                  <img src={GithubIcon} alt="" className={classes.iconImg} />
+                </a>
               </IconButton>
               <IconButton aria-label="email" onClick={handleClickCodePenButton}>
-                <img src={CodepenIcon} className={classes.iconImg} />
+                <a href="https://codepen.io/beiyi1996/pens/public" className={classes.aTagIcon}>
+                  <img src={CodepenIcon} alt="" className={classes.iconImg} />
+                </a>
               </IconButton>
             </Grid>
           </Grid>
@@ -124,11 +141,6 @@ function ContactMe() {
               VSTS 及 Scurm 與4位組員偕同開發 Bot Designer 專案。希望我可以成為貴公司的一份子！
             </Typography>
           </Paper>
-        </Grid>
-        <Grid item xs={12} className={classes.buttonGrid}>
-          <Button variant="outlined" className={classes.button}>
-            Contact me
-          </Button>
         </Grid>
         <div className={classes.footerDiv}>
           <Footer />
