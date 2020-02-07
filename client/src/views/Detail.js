@@ -312,8 +312,11 @@ function Detail() {
           script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
           script.async = false;
           script.defer = true;
-          script.addEventListener(`load`, onLoad);
-          resolve(true);
+          script.addEventListener(`load`, () => {
+            onLoad();
+            resolve(true);
+          });
+          // resolve(true);
         } else {
           console.log("google map script is exist!");
           resolve(true);
