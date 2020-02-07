@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
@@ -21,6 +21,12 @@ import ArrowLeftRoundedIcon from "@material-ui/icons/ArrowLeftRounded";
 import ArrowRightRoundedIcon from "@material-ui/icons/ArrowRightRounded";
 import Fade from "@material-ui/core/Fade";
 import Header from "./Header";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: { main: "#638585" }
+  }
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -111,7 +117,7 @@ const useStyles = makeStyles(theme => ({
   label: {
     margin: "10px 0 3px",
     fontSize: 12,
-    color: "#9BD0D0"
+    color: "#638585"
   },
   countContainer: {
     display: "flex",
@@ -125,7 +131,8 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     fontSize: 14,
-    width: "15%"
+    width: "15%",
+    color: "#638585"
   },
   btnGroup: {
     width: "85%",
@@ -163,7 +170,8 @@ const useStyles = makeStyles(theme => ({
   },
   notes: {
     marginTop: 0,
-    fontSize: 12
+    fontSize: 12,
+    color: "#638585"
   },
   calendarIcon: {
     position: "absolute",
@@ -291,6 +299,9 @@ const useStyles = makeStyles(theme => ({
       borderBottom: "1px solid #9BD0D0"
     }
   },
+  timeSelect: {
+    color: "#638585"
+  },
   show: {
     display: "block"
   },
@@ -327,6 +338,7 @@ function Booking() {
   const [timeError, setTimeError] = useState(false);
   const [adultError, setAdultError] = useState(false);
   const [restaurantName, setRestaurantName] = useState("");
+  const [timeSelect, setTimeSelect] = useState(false);
   const inputRef = useRef(null);
   let [clickDate, setClickDate] = useState("");
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
@@ -383,6 +395,7 @@ function Booking() {
   const handleChange = event => {
     setTime(event.target.value);
     setTimeError(false);
+    setTimeSelect(true);
   };
 
   const handleClickPlusAdult = () => {
@@ -666,18 +679,25 @@ function Booking() {
                 </li>
                 <li>
                   <FormControl className={classes.formControl}>
-                    <InputLabel id="demo-simple-select-helper-label">時間</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-helper-label"
-                      id="demo-simple-select-helper"
-                      value={time}
-                      onChange={handleChange}
-                      error={timeError}
-                    >
-                      <MenuItem value={12}>12:00</MenuItem>
-                      <MenuItem value={13}>13:00</MenuItem>
-                      <MenuItem value={14}>14:00</MenuItem>
-                    </Select>
+                    <MuiThemeProvider theme={theme}>
+                      <InputLabel
+                        id="demo-simple-select-helper-label"
+                        className={clsx({ [classes.timeSelect]: timeSelect })}
+                      >
+                        時間
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-helper-label"
+                        id="demo-simple-select-helper"
+                        value={time}
+                        onChange={handleChange}
+                        error={timeError}
+                      >
+                        <MenuItem value={12}>12:00</MenuItem>
+                        <MenuItem value={13}>13:00</MenuItem>
+                        <MenuItem value={14}>14:00</MenuItem>
+                      </Select>
+                    </MuiThemeProvider>
                     <FormHelperText className={clsx({ [classes.hide]: time !== "" ? true : false })}>
                       請選擇訂位時間!
                     </FormHelperText>
