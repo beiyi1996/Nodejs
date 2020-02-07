@@ -30,7 +30,10 @@ const useStyles = makeStyles(theme => ({
   container: {
     textAlign: "center",
     height: "100vh",
-    boxShadow: "1px 5px 15px 0px #DBDCE1"
+    boxShadow: "1px 5px 15px 0px #DBDCE1",
+    "@media screen and (max-width:320px)": {
+      height: "100%"
+    }
   },
   logo: {
     borderRadius: "50%",
@@ -66,7 +69,7 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     width: "40%",
-    margin: "50px 0",
+    margin: "30px 0",
     fontFamily: "Microsoft JhengHei",
     border: "none"
   },

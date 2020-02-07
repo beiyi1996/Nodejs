@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles, createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import productService from "../services/productService";
 import Container from "@material-ui/core/Container";
@@ -7,7 +7,6 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/button";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import Chip from "@material-ui/core/Chip";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Footer from "./Footer";
@@ -20,7 +19,11 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     height: "100vh",
     boxShadow: "1px 5px 15px 0px #DBDCE1",
-    textAlign: "center"
+    textAlign: "center",
+    overflow: "hidden"
+  },
+  container: {
+    height: "100%"
   },
   userPicGrid: {
     marginTop: 50
@@ -49,15 +52,16 @@ const useStyles = makeStyles(theme => ({
   userDetails: {
     textAlign: "left",
     padding: "0 20px",
+    height: "calc(100% - 56px)",
     "& > *": {
       fontFamily: "Microsoft JhengHei"
     }
   },
   orders: {
     marginTop: 20,
-    maxHeight: "500px",
+    maxHeight: "calc(50% - 56px)",
     overflow: "scroll",
-    paddingBottom: 30,
+    paddingBottom: 100,
     "& > *": {
       fontFamily: "Microsoft JhengHei"
     }
@@ -185,7 +189,7 @@ function Member() {
 
   return (
     <Container maxWidth="sm" className={classes.root}>
-      <Grid item xs={12}>
+      <Grid item xs={12} className={classes.container}>
         {isLogIn ? <Header /> : <></>}
         <Grid item xs={12} className={classes.userPicGrid}>
           <img src="http://fakeimg.pl/100x100?text=userPic&font=lobster" alt="" className={classes.userPic} />
