@@ -12,6 +12,10 @@ import Badge from "@material-ui/core/Badge";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Header from "./Header";
 import Footer from "./Footer";
+import Rice from "../images/rice.jpg";
+import Noddles from "../images/noodles.jpg";
+import Dessert from "../images/dessert.jpg";
+import Beverage from "../images/beverage.jpg";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -162,6 +166,7 @@ function Home() {
   const classes = useStyles();
   const categoryClasses = categoryStyles();
   const history = useHistory();
+  const kindEnglishName = [Rice, Noddles, Dessert, Beverage];
 
   useEffect(() => {
     if (!restaurant) {
@@ -191,12 +196,13 @@ function Home() {
           <Grid item xs={12} className={classes.restaurants}>
             {restaurant ? (
               restaurant.distinctByKind.map((kind, idx) => {
+                console.log("{kindEnglishName[idx]}", kindEnglishName[idx]);
                 return (
                   <Grid item xs={6} className={classes.item} key={idx}>
                     <Card className={classes.card}>
                       <CardContent className={classes.cardContent}>
                         <Typography variant="body2" component="p">
-                          <img src="http://fakeimg.pl/100x100?font=lobster" alt="" className={classes.img} />
+                          <img src={kindEnglishName[idx]} alt="" className={classes.img} />
                         </Typography>
                         <Link to={`/search?searchKeyWord=${kind}`} className={classes.cardActions}>
                           <Button size="small">{kind}</Button>
