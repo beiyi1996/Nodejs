@@ -6,6 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Header from "./Header";
+import Logo from "../images/logo.png";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -54,7 +55,7 @@ function Completed() {
       <Grid item xs={12} className={classes.container}>
         <Header />
         <Grid item xs={12} className={classes.paper}>
-          <img src="http://fakeimg.pl/130x130?text=logo&font=lobster" alt="" className={classes.logo} />
+          <img src={Logo} alt="" className={classes.logo} />
         </Grid>
         <Grid item xs={12}>
           <Paper className={classes.paperText}>

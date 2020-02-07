@@ -15,6 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import Header from "./Header";
+import Logo from "../images/logo.png";
 
 const theme = createMuiTheme({
   palette: {
@@ -32,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: 50
   },
   logo: {
-    borderRadius: "50%"
+    // borderRadius: "50%"
   },
   form: {
     "& > *": {
@@ -149,7 +150,7 @@ function LogIn() {
       <Grid item xs={12} className={classes.container}>
         <Header />
         <Grid item xs={12} className={classes.logoGrid}>
-          <img src="http://fakeimg.pl/100x100?text=logo&font=lobster" alt="" className={classes.logo} />
+          <img src={Logo} alt="" className={classes.logo} />
         </Grid>
         <Grid item xs={12} className={classes.formGrid}>
           <form className={classes.form} noValidate autoComplete="off">

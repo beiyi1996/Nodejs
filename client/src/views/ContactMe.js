@@ -11,6 +11,7 @@ import CodepenIcon from "../images/codepen.png";
 import Paper from "@material-ui/core/Paper";
 import Header from "./Header";
 import Footer from "./Footer";
+import Logo from "../images/logo.png";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,7 +34,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center"
   },
   logo: {
-    borderRadius: "50%"
+    borderRadius: "50%",
+    width: 200
   },
   formGrid: {
     width: "100%",
@@ -103,7 +105,7 @@ function ContactMe() {
       <Grid item xs={12} className={classes.container}>
         <Header />
         <Grid item xs={12} className={classes.logoGrid}>
-          <img src="http://fakeimg.pl/200x200?text=logo&font=lobster" alt="" className={classes.logo} />
+          <img src={Logo} alt="" className={classes.logo} />
           <Grid item xs={12} className={classes.formGrid}>
             <Typography variant="h4">Winni Huang</Typography>
             <Grid item xs={12}>

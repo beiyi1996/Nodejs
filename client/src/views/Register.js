@@ -19,6 +19,7 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Header from "./Header";
+import Logo from "../images/logo.png";
 
 const theme = createMuiTheme({
   palette: {
@@ -31,12 +32,12 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
     height: "100vh",
     boxShadow: "1px 5px 15px 0px #DBDCE1",
-    "@media screen and (max-width:320px)": {
+    "@media screen and (max-width:360px)": {
       height: "100%"
     }
   },
   logo: {
-    borderRadius: "50%",
+    // borderRadius: "50%",
     marginTop: 50
   },
   form: {
@@ -69,7 +70,7 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     width: "40%",
-    margin: "30px 0",
+    margin: "5px 0",
     fontFamily: "Microsoft JhengHei",
     border: "none"
   },
@@ -240,7 +241,7 @@ function Register() {
       <Grid item xs={12} className={classes.container}>
         <Header />
         <Grid item xs={12} className={classes.paper}>
-          <img src="http://fakeimg.pl/100x100?text=logo&font=lobster" alt="" className={classes.logo} />
+          <img src={Logo} alt="" className={classes.logo} />
         </Grid>
         <Grid item xs={12} className={classes.formGrid}>
           <form className={classes.form} noValidate autoComplete="off">

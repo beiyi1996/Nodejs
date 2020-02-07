@@ -6,6 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import ErrorIcon from "@material-ui/icons/Error";
 import Header from "./Header";
+import Logo from "../images/logo.png";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center"
   },
   logo: {
-    borderRadius: "50%",
+    // borderRadius: "50%",
     marginTop: 50
   },
   grid: {
@@ -59,7 +60,7 @@ function ForgotPassword() {
       <Grid item xs={12} className={classes.container}>
         <Header />
         <Grid item xs={12} className={classes.paper}>
-          <img src="http://fakeimg.pl/100x100?text=logo&font=lobster" alt="" className={classes.logo} />
+          <img src={Logo} alt="" className={classes.logo} />
         </Grid>
         <Grid item xs={10} className={classes.grid}>
           <Typography variant="body1" gutterBottom className={classes.typography}>
