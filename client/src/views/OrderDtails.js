@@ -3,7 +3,7 @@ import productService from "../services/productService";
 import { useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import clsx from "clsx";
@@ -18,6 +18,12 @@ import ArrowLeftRoundedIcon from "@material-ui/icons/ArrowLeftRounded";
 import ArrowRightRoundedIcon from "@material-ui/icons/ArrowRightRounded";
 import Fade from "@material-ui/core/Fade";
 import Header from "./Header";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: { main: "#638585" }
+  }
+});
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -37,7 +43,8 @@ const useStyles = makeStyles(theme => ({
   },
   root: {
     height: "100vh",
-    boxShadow: "1px 5px 15px 0px #DBDCE1"
+    boxShadow: "1px 5px 15px 0px #DBDCE1",
+    overflow: "hidden"
   },
   hide: {
     display: "none"
@@ -50,7 +57,9 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.leavingScreen
     }),
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 20,
+    height: "calc(100% - 56px)",
+    overflow: "scroll"
     // marginLeft: -drawerWidth
   },
   orderContent: {
@@ -103,7 +112,8 @@ const useStyles = makeStyles(theme => ({
   },
   label: {
     margin: "10px 0 3px",
-    fontSize: 12
+    fontSize: 12,
+    color: "#638585"
   },
   countContainer: {
     display: "flex",
@@ -117,7 +127,8 @@ const useStyles = makeStyles(theme => ({
   },
   counterTitle: {
     fontSize: 14,
-    width: "15%"
+    width: "15%",
+    color: "#638585"
   },
   btnGroup: {
     width: "85%",
@@ -155,7 +166,8 @@ const useStyles = makeStyles(theme => ({
   },
   notes: {
     marginTop: 0,
-    fontSize: 12
+    fontSize: 12,
+    color: "#638585"
   },
   calendarGrid: {
     border: "1px solid #DEDCCA",
@@ -164,7 +176,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#fff",
     zIndex: 1,
     width: "90%",
-    top: 43
+    top: 44
   },
   week: {
     display: "inline-block",
@@ -265,7 +277,13 @@ const useStyles = makeStyles(theme => ({
     color: "#3D405B",
     fontSize: 16,
     fontFamily: "Microsoft JhengHei",
-    letterSpacing: 2
+    letterSpacing: 2,
+    "&:focus": {
+      borderBottom: "1px solid #9BD0D0"
+    }
+  },
+  timeSelect: {
+    color: "#638585"
   },
   show: {
     display: "block"
@@ -288,6 +306,7 @@ function OrderDetails() {
   const [orderID, setOrderID] = useState("");
   const [createTime, setCreateTime] = useState("");
   let [clickDate, setClickDate] = useState("");
+  const [timeSelect, setTimeSelect] = useState(false);
   const inputRef = useRef(null);
   const weekend = ["日", "一", "二", "三", "四", "五", "六"];
   const monthEnName = [
@@ -375,6 +394,7 @@ function OrderDetails() {
       setCreateTime(`${create_Date} - ${create_Time}`);
       setClickDate(date);
       setTime(time);
+      setTimeSelect(true);
       setAdult(res.orderDetails.adult);
       setChildren(res.orderDetails.children);
       setNotes(res.orderDetails.notes);
@@ -387,6 +407,7 @@ function OrderDetails() {
 
   const handleChange = event => {
     setTime(event.target.value);
+    setTimeSelect(true);
   };
 
   const handleSaveChangeOrder = async () => {
@@ -632,17 +653,24 @@ function OrderDetails() {
                 </li>
                 <li>
                   <FormControl className={classes.formControl}>
-                    <InputLabel id="demo-simple-select-helper-label">時間</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-helper-label"
-                      id="demo-simple-select-helper"
-                      value={time}
-                      onChange={handleChange}
-                    >
-                      <MenuItem value={12}>12:00</MenuItem>
-                      <MenuItem value={13}>13:00</MenuItem>
-                      <MenuItem value={14}>14:00</MenuItem>
-                    </Select>
+                    <MuiThemeProvider theme={theme}>
+                      <InputLabel
+                        id="demo-simple-select-helper-label"
+                        className={clsx({ [classes.timeSelect]: timeSelect })}
+                      >
+                        時間
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-helper-label"
+                        id="demo-simple-select-helper"
+                        value={time}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value={12}>12:00</MenuItem>
+                        <MenuItem value={13}>13:00</MenuItem>
+                        <MenuItem value={14}>14:00</MenuItem>
+                      </Select>
+                    </MuiThemeProvider>
                   </FormControl>
                 </li>
                 <li>
