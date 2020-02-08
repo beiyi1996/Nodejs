@@ -216,6 +216,8 @@ function Search() {
   const [urlParams, setURLParams] = useState("");
   const [blur, setBlur] = useState(true);
   const history = useHistory();
+  const url_params = new URLSearchParams(window.location.search);
+  const keyWord = url_params.get("searchKeyWord");
   let fetching = function() {};
   useEffect(() => {
     if (!restaurant) {
@@ -225,14 +227,22 @@ function Search() {
   }, []);
 
   useEffect(() => {
+    console.log("set search key word!!");
+    setSearchKeyWord(keyWord);
+    setURLParams(keyWord);
+  }, [keyWord]);
+
+  useEffect(() => {
+    console.log("監聽 searchkeyword is working!!");
     if (searchKeyWord) {
-      console.log("in if");
+      console.log(12345, "search key word is changing!", searchKeyWord);
       fetching = async () => {
         let res = await productService.searchByKeyWord(searchKeyWord);
         console.log(123, res, res.restaurants.length);
         if (res.restaurants.length > 0) {
           console.log("res 有資料");
           setSearchResult(res.restaurants);
+          setRestaurant(res.restaurants);
         }
       };
       fetching();
@@ -240,8 +250,6 @@ function Search() {
   }, [searchKeyWord]);
 
   const getRestaurant = async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const keyWord = urlParams.get("searchKeyWord");
     setURLParams(keyWord);
     let res = await productService.searchByKeyWord(keyWord);
     console.log("111", res.restaurants);
