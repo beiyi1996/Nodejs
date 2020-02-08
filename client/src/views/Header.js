@@ -297,7 +297,12 @@ function Header() {
               {restaurant ? (
                 restaurant.distinctByKind.map((kind, idx) => {
                   return (
-                    <Link to={`/search?searchKeyWord=${kind}`} key={idx} className={classes.linkBtn}>
+                    <Link
+                      to={`/search?searchKeyWord=${kind}`}
+                      key={idx}
+                      className={classes.linkBtn}
+                      onClick={handleDrawerClose}
+                    >
                       <ListItem button>
                         <ListItemText primary={kind} className={classes.listItems} />
                       </ListItem>
