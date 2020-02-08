@@ -2,12 +2,12 @@
   "name": "nodejs-web-application",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon --exec babel-node index.js ",
+    "server": "nodemon --exec babel-node ./src/app.js ",
     "client": "npm run start --prefix client",
-    "start": "node index.js",
+    "start": "node app.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "repository": {

@@ -3,8 +3,6 @@
 const mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 
-mongoose.connect("mongodb://localhost/booking",  { useNewUrlParser: true, useUnifiedTopology: true });
-
 let memberSchema = new Schema({
   email: {
     type: String,
@@ -46,12 +44,12 @@ let memberSchema = new Schema({
   },
   token: {
     type: String,
-    default: ''
+    default: ""
   },
   create_token_time: {
     type: Date,
-    default: ''
+    default: ""
   }
 });
 
-module.exports = mongoose.model('Member', memberSchema);
+module.exports = mongoose.model("Member", memberSchema);

@@ -4,13 +4,38 @@ import path from "path";
 import bodyParser from "body-parser";
 import session from "express-session";
 import cookieParser from "cookie-parser";
-import router from "./src/router";
+import router from "./router";
 import cors from "cors";
 import connectMongo from "connect-mongo";
+import mongoose from "mongoose";
+import mailPassword from "./mailPassword";
+import { CloudFormation } from "aws-sdk";
 const app = express();
 const port = process.env.PORT || 5000;
 const MongoStore = connectMongo(session);
 
+console.log("mailPassword.mongo.connection", mailPassword.mongo.connection);
+
+mongoose
+  .connect(mailPassword.mongo.connection, { useNewUrlParser: true, useUnifiedTopology: true })
+  .catch(error => console.log("Connect Error", error));
+
+mongoose.connection
+  .on("connecting", () => {
+    console.log("mongoose connection is connectiog");
+  })
+  .on("open", () => {
+    console.log("mongoose connection is open");
+  })
+  .on("disconnecting", () => {
+    console.log("mongoose connection is disconnecting");
+  })
+  .on("close", () => {
+    console.log("mongoose connection is close");
+  })
+  .on("reconnected", () => {
+    console.log("mongoose connection is reconnected");
+  });
 app.set("views", path.join(__dirname, "./views/")); // 默認就是views目錄
 app.use("/node_modules/", express.static(path.join(__dirname, "./node_modules/")));
 
@@ -26,7 +51,7 @@ app.use(
     secret: "youarehash", // 加密字串: 會與原密碼組合成新的字串, 在進行加密
     resave: true,
     saveUninitialized: true, // session默認直接分配給你一個加密過的key,false: server 真的存資料到 session時, 才分配cookie key
-    store: new MongoStore({ url: "mongodb://localhost:27017/sessiondb" }),
+    // store: new MongoStore({ url: "mongodb://localhost:27017/sessiondb" }),
     cookie: {
       maxAge: 600 * 1000,
       httpOnly: true,
