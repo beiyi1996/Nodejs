@@ -174,6 +174,21 @@ function Home() {
     }
   }, []);
 
+  const compaireKindComponent = str => {
+    switch (str) {
+      case "飯":
+        return Rice;
+      case "麵":
+        return Noddles;
+      case "甜點":
+        return Dessert;
+      case "飲料":
+        return Beverage;
+      default:
+        return "";
+    }
+  };
+
   const getRestaurant = async () => {
     let res = await productService.getAll();
     console.log("app res", res);
@@ -196,13 +211,12 @@ function Home() {
           <Grid item xs={12} className={classes.restaurants}>
             {restaurant ? (
               restaurant.distinctByKind.map((kind, idx) => {
-                console.log("{kindEnglishName[idx]}", kindEnglishName[idx]);
                 return (
                   <Grid item xs={6} className={classes.item} key={idx}>
                     <Card className={classes.card}>
                       <CardContent className={classes.cardContent}>
                         <Typography variant="body2" component="p">
-                          <img src={kindEnglishName[idx]} alt="" className={classes.img} />
+                          <img src={compaireKindComponent(kind)} alt="" className={classes.img} />
                         </Typography>
                         <Link to={`/search?searchKeyWord=${kind}`} className={classes.cardActions}>
                           <Button size="small">{kind}</Button>
