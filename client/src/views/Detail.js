@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
   },
   restaurantImage: {
     width: "100%",
-    height: "100%",
+    height: 230,
     borderRadius: 10,
     "& > img": {
       width: "100%",
@@ -218,39 +218,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SimpleSlider = () => {
-  const classes = useStyles();
-  let settings = {
-    dots: true,
-    infinite: true,
-    speed: 300,
-    slidesToShow: 1,
-    slidesToScroll: 1
-  };
-  return (
-    <Slider {...settings} className={classes.slider}>
-      <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic1&font=lobster" alt="" />
-      </div>
-      <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic2&font=lobster" alt="" />
-      </div>
-      <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic3&font=lobster" alt="" />
-      </div>
-      <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic4&font=lobster" alt="" />
-      </div>
-      <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic5&font=lobster" alt="" />
-      </div>
-      <div className={classes.restaurantImage}>
-        <img src="http://fakeimg.pl/100x100?text=pic6&font=lobster" alt="" />
-      </div>
-    </Slider>
-  );
-};
-
 function Detail() {
   const classes = useStyles();
   const [form, setForm] = useState(null);
@@ -290,11 +257,38 @@ function Detail() {
       name: name,
       address: res.restaurant.address,
       phone: res.restaurant.phone,
-      info: res.restaurant.info
+      info: res.restaurant.info,
+      image_path: res.restaurant.image_path
     });
 
     console.log("[getRestaurantDetail]取得資料結束", res);
     return res.restaurant;
+  };
+
+  const SimpleSlider = ({ image_path }) => {
+    console.log("image_path", image_path);
+    const classes = useStyles();
+    let settings = {
+      dots: true,
+      infinite: true,
+      speed: 300,
+      slidesToShow: 1,
+      slidesToScroll: 1
+    };
+    return (
+      <Slider {...settings} className={classes.slider}>
+        <div className={classes.restaurantImage}>
+          <img src={image_path.main} alt="" />
+        </div>
+        {image_path.products.map((item, idx) => {
+          return (
+            <div className={classes.restaurantImage} key={idx}>
+              <img src={item} alt="" />
+            </div>
+          );
+        })}
+      </Slider>
+    );
   };
 
   function Map({ options, onMount, className }) {
@@ -438,7 +432,7 @@ function Detail() {
         <Grid item xs={12}>
           <Grid item xs={12} className={classes.paperGrid}>
             <div className={classes.restaurantImage}>
-              <SimpleSlider />
+              {form ? <SimpleSlider image_path={form.image_path} /> : <></>}
             </div>
             <Paper className={classes.paperRoot}>
               <ul className={classes.detailList}>
