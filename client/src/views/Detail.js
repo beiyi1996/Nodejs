@@ -289,7 +289,8 @@ function Detail() {
     setForm({
       name: name,
       address: res.restaurant.address,
-      phone: res.restaurant.phone
+      phone: res.restaurant.phone,
+      info: res.restaurant.info
     });
 
     console.log("[getRestaurantDetail]取得資料結束", res);
@@ -300,59 +301,45 @@ function Detail() {
     console.log("Map function is working!!", onMount);
     const ref = useRef();
     useEffect(() => {
-      const onLoad = address => {
-        const map = new window.google.maps.Map(ref.current, options);
-        onMount && onMount(map, address);
+      const onLoad = async () => {
+        if (!form) {
+          const restaurantResult = await getRestaurantDetail();
+          const map = new window.google.maps.Map(ref.current, options);
+          onMount && onMount(map, restaurantResult.address);
+          script.removeEventListener(`load`, onLoad);
+        }
       };
 
       const script = document.createElement(`script`);
-      const scriptPromise = new Promise((resolve, reject) => {
-        if (!window.google) {
-          document.body.append(script);
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
-          script.async = false;
-          script.defer = true;
-          script.addEventListener(`load`, () => {
-            onLoad();
-            resolve(true);
-          });
+      // const scriptPromise = new Promise((resolve, reject) => {
+      if (!window.google) {
+        document.body.append(script);
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapKey}`;
+        script.async = false;
+        script.defer = true;
+        script.addEventListener(`load`, () => {
+          onLoad();
           // resolve(true);
-        } else {
-          console.log("google map script is exist!");
-          resolve(true);
-        }
-      });
-
-      scriptPromise
-        .then(value => {
-          console.log("google map script is appended!", value);
-          if (value) {
-            console.log("in if?????");
-            async function oo() {
-              if (!form) {
-                return await getRestaurantDetail();
-              }
-            }
-            return oo();
-          }
-        })
-        .then(value => {
-          console.log("oo is finished!", value);
-          if (window.google) {
-            setGoogleScript(false);
-            console.log("已經載入google map script!!");
-            onLoad(value.address);
-          } else {
-            console.log("window.google 未載入完成");
-            setGoogleScript(true);
-          }
-          script.removeEventListener(`load`, onLoad);
         });
+      } else {
+        console.log("google map script is exist!");
+        // resolve(true);
+        onLoad();
+      }
+      // });
+
+      // scriptPromise.then(value => {
+      //   console.log("google map script is appended!", value);
+      //   if (value) {
+      //     console.log("in if?????");
+      //   }
+      // });
     }, [options, onMount, googleScript]);
     return <div {...{ ref, className }} />;
   }
 
   const createMarker = () => (map, address) => {
+    console.log("address", address);
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode(
       {
@@ -469,7 +456,11 @@ function Detail() {
                 </li>
                 <li>
                   <span className={classes.title}>用餐時間 : </span>
-                  <span className={classes.content}>11:00 – 21:30</span>
+                  <span className={classes.content}>10:00 – 21:30</span>
+                </li>
+                <li>
+                  <span className={classes.title}>店家描述 : </span>
+                  <span className={classes.content}>{form ? form.info : ""}</span>
                 </li>
                 <li>
                   <span className={classes.title}>保留資訊 : </span>
