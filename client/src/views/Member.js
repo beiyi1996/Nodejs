@@ -113,6 +113,7 @@ function Member() {
   const [orderCount, setOrderCount] = useState(0);
   const [userEmail, setUserEmail] = useState("");
   const [isLogIn, setIsLogIn] = useState(true);
+  const [userPhotoText, setUserPhotoText] = useState("");
   const history = useHistory();
 
   useEffect(() => {
@@ -129,6 +130,8 @@ function Member() {
     console.log("member orders", orders);
     const today = new Date();
     console.log("today", today);
+    const userPhotoText = Object.keys(sessionStorageData).length > 0 ? sessionStorageData.member[0].toUpperCase() : "";
+    setUserPhotoText(userPhotoText);
 
     if (orders.code === 200) {
       const promises = orders.orders.map(item => {
@@ -192,7 +195,11 @@ function Member() {
       <Grid item xs={12} className={classes.container}>
         {isLogIn ? <Header /> : <></>}
         <Grid item xs={12} className={classes.userPicGrid}>
-          <img src="http://fakeimg.pl/100x100?text=userPic&font=lobster" alt="" className={classes.userPic} />
+          <img
+            src={`http://fakeimg.pl/100x100/F4D28B/3D405B/?text=${userPhotoText}&font=bebas`}
+            alt=""
+            className={classes.userPic}
+          />
         </Grid>
         <Grid item xs={12} className={classes.userGrid}>
           <Paper className={classes.userPaper}>
