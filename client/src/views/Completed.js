@@ -17,9 +17,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
     color: theme.palette.text.secondary
   },
-  logo: {
-    borderRadius: "50%"
-  },
+  logo: {},
   paperText: {
     textAlign: "left",
     boxShadow: "none",
@@ -33,7 +31,10 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 10,
+    "& > a": {
+      textDecoration: "none"
+    }
   },
   button: {
     margin: "10px 0",
@@ -60,9 +61,6 @@ function Completed() {
         <Grid item xs={12}>
           <Paper className={classes.paperText}>
             <p className={classes.center}>感謝您的訂位!</p>
-            <p>
-              訂單編號：<a href="https://www.youtube.com/watch?v=jL25Drh3Npo">20191210812991</a>
-            </p>
             <p>請至網站「查詢訂單」查看訂單明細。</p>
           </Paper>
         </Grid>
