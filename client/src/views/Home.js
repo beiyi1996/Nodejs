@@ -157,7 +157,11 @@ const categoryStyles = makeStyles({
     }
   },
   card: {
-    textAlign: "center"
+    textAlign: "center",
+    "& > img": {
+      width: 150,
+      height: 100
+    }
   }
 });
 
@@ -243,7 +247,7 @@ function Home() {
                       onClick={() => handleClickRestaurant(result._id, result.name)}
                     >
                       <Card className={categoryClasses.card}>
-                        <img src="http://fakeimg.pl/100x100?text=image" alt="" />
+                        <img src={result.image_path.main} alt="" />
                       </Card>
                       <Grid item xs={12} className={classes.guessItem}>
                         <span className={classes.restaurantName}>{result.name}</span>
