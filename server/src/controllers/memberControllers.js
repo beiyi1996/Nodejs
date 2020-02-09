@@ -6,16 +6,16 @@ import { validationResult } from "../../node_modules/express-validator";
 import MyEmail from "../mailPassword";
 
 const register = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log("errors is not empty!!!");
+    res.status(422).json({
+      code: 422,
+      errors: errors.array()
+    });
+    return;
+  }
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      res.status(422).json({
-        code: 422,
-        errors: errors.array()
-      });
-      return;
-    }
-
     const { email, password, gender, phone, name } = req.body;
     const bcryptPassword = Bcrypt.hashSync(password, 10);
     console.log("bcryptPassword", bcryptPassword);
@@ -28,7 +28,7 @@ const register = async (req, res, next) => {
     });
     res.status(200).json({ code: 200, message: "register success", member });
   } catch (err) {
-    console.log("error!!!");
+    console.log("error!!!", err);
     return next(err);
   }
 };
@@ -38,14 +38,6 @@ const logIn = async (req, res, next) => {
   let isLogIn = false;
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      res.status(422).json({
-        code: 422,
-        errors: errors.array()
-      });
-      return;
-    }
-
     const { email, password } = req.body;
     Member.findOne(
       {
@@ -55,7 +47,11 @@ const logIn = async (req, res, next) => {
         if (err) next(err);
         if (!member) {
           console.log("This email is unregistered");
-          res.redirect("/register"); // 會員未註冊
+          return res.status(400).json({
+            code: 400,
+            message: "This email is unregistered",
+            email: email
+          }); // 會員未註冊
         }
         console.log(333, member.name);
         console.log("member.password", member.password);
