@@ -376,8 +376,8 @@ function Booking() {
           setChildren(sessionStorageForm.children);
           setNotes(sessionStorageForm.notes);
         } else {
+          setRestaurantName(sessionStorageForm.restaurantName);
           sessionStorage.removeItem("form");
-          setRestaurantName(restaurantName);
         }
       } else {
         setRestaurantName(sessionStorageForm.restaurantName);
