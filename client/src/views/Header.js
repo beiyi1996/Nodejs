@@ -130,16 +130,17 @@ function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [restaurant, setrestaurant] = useState(null);
   const [showLogInButton, setShowLogInButton] = useState(true);
-  const [sessionStroage, setSessionStorage] = useState({});
+  const [session_storage, setSessionStorage] = useState({});
   const openU = Boolean(anchorEl);
   const history = useHistory();
   const listItem = [
-    { title: "查看訂單", href: `/orders?name=${sessionStroage.member}` },
+    { title: "查看訂單", href: `/orders?name=${session_storage.member}` },
     { title: "首頁", href: "/" },
-    { title: "聯絡我們", href: "/contactme" }
+    { title: "關於作者", href: "/contactme" }
   ];
 
   useEffect(() => {
+    console.log("Header useEffect is working!!");
     console.log("sessionStorage", JSON.parse(sessionStorage.getItem("user")));
     const sessionStorageData =
       sessionStorage.getItem("user") !== null ? JSON.parse(sessionStorage.getItem("user")) : {};
@@ -193,7 +194,7 @@ function Header() {
   };
 
   const handleLogOut = async () => {
-    const res = await productService.logOut(sessionStroage.login);
+    const res = await productService.logOut(session_storage.login);
     console.log("log out res", res);
     if (res.code === 200) {
       sessionStorage.clear();
@@ -256,6 +257,7 @@ function Header() {
                 </MenuItem>
               ) : (
                 <div>
+                  <MenuItem className={classes.menuItem}>Hi! {session_storage.member}</MenuItem>
                   <MenuItem onClick={handleCheckOrderDetails} className={classes.menuItem}>
                     查詢訂單
                   </MenuItem>
