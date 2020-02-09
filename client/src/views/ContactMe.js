@@ -11,7 +11,7 @@ import CodepenIcon from "../images/codepen.png";
 import Paper from "@material-ui/core/Paper";
 import Header from "./Header";
 import Footer from "./Footer";
-import Logo from "../images/logo.png";
+import Winni from "../images/winni.jpg";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,15 +27,16 @@ const useStyles = makeStyles(theme => ({
     }
   },
   logoGrid: {
-    marginTop: 50,
+    marginTop: 20,
     display: "flex",
     flexDirection: "column",
     padding: "0 20px",
     alignItems: "center"
   },
   logo: {
-    borderRadius: "50%",
-    width: 200
+    borderRadius: "10%",
+    width: 200,
+    height: 250
   },
   formGrid: {
     width: "100%",
@@ -54,12 +55,15 @@ const useStyles = makeStyles(theme => ({
     padding: 20,
     overflow: "scroll",
     "& > div": {
-      padding: 20
+      padding: 20,
+      "& > p": {
+        textAlign: "left"
+      }
     },
     "& > div > *": {
       fontFamily: "Microsoft JhengHei"
     },
-    "@media screen and (max-width:320px)": {
+    "@media screen and (max-width:360px)": {
       height: "calc(50% - 180px)"
     },
     "@media screen and (min-width:375px)": {
@@ -105,7 +109,7 @@ function ContactMe() {
       <Grid item xs={12} className={classes.container}>
         <Header />
         <Grid item xs={12} className={classes.logoGrid}>
-          <img src={Logo} alt="" className={classes.logo} />
+          <img src={Winni} alt="" className={classes.logo} />
           <Grid item xs={12} className={classes.formGrid}>
             <Typography variant="h4">Winni Huang</Typography>
             <Grid item xs={12}>
@@ -136,11 +140,15 @@ function ContactMe() {
           <Paper>
             <Typography variant="h5">樂觀開朗，勇於挑戰。</Typography>
             <Typography variant="body1">
-              在大學的最後一個學期，決定加入Build School，培養自己的第二專長。
-              從一開始的C#課程，完成了生命靈數、運輸票價等作品；到前端的HTML、CSS、JavaScript，使用BootStrap 4
-              刻了蝦皮首頁、jQuery搭配localstorage跟Google Maps API實作了一個自己的行事曆、CSS :
-              Flexbox搭配設定網頁斷點實作貓奴選物的RWD響應式網頁以及運用Vue.js實做簡易TodoList工具；並且在6月底參加企業專題，使用
-              VSTS 及 Scurm 與4位組員偕同開發 Bot Designer 專案。希望我可以成為貴公司的一份子！
+              在大學的最後一個學期，決定加入Build School，培養自己的第二專長。並且在2018/06月底參加企業專題，使用 VSTS
+              及 Scurm 與4位組員偕同開發 Bot Designer 專案。
+              <br />
+              畢業之後，在雄獅資訊科技公司-票券當地遊組擔任前端工程師一職1年半的時間，
+              <br />
+              每當我在開發時，總是會特別激進，使用官方文件搭配網路文章的方法，進行一次又一次的嘗試，直到解出來為止!!
+              完成功能的瞬間，讓我感到無比的成就感，同時將新學到的方法或知識與身邊的人分享，
+              <br />
+              想要了解更全面的我，可以透過名字下方的按鈕與我聯繫，謝謝。
             </Typography>
           </Paper>
         </Grid>
