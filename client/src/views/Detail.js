@@ -16,6 +16,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { googleMapKey } from "../password";
 import classNames from "classnames";
 import Header from "./Header";
+import Marker from "../images/marker.png";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,12 +37,12 @@ const useStyles = makeStyles(theme => ({
   },
   grid: {
     width: "100%",
-    margin: "0 auto",
-    padding: "10px 10px 0",
+    padding: "10px",
+    margin: "2px 0",
     display: "flex",
     position: "sticky",
     zIndex: 1,
-    top: 56,
+    top: 62,
     backgroundColor: "#fff"
   },
   searchBar: {
@@ -73,7 +74,6 @@ const useStyles = makeStyles(theme => ({
   },
   restaurantImage: {
     width: "100%",
-    height: 230,
     borderRadius: 10,
     "& > img": {
       width: "100%",
@@ -347,6 +347,7 @@ function Detail() {
             map,
             position: results[0].geometry.location,
             title: "",
+            icon: Marker,
             visible: true
           });
           return marker;
