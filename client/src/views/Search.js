@@ -30,11 +30,11 @@ const useStyles = makeStyles(theme => ({
   },
   grid: {
     width: "100%",
-    margin: "0 auto",
-    padding: "10px 10px 0",
+    margin: "2px 0",
+    padding: 10,
     display: "flex",
     position: "sticky",
-    top: 56,
+    top: 62,
     zIndex: 1,
     backgroundColor: "#fff"
   },
@@ -332,7 +332,7 @@ function Search() {
             restaurant.map(item => (
               <Grid item xs={12} className={classes.paperGrid} key={item._id}>
                 <div className={classes.restaurantImage}>
-                  <img src="http://fakeimg.pl/100x100?font=lobster" alt="" />
+                  <img src={item.image_path.main} alt="" />
                 </div>
                 <Paper className={classes.paperRoot}>
                   <p className={classes.restaurantName}>{item.name}</p>
