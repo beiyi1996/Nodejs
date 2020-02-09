@@ -127,7 +127,15 @@ function LogIn() {
         history.push("/");
       }
     } else {
-      setError(true);
+      if (res.code === 400) {
+        const temporarily_email = res.email;
+        console.log("temporarily_email", temporarily_email);
+        sessionStorage.setItem("temporarily_email", temporarily_email);
+        alert("此email並未註冊，請先註冊在登入喔!!");
+        history.push("/register");
+      } else if (res.code === 401) {
+        setError(true);
+      }
     }
   };
 
