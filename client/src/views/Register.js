@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles, withStyles, createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import productService from "../services/productService";
@@ -183,6 +183,16 @@ function Register() {
     setNameError(false);
   };
 
+  useEffect(() => {
+    if (sessionStorage.getItem("temporarily_email")) {
+      console.log("in if???");
+      const temporarily_email = sessionStorage.getItem("temporarily_email");
+      setEmail(temporarily_email);
+    } else {
+      console.log("沒有欲註冊的暫存帳號!");
+    }
+  }, []);
+
   const handleInputRegex = e => {
     e.target.value = e.target.value.replace(/[A-Za-z\u4e00-\u9fa5\s\D]/g, "");
     const name = e.target.name;
@@ -208,6 +218,7 @@ function Register() {
       const res = await productService.register(email, password, name, genderNumber, allPhone);
       console.log("res", res);
       if (res.code === 200) {
+        sessionStorage.removeItem("temporarily_email");
         alert("您已註冊成功, 開始挑選您的食物吧!");
         history.push("/");
       } else if (res.code === 422) {
@@ -246,7 +257,13 @@ function Register() {
         <Grid item xs={12} className={classes.formGrid}>
           <form className={classes.form} noValidate autoComplete="off">
             <FormControl className={clsx(classes.margin, classes.textField, classes.input)}>
-              <CssTextField label="email" name="email" onChange={handleChangeEmail} error={emailError} />
+              <CssTextField
+                label="email"
+                name="email"
+                onChange={handleChangeEmail}
+                error={emailError}
+                value={email || ""}
+              />
               <FormHelperText
                 className={clsx(classes.input, classes.errorText, { [classes.hide]: emailError === false })}
               >
