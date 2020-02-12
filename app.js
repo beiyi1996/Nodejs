@@ -9,8 +9,9 @@ import connectMongo from "connect-mongo";
 import mongoose from "mongoose";
 import mailPassword from "./mailPassword";
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8000;
 const MongoStore = connectMongo(session);
+import imagemin from "./imagemin.js";
 
 console.log("mailPassword.mongo.connection", mailPassword.mongo.connection);
 
