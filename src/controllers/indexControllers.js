@@ -1,5 +1,3 @@
-/*jshint esversion: 6 */
-
 import Restaurant from "../../models/restaurant";
 import Category from "../../models/category";
 

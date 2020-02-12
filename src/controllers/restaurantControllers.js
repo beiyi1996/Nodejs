@@ -1,4 +1,3 @@
-/*jshint esversion: 6 */
 import Restaurant from "../../models/restaurant";
 
 const createRestaurantData = (req, res, next) => {
