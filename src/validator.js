@@ -1,5 +1,3 @@
-/*jshint esversion: 6 */
-
 import { body } from "../node_modules/express-validator";
 import Member from "../models/member";
 
