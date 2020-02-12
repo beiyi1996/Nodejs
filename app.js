@@ -11,6 +11,15 @@ import mailPassword from "./mailPassword";
 const app = express();
 const port = process.env.PORT || 5000;
 const MongoStore = connectMongo(session);
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
+
+io.on("connection", function(socket) {
+  console.log("a user connected");
+  socket.on("disconnect", function() {
+    console.log("user disconnected");
+  });
+});
 
 console.log("mailPassword.mongo.connection", mailPassword.mongo.connection);
 
