@@ -105,7 +105,7 @@ async function createMail(email, token) {
     to: email, // list of receivers
     subject: "forget password", // Subject line
     text: "美食家 - 修改密碼通知信", // plain text body
-    html: `<h3>請至連結更改密碼 : <a href="http://localhost:3000/modifiedpassword?token=${token}">修改密碼</a></h3>` // html body
+    html: `<h3>請至連結更改密碼 : <a href="https://winniexpressappclient.azurewebsites.net/modifiedpassword?token=${token}">修改密碼</a></h3>` // html body
   });
 }
 
