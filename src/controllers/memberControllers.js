@@ -3,7 +3,7 @@ import Bcrypt from "bcryptjs";
 import Crypto from "crypto";
 import NodeMailer from "nodemailer";
 import { validationResult } from "../../node_modules/express-validator";
-import MyEmail from "../mailPassword";
+import Config from "../mailPassword";
 
 const register = async (req, res, next) => {
   const errors = validationResult(req);
@@ -84,29 +84,44 @@ const logIn = async (req, res, next) => {
   }
 };
 
-async function createMail(email, token) {
-  console.log(18901394, MyEmail, token);
-  let transporter = NodeMailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    secureConnection: true, // 使用SSL方式 (安全方式，防止被竊取信息)
-    auth: {
-      user: MyEmail.email, // generated ethereal user
-      pass: MyEmail.password // generated ethereal password
-    },
-    tls: {
-      rejectUnauthorized: false // 不得檢查服務器所發送的憑證
-    }
-  });
+let transporter = NodeMailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 578,
+  secure: true,
+  service: "gmail",
+  secureConnection: true,
+  auth: {
+    type: "OAuth2",
+    user: Config.account.email,
+    password: Config.account.password,
+    clientId: Config.oauth.clientId,
+    clientSecret: Config.oauth.clientSecret,
+    refreshToken: Config.oauth.refreshToken,
+    accessToken: Config.oauth.accessToken,
+    expries: 1609344000000
+  },
+  tls: {
+    rejectUnauthorized: false // 不得檢查服務器所發送的憑證
+  }
+});
 
-  await transporter.sendMail({
-    from: MyEmail.email, // sender address
-    to: email, // list of receivers
-    subject: "forget password", // Subject line
-    text: "美食家 - 修改密碼通知信", // plain text body
-    html: `<h3>請至連結更改密碼 : <a href="https://winniexpressappclient.azurewebsites.net/modifiedpassword?token=${token}">修改密碼</a></h3>` // html body
-  });
+async function createMail(email, token) {
+  console.log(18901394, Config.account, token);
+  console.log(555555, transporter);
+
+  await transporter.sendMail(
+    {
+      from: Config.account.email, // sender address
+      to: email, // list of receivers
+      subject: "forget password", // Subject line
+      text: "美食家 - 修改密碼通知信", // plain text body
+      html: `<h3>請至連結更改密碼 : <a href="https://winniexpressappclient.azurewebsites.net/modifiedpassword?token=${token}">修改密碼</a></h3>` // html body
+    },
+    (err, res) => {
+      if (err) return console.log("send mail error", err);
+      else console.log(JSON.stringify(res));
+    }
+  );
 }
 
 function createTokenAndSaveDB(email, type, next) {
