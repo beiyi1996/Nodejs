@@ -63,6 +63,6 @@ typings/
 #dist
 dist/
 
-src/mailPassword.js
+# src/mailPassword.js
 
 .idea
