@@ -1,35 +1,48 @@
 import Order from "../../models/order";
 import Member from "../../models/member";
 import Restaurant from "../../models/restaurant";
-import MyEmail from "../mailPassword";
+import Config from "../mailPassword.js";
 import NodeMailer from "nodemailer";
 import { validationResult } from "../../node_modules/express-validator";
 
 async function sendCompletedMail(email, orderId) {
-  console.log(1, MyEmail);
+  console.log(1, Config.account);
   console.log(2, orderId);
   console.log(3, email);
   let transporter = NodeMailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    secureConnection: true, // 使用SSL方式 (安全方式，防止被竊取信息)
+    port: 578,
+    secure: true,
+    service: "gmail",
+    secureConnection: true,
     auth: {
-      user: MyEmail.email, // generated ethereal user
-      pass: MyEmail.password // generated ethereal password
+      type: "OAuth2",
+      user: Config.account.email,
+      password: Config.account.password,
+      clientId: Config.oauth.clientId,
+      clientSecret: Config.oauth.clientSecret,
+      refreshToken: Config.oauth.refreshToken,
+      accessToken: Config.oauth.accessToken,
+      expries: Config.oauth.expries
     },
     tls: {
       rejectUnauthorized: false // 不得檢查服務器所發送的憑證
     }
   });
 
-  await transporter.sendMail({
-    from: MyEmail.email, // sender address
-    to: email, // list of receivers
-    subject: `Completed Mail`, // Subject line
-    text: "美食家-訂購完成通知信", // plain text body
-    html: `這是您的訂購完成通知信, <br> 您可以從這個連結查詢此筆訂單。 <a href='http://localhost:3000/orderdetails?order_ID=${orderId}'>查詢此筆訂單</a>` // html body
-  });
+  await transporter.sendMail(
+    {
+      from: Config.account.email, // sender address
+      to: email, // list of receivers
+      subject: `Completed Mail`, // Subject line
+      text: "美食家-訂購完成通知信", // plain text body
+      html: `這是您的訂購完成通知信, <br> 您可以從這個連結查詢此筆訂單。 <a href='http://localhost:3000/orderdetails?order_ID=${orderId}'>查詢此筆訂單</a>` // html body
+    },
+    (err, res) => {
+      if (err) return console.log("send completed mail error", err);
+      else console.log(JSON.stringify(res));
+    }
+  );
 }
 
 const createOrder = async (req, res, next) => {
