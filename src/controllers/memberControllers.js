@@ -3,7 +3,7 @@ import Bcrypt from "bcryptjs";
 import Crypto from "crypto";
 import NodeMailer from "nodemailer";
 import { validationResult } from "../../node_modules/express-validator";
-import Config from "../mailPassword";
+import Config from "../mailPassword.js";
 
 const register = async (req, res, next) => {
   const errors = validationResult(req);
@@ -98,7 +98,7 @@ let transporter = NodeMailer.createTransport({
     clientSecret: Config.oauth.clientSecret,
     refreshToken: Config.oauth.refreshToken,
     accessToken: Config.oauth.accessToken,
-    expries: 1609344000000
+    expries: Config.oauth.expries
   },
   tls: {
     rejectUnauthorized: false // 不得檢查服務器所發送的憑證
