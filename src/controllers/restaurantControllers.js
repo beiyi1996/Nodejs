@@ -155,6 +155,7 @@ const searchRestaurant = async (req, res, next) => {
 };
 
 const getRestaurantDetail = (req, res, next) => {
+  console.log("getRestaurantDetail is working!!");
   const { name, _id } = req.query;
   console.log("name", name, "_id", _id);
   Restaurant.findOne(
@@ -163,13 +164,20 @@ const getRestaurantDetail = (req, res, next) => {
       _id: _id
     },
     (err, data) => {
-      if (err) next(err);
       console.log("data", data);
-      res.status(200).json({
-        code: 200,
-        message: `find restaurant ${name}`,
-        restaurant: data
-      });
+      if (err) {
+        return res.status(400).json({
+          code: 400,
+          message: `Cannot find any restaurant by name ${name} or id ${_id}`
+        });
+      }
+      if (data) {
+        res.status(200).json({
+          code: 200,
+          message: `find restaurant ${name}`,
+          restaurant: data
+        });
+      }
     }
   );
 };
