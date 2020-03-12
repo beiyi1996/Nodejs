@@ -31,4 +31,4 @@ jobs:
         app-name: 'bookingsystem2020'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_ab5b25f9d2f74458b9edbb209f204922 }}
-        package: .
+        package: ./dist
