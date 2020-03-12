@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon --exec babel-node app.js",
     "client": "npm run start --prefix client",
-    "start": "npm run build-node && node dist/app.js",
+    "start": "nodemon --exec babel-node ./bin/www",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
     "build-node": "babel ./src --out-dir ./dist --source-maps --copy-files && babel app.js -d dist",
     "build ": "npm run build-node"
