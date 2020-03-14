@@ -36,7 +36,7 @@ mongoose.connection
   });
 app.set("views", path.join(__dirname, "./views/")); // 默認就是views目錄
 app.use("/node_modules/", express.static(path.join(__dirname, "./node_modules/")));
-app.use("/images", express.static(__dirname + "/images"));
+app.use("/images", express.static(__dirname + "/src/images"));
 
 app.use(cookieParser("38940293"));
 // parse application/x-www-form-urlencoded
