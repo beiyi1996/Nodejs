@@ -3,11 +3,11 @@ import path from 'path'
 import bodyParser from 'body-parser'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
-import routes from './src/router'
+import routes from './router'
 import cors from 'cors'
 import connectMongo from 'connect-mongo'
 import mongoose from 'mongoose'
-import mailPassword from './src/mailPassword'
+import mailPassword from './mailPassword'
 const app = express()
 const port = process.env.PORT || 8000
 const MongoStore = connectMongo(session)
