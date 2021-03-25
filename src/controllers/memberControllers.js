@@ -3,7 +3,7 @@ import Bcrypt from 'bcryptjs'
 import Crypto from 'crypto'
 import NodeMailer from 'nodemailer'
 import { validationResult } from '../../node_modules/express-validator'
-import Config from '../mailPassword.js'
+import { account, oauth } from '../mailPassword.js'
 
 const register = async (req, res, next) => {
   const errors = validationResult(req)
@@ -86,36 +86,29 @@ const logIn = async (req, res, next) => {
 
 let transporter = NodeMailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 578,
+  port: 465,
   secure: true,
-  service: 'gmail',
-  secureConnection: true,
   auth: {
     type: 'OAuth2',
-    user: Config.account.email,
-    password: Config.account.password,
-    clientId: Config.oauth.clientId,
-    clientSecret: Config.oauth.clientSecret,
-    refreshToken: Config.oauth.refreshToken,
-    accessToken: Config.oauth.accessToken,
-    expries: Config.oauth.expries,
-  },
-  tls: {
-    rejectUnauthorized: false, // 不得檢查服務器所發送的憑證
+    user: account.email,
+    clientId: oauth.clientId,
+    clientSecret: oauth.clientSecret,
+    refreshToken: oauth.refreshToken,
+    accessToken: oauth.accessToken,
   },
 })
 
 async function createMail(email, token) {
-  console.log(18901394, Config.account, token)
+  console.log(18901394, account, token)
   console.log(555555, transporter)
 
   transporter.sendMail(
     {
-      from: Config.account.email, // sender address
+      from: account.email, // sender address
       to: email, // list of receivers
       subject: 'forget password', // Subject line
       text: '美食家 - 修改密碼通知信', // plain text body
-      html: `<h3>請至連結更改密碼 : <a href="https://bookingsystemclient.herokuapp.com/modifiedpassword?token=${token}">修改密碼</a></h3>`, // html body
+      html: `<div><h3>請至連結更改密碼 : <a href="https://bookingsystemclient.herokuapp.com/modifypassword?token=${token}">修改密碼</a></h3><p>若無法點擊連結，請複製下列網址至流覽器 : https://bookingsystemclient.herokuapp.com/modifypassword?token=${token}</p></div>`, // html body
     },
     (err, res) => {
       if (err) return console.log('send mail error', err)
@@ -178,8 +171,8 @@ const forgotPassword = (req, res, next) => {
   }
 }
 
-const modifiedPasswordGET = (req, res, next) => {
-  console.log('modifiedPasswordGet req.query', req.query)
+const modifyPassword = (req, res, next) => {
+  console.log('modifyPasswordGet req.query', req.query)
   const { token } = req.query
   let now = new Date()
   Member.findOne(
@@ -198,7 +191,7 @@ const modifiedPasswordGET = (req, res, next) => {
           email: data.email,
         })
       } else {
-        console.log('modified password get token is expired!!!')
+        console.log('modify password get token is expired!!!')
         createTokenAndSaveDB(data.email)
         res.status(400).json({ code: 400, message: 'token is expired' })
       }
@@ -206,8 +199,8 @@ const modifiedPasswordGET = (req, res, next) => {
   )
 }
 
-const modifiedPasswordPOST = (req, res, next) => {
-  console.log('Modified password post is working!!!', res.body)
+const changePassword = (req, res, next) => {
+  console.log('Modify password post is working!!!', res.body)
   const { email, password } = req.body
   Member.findOne(
     {
@@ -272,8 +265,8 @@ module.exports = {
   register,
   logIn,
   forgotPassword,
-  modifiedPasswordGET,
-  modifiedPasswordPOST,
+  modifyPassword,
+  changePassword,
   logOut,
   checkLogInStatus,
 }

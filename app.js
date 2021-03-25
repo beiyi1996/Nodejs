@@ -7,12 +7,12 @@ import routes from './router'
 import cors from 'cors'
 import connectMongo from 'connect-mongo'
 import mongoose from 'mongoose'
-import mailPassword from './mailPassword'
+import { mongo } from './mailPassword'
 const app = express()
 const port = process.env.PORT || 8000
 const MongoStore = connectMongo(session)
 
-console.log('mailPassword.mongo.connection', mailPassword.mongo.connection)
+console.log('mailPassword.mongo.connection', mongo.connection)
 
 const options = {
   useNewUrlParser: true,
@@ -26,7 +26,7 @@ const options = {
   family: 4, // Use IPv4, skip trying IPv6
 }
 
-mongoose.connect(mailPassword.mongo.connection, options).catch((error) => console.log('Connect Error', error))
+mongoose.connect(mongo.connection, options).catch((error) => console.log('Connect Error', error))
 
 mongoose.connection
   .on('connecting', () => {
